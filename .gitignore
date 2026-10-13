@@ -1,0 +1,27 @@
+# Data: raw PDFs and generated artifacts are not committed (see data/manifest.csv)
+data/raw/
+data/processed/
+
+# Secrets and local instructions
+.env
+.env.*
+CLAUDE.md
+
+# Model / tool caches
+.cache/
+.hf_cache/
+huggingface/
+models/
+*.faiss
+*.index
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+*.egg-info/
+dist/
+build/

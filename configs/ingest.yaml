@@ -1,0 +1,49 @@
+# Phase 1 ingestion config: PDF parsing, cleaning, and chunking.
+
+paths:
+  manifest: data/manifest.csv
+  raw_dir: data/raw
+  processed_dir: data/processed
+  chunks_file: data/processed/chunks.jsonl
+  reports_dir: reports
+
+tokenizer:
+  # Token counts are measured with the embedding model's tokenizer, so caps match its 512 limit.
+  name: intfloat/multilingual-e5-base
+
+validation:
+  min_chars_per_page: 200       # pages below this are flagged as near-empty / possibly scanned
+  ocr_image_coverage: 0.8       # an image covering >= this fraction of a page => text is an OCR layer
+
+cleaning:
+  edge_lines: 4                 # lines inspected at the top/bottom of each page for running headers
+  running_min_ratio: 0.3        # a normalized edge line on >= this share of pages is a running header
+  running_min_pages: 3
+  catchword_max_chars: 60       # page-bottom continuation markers ("Pasal 21 . . .") are short
+  running_line_patterns:        # OCR-garbled running headers that frequency alone misses
+    - '^[PFE]\s*R\s*E\s*S\s*[I1l!i]\s*D\s*E\s*N\s*,?$'
+    - '^REPUB\S*\s+\S*[NI]\S*$'
+    - '^SK\s*No\.?\s*\S*'
+    - '^SALINAN$'
+    - '^www\.'
+  protected_line_patterns:      # never treat these as running headers, even when frequent
+    - '^(Pasal|BAB|Bagian|Paragraf|Ayat|Huruf|Angka)\b'
+    - '^(Cukup jelas|Dihapus)\.?$'
+
+regulation:
+  max_tokens: 400               # cap per chunk (e5 limit is 512 incl. prefix + heading)
+  window_overlap_tokens: 50     # overlap for free-text parts (preamble, Penjelasan Umum, Lampiran)
+  drop_trivial_penjelasan: true # drop Penjelasan entries whose every line is "Cukup jelas."
+  trivial_penjelasan_line_pattern: '^(Cukup\s*je\S{0,8}|Dihapus\S{0,3})$'  # tolerates OCR ("Cukup jel,'rs.")
+
+report:
+  max_tokens: 400
+  overlap_tokens: 64
+  h1_min_size: 14.5             # chapter headings (22pt "1. International maritime trade", 15pt "Policy focus")
+  h2_min_size: 13.5             # bold 14pt sub-headings
+  min_alpha_ratio: 0.5          # drop chart-axis blocks that are mostly numbers
+  min_words: 4                  # drop tiny fragments (sidebar shards, chart labels)
+
+doc_overrides:
+  unctad_rmt_2025:
+    skip_pages: [1, 2, 3, 4, 5, 28, 29, 30, 31, 32]  # cover, copyright, contents; back photos and cover

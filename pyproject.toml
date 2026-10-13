@@ -1,0 +1,26 @@
+[project]
+name = "maritime-rag"
+version = "0.1.0"
+description = "RAG Q&A over Indonesian maritime regulations and UNCTAD RMT with source citations"
+requires-python = ">=3.11"
+dependencies = [
+    "huggingface-hub>=2.2.0",
+    "pymupdf>=1.28.2",
+    "pyyaml>=6.0.3",
+    "tokenizers>=0.23.3",
+]
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[project.scripts]
+maritime-ingest = "maritime_rag.ingest:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
