@@ -101,20 +101,48 @@ class HeaderSelection:
     accepted: dict[int, PasalNum]  # line index -> number
     rejected: list[tuple[int, str]]  # (line index, reason)
     repaired: list[tuple[int, str]]  # (line index, "read as Pasal X")
+    overridden: list[tuple[int, str]]  # (line index, what the manual override did)
 
 
-def select_pasal_headers(lines: Sequence[str], allow_roman: bool = False) -> HeaderSelection:
+def _keep_increasing(group: list[tuple[int, PasalNum]], pinned: set[int]) -> set[int]:
+    """Positions in group to keep: all pinned ones, plus the longest increasing run between pins."""
+    keep = set(pinned)
+    bounds = [-1, *sorted(pinned), len(group)]
+    for a, b in zip(bounds, bounds[1:]):
+        lo = group[a][1] if a >= 0 else None
+        hi = group[b][1] if b < len(group) else None
+        seg = [j for j in range(a + 1, b) if (lo is None or group[j][1] > lo) and (hi is None or group[j][1] < hi)]
+        keep |= {seg[k] for k in _longest_increasing([group[j][1] for j in seg])}
+    return keep
+
+
+def select_pasal_headers(
+    lines: Sequence[str], allow_roman: bool = False, forced: dict[int, PasalNum | None] | None = None
+) -> HeaderSelection:
     """Choose the real Pasal headers among candidate lines.
 
     Roman headers (Pasal I, II in amending regulations) split the sequence into groups;
-    within each group the arabic headers must strictly increase.
+    within each group the arabic headers must strictly increase. `forced` pins manual
+    overrides: line index -> Pasal number (always accepted) or None (never a header).
     """
+    forced = forced or {}
     accepted: dict[int, PasalNum] = {}
     rejected: list[tuple[int, str]] = []
     repaired: list[tuple[int, str]] = []
+    overridden: list[tuple[int, str]] = []
     groups: list[list[tuple[int, PasalNum]]] = [[]]
+    pinned: list[set[int]] = [set()]
     last_roman = 0
     for i, text in enumerate(lines):
+        if i in forced:
+            pin = forced[i]
+            if pin is None:
+                overridden.append((i, "not a Pasal header"))
+            else:
+                overridden.append((i, f"read as Pasal {pin.label}"))
+                pinned[-1].add(len(groups[-1]))
+                groups[-1].append((i, pin))
+            continue
         num = parse_pasal_header(text, allow_roman)
         if num is None:
             continue
@@ -126,12 +154,13 @@ def select_pasal_headers(lines: Sequence[str], allow_roman: bool = False) -> Hea
                 accepted[i] = num
                 last_roman = num.number
                 groups.append([])
+                pinned.append(set())
             else:
                 rejected.append((i, f"roman Pasal {num.label} out of order"))
             continue
         groups[-1].append((i, num))
-    for group in groups:
-        keep = set(_longest_increasing([n for _, n in group]))
+    for group, pins in zip(groups, pinned):
+        keep = _keep_increasing(group, pins)
         prev: PasalNum | None = None
         for j, (i, num) in enumerate(group):
             if j in keep:
@@ -144,7 +173,7 @@ def select_pasal_headers(lines: Sequence[str], allow_roman: bool = False) -> Hea
                 repaired.append((i, f"Pasal {num.label} read as Pasal {fixed.label}"))
             else:
                 rejected.append((i, f"Pasal {num.label} breaks the increasing sequence"))
-    return HeaderSelection(dict(sorted(accepted.items())), sorted(rejected), sorted(repaired))
+    return HeaderSelection(dict(sorted(accepted.items())), sorted(rejected), sorted(repaired), sorted(overridden))
 
 
 # --- ayat splitting -------------------------------------------------------------------------

@@ -21,6 +21,7 @@ dev = [
 
 [project.scripts]
 maritime-ingest = "maritime_rag.ingest:main"
+maritime-ocr-quality = "maritime_rag.ocr_report:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

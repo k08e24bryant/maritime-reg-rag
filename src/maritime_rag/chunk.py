@@ -16,10 +16,12 @@ class Chunk:
     year: int | None
     status: str
     part: str  # preamble | body | penjelasan | lampiran | report
-    text: str
-    heading: str  # human-readable breadcrumb for citations and embedding context
+    text: str  # original document text; context is prepended only at embedding time
+    heading: str  # "doc title > BAB > Bagian > Pasal" breadcrumb for citations and embedding context
+    source_file: str  # PDF the page numbers refer to (physical, 1-based)
     page_start: int
     page_end: int
+    text_layer: str = "born_digital"  # born_digital | ocr_embedded | tesseract_reocr
     bab: str | None = None
     bab_title: str | None = None
     bagian: str | None = None
@@ -27,7 +29,15 @@ class Chunk:
     ayat: str | None = None
     section: str | None = None  # report chapter
     subsection: str | None = None  # report sub-heading
-    amends: list[str] = field(default_factory=list)
+    doc_amends: list[str] = field(default_factory=list)  # manifest-level: documents this one amends/revokes
+    # set on chunks inside "Pasal I" of an amending regulation
+    amends_doc: str | None = None
+    amends_pasal: str | None = None
+    amendment_kind: str | None = None  # replace | insert | delete | partial | penjelasan
+    # set by the amendment linker on chunks whose Pasal was later amended within the corpus
+    superseded_by: list[str] = field(default_factory=list)  # doc_ids, oldest first; last = newest
+    partially_amended_by: list[str] = field(default_factory=list)
+    may_be_amended_by_out_of_corpus: list[str] = field(default_factory=list)
     n_tokens: int = 0
 
     def to_dict(self) -> dict[str, Any]:

@@ -18,6 +18,7 @@ class DocMeta:
     status: str
     amends: tuple[str, ...]
     source_url: str
+    penjelasan_file: str | None = None  # Penjelasan published as a separate PDF (e.g. TLN)
 
     @property
     def is_regulation(self) -> bool:
@@ -51,6 +52,7 @@ def load_manifest(path: Path) -> list[DocMeta]:
                 status=r["status"].strip(),
                 amends=tuple(a for a in r["amends"].split(";") if a.strip()),
                 source_url=r["source_url"].strip(),
+                penjelasan_file=(r.get("penjelasan_file") or "").strip() or None,
             )
         )
     return docs

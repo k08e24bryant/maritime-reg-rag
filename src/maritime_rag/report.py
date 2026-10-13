@@ -121,6 +121,7 @@ class ReportChunker:
                         part="report",
                         text=text,
                         heading=" > ".join(crumbs),
+                        source_file=meta.file,
                         page_start=w[0].page,
                         page_end=w[-1].page,
                         section=sec.title,

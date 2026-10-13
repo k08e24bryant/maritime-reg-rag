@@ -6,6 +6,7 @@ paths:
   processed_dir: data/processed
   chunks_file: data/processed/chunks.jsonl
   reports_dir: reports
+  overrides: configs/overrides.yaml   # manual Pasal-header fixes, pinned to file SHA-256
 
 tokenizer:
   # Token counts are measured with the embedding model's tokenizer, so caps match its 512 limit.
@@ -47,3 +48,24 @@ report:
 doc_overrides:
   unctad_rmt_2025:
     skip_pages: [1, 2, 3, 4, 5, 28, 29, 30, 31, 32]  # cover, copyright, contents; back photos and cover
+
+ocr:
+  # Re-OCR of scans whose embedded OCR layer is poor and no born-digital copy exists.
+  reocr_docs: [uu_66_2024]
+  tesseract_cmd: C:/Program Files/Tesseract-OCR/tesseract.exe
+  tessdata_dir: .cache/tessdata  # holds ind.traineddata from tesseract-ocr/tessdata_best
+  lang: ind
+  dpi: 300
+  psm: 4                         # single column; psm 3 split hanging ayat markers "(1)" off their text
+  workers: 4
+  cache_dir: data/processed/ocr
+
+quality:
+  # OCR quality = share of word tokens (>= min_token_len letters) found in this wordlist
+  wordlist: .cache/wordlists/00-indonesian-wordlist.lst  # github.com/geovedi/indonesian-wordlist
+  min_token_len: 3
+
+amendments:
+  # Amendments not in the corpus: chunks of these docs are flagged so answers show a warning.
+  out_of_corpus:
+    uu_17_2008: ["UU 11/2020", "UU 6/2023"]  # Cipta Kerja and its Perppu-ratification law
