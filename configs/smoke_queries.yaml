@@ -1,0 +1,43 @@
+# Phase 2 smoke check: 10 hand-written queries spanning the corpus. Not an evaluation set
+# (no gold labels, no metrics); the gold set comes in Phase 4. `expect` is a human hint only.
+
+queries:
+  - id: q01_sab
+    text: Siapa yang menerbitkan Surat Persetujuan Berlayar bagi kapal yang akan berlayar?
+    expect: UU 17/2008 (syahbandar), possibly PP 31/2021
+
+  - id: q02_amended_pm74
+    text: Apa persyaratan untuk memperoleh izin usaha perusahaan angkutan laut?
+    expect: PM 93/2013 Pasal 71, superseded by PM 74/2016 Pasal 71
+
+  - id: q03_tol_laut
+    text: Bagaimana penyelenggaraan kewajiban pelayanan publik angkutan barang di laut (tol laut)?
+    expect: PM 5/2024
+
+  - id: q04_bongkar_muat
+    text: Apa saja kewajiban perusahaan bongkar muat dan persyaratan tenaga kerja bongkar muat?
+    expect: PM 59/2021 and its amendment PM 3/2026 (Pasal 132)
+
+  - id: q05_unctad_en
+    text: How much did seaborne trade volumes grow in 2024 and why did ton-miles increase?
+    expect: UNCTAD RMT 2025 Overview, chapter 1
+
+  - id: q06_tarif
+    text: Apa saja jenis tarif jasa kepelabuhanan untuk pelayanan jasa kapal?
+    expect: PM 72/2017
+
+  - id: q07_rip
+    text: Apa yang dimaksud dengan Rencana Induk Pelabuhan dan siapa yang menetapkannya?
+    expect: PP 61/2009, PM 50/2021
+
+  - id: q08_pelayaran_rakyat
+    text: Bagaimana pemberdayaan angkutan laut pelayaran-rakyat oleh pemerintah?
+    expect: UU 66/2024 Pasal 15A-15E (inserted)
+
+  - id: q09_cabotage_en
+    text: Can a foreign-flagged ship carry cargo between Indonesian domestic ports?
+    expect: UU 17/2008 Pasal 8 (cabotage, Indonesian text; cross-lingual)
+
+  - id: q10_out_of_scope
+    text: Berapa tarif tiket pesawat Jakarta ke Bali pada musim liburan?
+    expect: nothing relevant (aviation fares are out of scope)

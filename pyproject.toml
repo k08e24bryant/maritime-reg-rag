@@ -4,10 +4,16 @@ version = "0.1.0"
 description = "RAG Q&A over Indonesian maritime regulations and UNCTAD RMT with source citations"
 requires-python = ">=3.11"
 dependencies = [
+    "faiss-cpu>=1.15.1",
     "huggingface-hub>=2.2.0",
+    "numpy>=2.4.6",
+    "psutil>=7.2.2",
     "pymupdf>=1.28.2",
     "pyyaml>=6.0.3",
+    "rank-bm25>=0.2.2",
+    "sentence-transformers>=5.7.0",
     "tokenizers>=0.23.3",
+    "torch>=2.11.0",
 ]
 
 [build-system]
@@ -22,6 +28,17 @@ dev = [
 [project.scripts]
 maritime-ingest = "maritime_rag.ingest:main"
 maritime-ocr-quality = "maritime_rag.ocr_report:main"
+maritime-search = "maritime_rag.retrieval.cli:main"
+maritime-index = "maritime_rag.retrieval.build:main"
+maritime-smoke = "maritime_rag.retrieval.smoke:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu128" }

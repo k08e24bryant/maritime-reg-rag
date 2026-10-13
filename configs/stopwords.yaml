@@ -1,0 +1,23 @@
+# BM25 stopwords. Indonesian list includes legal boilerplate that appears in almost every
+# Pasal ("sebagaimana dimaksud", "ketentuan peraturan perundang-undangan") and carries no topic.
+# Structural words (pasal, ayat, huruf, bab) are kept: queries like "Pasal 71 PM 93" need them.
+
+indonesian: [
+  ada, adalah, agar, akan, antara, apa, apabila, atas, atau, bagi, bahwa, baik, banyak, belum,
+  berupa, beserta, bila, bisa, boleh, bukan, dalam, dan, dapat, dari, demikian, dengan, di,
+  dimaksud, dsb, hal, harus, hanya, ia, ialah, ini, itu, jika, juga, kami, karena, ke, kepada,
+  ketika, lain, lebih, maka, masing, melalui, menjadi, mereka, misalnya, oleh, pada, para,
+  perlu, sama, saja, sampai, sebagai, sebagaimana, sebelum, sedang, sehingga, sejak, selain,
+  selama, seluruh, serta, setelah, setiap, suatu, sudah, tanpa, tentang, terhadap, tersebut,
+  tetapi, untuk, yaitu, yakni, yang,
+  ketentuan, peraturan, perundang, undangan,
+]
+
+english: [
+  a, about, above, after, again, all, also, an, and, any, are, as, at, be, been, being, both,
+  but, by, can, could, did, do, does, for, from, had, has, have, he, her, his, how, i, if, in,
+  into, is, it, its, more, most, 'no', not, of, 'on', or, other, our, out, over, own, per, same,
+  she, should, so, some, such, than, that, the, their, them, then, there, these, they, this,
+  those, through, to, under, up, very, was, we, were, what, when, where, which, while, who,
+  why, will, with, would, you,
+]

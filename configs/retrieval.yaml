@@ -1,0 +1,48 @@
+# Phase 2 retrieval config: BM25, dense (e5 + FAISS), hybrid (RRF), optional reranker.
+
+paths:
+  chunks_file: data/processed/chunks.jsonl
+  index_dir: data/processed/index           # FAISS index, ids, embedding cache (gitignored)
+  hf_cache: .cache/huggingface              # model weights stay inside the project (gitignored)
+  stopwords: configs/stopwords.yaml
+  smoke_queries: configs/smoke_queries.yaml
+  reports_dir: reports
+
+seed: 42
+
+bm25:
+  k1: 1.5
+  b: 0.75
+  include_heading: true    # prepend "doc title > BAB > Pasal" to the indexed text (compare in Phase 4)
+  min_token_len: 2         # numbers are always kept: "Pasal 71" -> ["pasal", "71"]
+
+dense:
+  model: intfloat/multilingual-e5-base
+  query_prefix: "query: "
+  passage_prefix: "passage: "
+  include_heading: true    # roadmap: embed heading + "\n" + text; stored text stays original
+  max_seq_length: 512
+  batch_size: auto         # auto = 16 on GPU, 8 on CPU; maritime-index --batch-size overrides
+  device: auto             # cuda when available, else cpu
+  fp16: true               # only applied on cuda
+
+hybrid:
+  k_rrf: 60                # RRF score = sum over retrievers of 1 / (k_rrf + rank)
+  candidates: 50           # depth taken from each retriever before fusion
+
+rerank:
+  # Loaded only at query time (maritime-search/maritime-smoke --rerank), never by maritime-index.
+  enabled: false
+  model: default           # key in `models`; --reranker small picks the light fallback
+  models:
+    default: BAAI/bge-reranker-v2-m3                    # ~2.3 GB, 568M params, multilingual
+    small: cross-encoder/mmarco-mMiniLMv2-L12-H384-v1   # ~0.5 GB, 118M params, multilingual
+  top_n: 20                # rerank this many first-stage hits, return k
+  batch_size: 16
+  max_length: 512
+  fp16: true
+
+search:
+  retriever: hybrid        # bm25 | dense | hybrid
+  k: 5
+  snippet_chars: 220
