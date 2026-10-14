@@ -137,8 +137,8 @@ messages:
     id: "{doc} mungkin telah diubah oleh {amenders}, yang tidak termasuk dalam korpus; periksa kembali pasal yang dikutip."
     en: "{doc} may have been amended by {amenders}, which are not in the corpus; check the cited Pasal against them."
   partly_revoked:
-    id: "{doc} telah dicabut sebagian oleh {by}; korpus tidak mencatat pasal mana yang dicabut, jadi periksa apakah pasal yang dikutip masih berlaku."
-    en: "{doc} was partly revoked by {by}; the corpus does not record which Pasal, so check that the cited Pasal still applies."
+    id: "{doc} telah dicabut sebagian oleh {by}; pasal yang dikutip tidak termasuk daftar pasal yang dicabut, tetapi periksa apakah masih berlaku."
+    en: "{doc} was partly revoked by {by}; the cited Pasal is not in its list of revoked Pasal, but check that it still applies."
   ayat_not_in_text:
     id: "{n} kutipan menyebut ayat yang tidak terdapat dalam teks sumber yang dikutip: {cites}"
     en: "{n} citation(s) name an ayat that does not appear in the cited source text: {cites}"

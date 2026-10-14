@@ -109,9 +109,14 @@ Decisions made while reviewing Phase 1 that later phases must implement.
 - PP 31/2021: swap the 2021 scan for the born-digital copy from peraturan.go.id (body +
   separate Penjelasan file). The manual overrides for the scan then report as stale; remove them.
 - PM 74/2016 and PM 5/2024 stay on their embedded OCR layer (decision: leave as is).
-- **Per-Pasal revocation (open)**: PP 31/2021 Pasal 233 ayat (1) lists exactly which Pasal of
-  PP 20/2010 (huruf a) and PP 61/2009 (huruf b) are revoked (e.g. PP 61/2009 Pasal 111 and 122).
-  Parsing that list would label those chunks REPEALED by PP 31/2021, instead of the document-level
-  "this Pasal may no longer apply" note. It changes metadata only (chunk ids, text and headings
-  stay the same), so it does not affect the retrieval evaluation. Decide before the answer
-  evaluation (Phase 4 Step 3).
+- **Per-Pasal revocation (done, before Phase 4 Step 3)**: `maritime_rag.revocations` reads
+  revocation lists from closing provisions at load time. PP 31/2021 Pasal 233 ayat (1) revokes
+  123 Pasal: PP 20/2010 80 (78 whole; Pasal 40 ayat (1) and Pasal 43 ayat (1)-(2) only) and
+  PP 61/2009 43. These chunks (147, body and Penjelasan) are labelled REPEALED by PP 31/2021, or
+  get an "ayat (n) revoked" note. Unlisted Pasal of the two documents keep a softer note.
+  - Labels only: chunks.jsonl, chunk ids, text and the index are unchanged.
+  - The PP 20/2010 list names Pasal 138 twice and omits 128 (probably a source typo for 128). It is
+    parsed as written.
+  - Other closing provisions in the corpus revoke whole regulations that are not in the corpus.
+  - `maritime-search` / `maritime-smoke` status strings (`retrieval.search.version_status`) do not
+    show these revocations yet; the answer pipeline does.

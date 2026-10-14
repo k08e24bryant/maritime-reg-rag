@@ -11,8 +11,10 @@ Each context chunk gets a status: CURRENT, SUPERSEDED (by <doc>) or REPEALED (by
 Sibling expansion: a long Pasal is split into several chunks (by ayat). When any of them is in
 the context, the others (same doc, Pasal, part) are added in ayat order, within a per-question
 token budget; siblings that do not fit are reported as cut.
-Documents marked partially_revoked in the manifest (PP 20/2010, PP 61/2009 by PP 31/2021) have
-no per-Pasal links, so their chunks stay CURRENT with a note that the Pasal may be revoked.
+Per-Pasal revocations listed in a closing provision (PP 31/2021 Pasal 233 revokes listed Pasal of
+PP 20/2010 and PP 61/2009; see maritime_rag.revocations) make those Pasal REPEALED, or add an
+"ayat (n) revoked" note when only some ayat are listed. Other Pasal of a document marked
+partially_revoked in the manifest keep a note that the Pasal may no longer apply.
 """
 
 from __future__ import annotations
@@ -23,6 +25,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 
 from maritime_rag.retrieval.corpus import Chunk, Corpus, Hit
+from maritime_rag.revocations import Revocation, parse_revocations
 
 log = logging.getLogger(__name__)
 
@@ -88,7 +91,9 @@ class VersionIndex:
                 self.amending[(c["doc_id"], c["amends_doc"], c["amends_pasal"])].append(c)
             elif c.get("pasal") and c["part"] in {"body", "penjelasan"}:
                 self.base[(c["doc_id"], c["pasal"])].append(c)
-        # partially revoked doc -> the docs that revoke parts of it (manifest `amends`, no Pasal links)
+        # (doc, Pasal) -> revocation listed in a closing provision (labels only)
+        self.revocations: dict[tuple[str, str], Revocation] = parse_revocations(corpus)
+        # partially revoked doc -> the docs that revoke parts of it (manifest `amends`)
         self.revoked_by: dict[str, list[str]] = defaultdict(list)
         partly_revoked = {c["doc_id"] for c in corpus.chunks if c.get("status") == "partially_revoked"}
         for c in corpus.chunks:
@@ -125,6 +130,17 @@ class VersionIndex:
             out += [c for c in self.amending.get(key, []) if c["part"] == "penjelasan"]
         return out
 
+    def revocation(self, chunk: Chunk) -> Revocation | None:
+        if not chunk.get("pasal") or chunk["part"] not in {"body", "penjelasan"} or chunk.get("amends_doc"):
+            return None
+        return self.revocations.get((chunk["doc_id"], chunk["pasal"]))
+
+    def doc_level_revokers(self, chunk: Chunk) -> list[str]:
+        """Revoking docs for the generic "may no longer apply" note: only for Pasal not listed."""
+        if self.revocation(chunk) is not None:
+            return []
+        return list(self.revoked_by.get(chunk["doc_id"], []))
+
     def ayat_order(self, chunk: Chunk) -> tuple[int, int]:
         m = re.match(r"\d+", chunk.get("ayat") or "")
         return (int(m[0]) if m else 0, self.position.get(chunk["chunk_id"], 0))
@@ -159,7 +175,8 @@ class ContextChunk:
     def chunk_id(self) -> str:
         return self.chunk["chunk_id"]
 
-    partly_revoked_by: list[str] = field(default_factory=list)  # doc-level revocation, Pasal unknown
+    partly_revoked_by: list[str] = field(default_factory=list)  # doc-level revocation, Pasal not listed
+    revocation: Revocation | None = None  # this Pasal (or some of its ayat) is listed as revoked
     added_by: str | None = None  # None = retrieved; "version" | "sibling" = added by expansion
 
     @property
@@ -170,7 +187,16 @@ class ContextChunk:
 def status_of(chunk: Chunk, index: VersionIndex) -> tuple[str, str | None]:
     if chunk.get("superseded_by"):
         return (REPEALED if index.is_repealed(chunk) else SUPERSEDED), chunk["superseded_by"][-1]
+    rev = index.revocation(chunk)
+    if rev is not None and rev.whole:
+        return REPEALED, rev.by_doc
     return CURRENT, None
+
+
+def new_context_chunk(chunk: Chunk, index: VersionIndex, **kw) -> ContextChunk:
+    status, by = status_of(chunk, index)
+    return ContextChunk(chunk, status, by, partly_revoked_by=index.doc_level_revokers(chunk),
+                        revocation=index.revocation(chunk), **kw)
 
 
 def build_context(hits: list[Hit], index: VersionIndex, max_added: int) -> list[ContextChunk]:
@@ -191,10 +217,8 @@ def build_context(hits: list[Hit], index: VersionIndex, max_added: int) -> list[
             if added >= max_added:
                 return
             added += 1
-        status, by = status_of(chunk, index)
-        cc = ContextChunk(chunk, status, by, hit.rank if hit else None, hit.score if hit else None,
-                          partly_revoked_by=list(index.revoked_by.get(chunk["doc_id"], [])),
-                          added_by=None if hit else "version")
+        cc = new_context_chunk(chunk, index, retrieved_rank=hit.rank if hit else None,
+                               score=hit.score if hit else None, added_by=None if hit else "version")
         pos[cid] = cc
         for newer in index.newer(chunk):
             place(newer, None)
@@ -287,9 +311,7 @@ def expand_siblings(
             if sid in emitted:
                 continue
             if sid not in present:
-                status, by = status_of(sib, index)
-                new = ContextChunk(sib, status, by, partly_revoked_by=list(index.revoked_by.get(sib["doc_id"], [])),
-                                   added_by="sibling")
+                new = new_context_chunk(sib, index, added_by="sibling")
                 for other in index.newer(sib) + index.amended_base(sib):
                     _link(new, present.get(other["chunk_id"]))
                 present[sid] = new
@@ -321,6 +343,9 @@ def describe(cc: ContextChunk, context: list[ContextChunk], names: DocNames, ind
     def sources(ids: list[str]) -> str:
         return ", ".join(f"SOURCE {number[i]}" for i in ids)
 
+    if cc.status == REPEALED and cc.revocation is not None:
+        return (f"REPEALED by {names(cc.status_by or '')} ({cc.revocation.provision} of {names(cc.status_by or '')} "
+                "lists this Pasal as revoked); do not present this text as current law")
     if cc.status in {SUPERSEDED, REPEALED}:
         by = names(cc.status_by or "")
         newer = [r for r in refs if _is_newer(context[number[r] - 1].chunk, c)]
@@ -348,9 +373,14 @@ def describe(cc: ContextChunk, context: list[ContextChunk], names: DocNames, ind
         by = ", ".join(names(d) for d in c["partially_amended_by"])
         where = f" ({sources(newer)} prevails where they differ)" if newer else ""
         notes.append(f"partly amended by {by}{where}")
+    if cc.revocation is not None and cc.revocation.ayat:
+        rev = cc.revocation
+        ayat = ", ".join(f"({n})" for n in rev.ayat)
+        notes.append(f"ayat {ayat} of this Pasal revoked by {names(rev.by_doc)} {rev.provision}; the other ayat remain")
     if cc.partly_revoked_by:
         by = ", ".join(names(d) for d in cc.partly_revoked_by)
-        notes.append(f"{names(c['doc_id'])} was partly revoked by {by} (not linked per Pasal): this Pasal may no longer apply")
+        notes.append(f"{names(c['doc_id'])} was partly revoked by {by}; this Pasal is not in its revocation list, "
+                     "but may still be affected")
     if cc.out_of_corpus:
         notes.append(f"may also have been amended by {', '.join(cc.out_of_corpus)} (not in the documents)")
     return CURRENT + (f": {'; '.join(notes)}" if notes else "")
@@ -373,6 +403,8 @@ def status_short(cc: ContextChunk, names: DocNames) -> str:
     if cc.status == CURRENT:
         if cc.chunk.get("partially_amended_by"):
             return f"{CURRENT} (partly amended)"
+        if cc.revocation is not None and cc.revocation.ayat:
+            return f"{CURRENT} (ayat {', '.join(f'({n})' for n in cc.revocation.ayat)} revoked by {names(cc.revocation.by_doc)})"
         if cc.partly_revoked_by:
             return f"{CURRENT}? (document partly revoked by {', '.join(names(d) for d in cc.partly_revoked_by)})"
         return CURRENT
