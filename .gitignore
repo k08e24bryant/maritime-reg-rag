@@ -7,6 +7,9 @@ data/processed/
 .env.*
 CLAUDE.md
 
+# LLM call logs (tokens, latency)
+logs/
+
 # Model / tool caches
 .cache/
 .hf_cache/

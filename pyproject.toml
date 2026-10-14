@@ -31,6 +31,8 @@ maritime-ocr-quality = "maritime_rag.ocr_report:main"
 maritime-search = "maritime_rag.retrieval.cli:main"
 maritime-index = "maritime_rag.retrieval.build:main"
 maritime-smoke = "maritime_rag.retrieval.smoke:main"
+maritime-ask = "maritime_rag.answer.cli:main"
+maritime-answer-examples = "maritime_rag.answer.examples:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

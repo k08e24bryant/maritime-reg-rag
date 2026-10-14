@@ -1,0 +1,115 @@
+# Phase 3 answer generation: retrieval -> version expansion -> prompt -> LLM -> citation post-check.
+
+retrieval_config: configs/retrieval.yaml   # paths, BM25/dense/hybrid/reranker settings
+
+retrieval:
+  retriever: hybrid
+  k: 5                     # hits passed to the model (before version expansion)
+  rerank: true             # default on for now; final decision after Phase 4 (--no-rerank turns it off)
+
+gate:
+  # Refuse before calling the LLM when the best reranker score is below the threshold.
+  # Off until the threshold is calibrated on the Phase 4 gold set. Needs the reranker.
+  enabled: false
+  min_rerank_score: null
+
+versions:
+  max_added_chunks: 8      # cap on chunks added by version expansion per question
+
+postcheck:
+  invalid_citations: flag  # flag = keep the text, mark it unverified | drop = remove it from the answer
+  require_page: true       # a citation without a page that matches the source is invalid
+
+short_names:               # citation name for documents without a "<type> <number>/<year>" name
+  unctad_rmt_2025: UNCTAD RMT 2025
+
+provider:
+  default: ollama          # ollama | openai | anthropic | groq | google (--provider overrides)
+  max_output_tokens: 1024
+  ollama:
+    base_url: http://localhost:11434
+    model: qwen2.5:7b-instruct   # fallback: --model qwen2.5:3b-instruct (never switched automatically)
+    num_ctx: 8192          # Ollama's default context is smaller and truncates the prompt silently
+    temperature: 0.0
+    seed: 42
+    timeout_s: 600         # the first call loads the model into memory
+  openai:
+    base_url: https://api.openai.com/v1
+    model: gpt-5-mini
+    api_key_env: OPENAI_API_KEY
+    temperature: null      # null = provider default (some models accept only the default)
+    timeout_s: 120
+  anthropic:
+    base_url: https://api.anthropic.com
+    model: claude-sonnet-5-5
+    api_key_env: ANTHROPIC_API_KEY
+    api_version: "2023-06-01"
+    temperature: null
+    timeout_s: 120
+  groq:                    # OpenAI-compatible API
+    base_url: https://api.groq.com/openai/v1
+    model: llama-3.3-70b-versatile
+    api_key_env: GROQ_API_KEY
+    temperature: 0.0
+    timeout_s: 120
+  google:                  # Gemini through its OpenAI-compatible endpoint
+    base_url: https://generativelanguage.googleapis.com/v1beta/openai
+    model: gemini-2.5-flash
+    api_key_env: GOOGLE_API_KEY
+    max_tokens_param: max_tokens
+    max_output_tokens: 4096  # Gemini 2.5 "thinking" tokens count against this limit
+    temperature: 0.0
+    timeout_s: 120
+
+env_file: .env               # API keys (gitignored); shell environment variables take precedence
+
+logging:
+  calls_file: logs/llm_calls.jsonl   # one JSON line per LLM call: provider, model, tokens, latency (gitignored)
+
+examples:
+  # maritime-answer-examples: these smoke query ids -> reports/answer_examples.md
+  queries: [q02_amended_pm74, q04_bongkar_muat, q06_tarif, q09_cabotage_en, q05_unctad_en, q10_out_of_scope]
+  output: reports/answer_examples.md
+
+messages:
+  # Fixed texts, chosen by the detected language of the question.
+  not_found:
+    id: Informasi tersebut tidak ditemukan dalam dokumen yang tersedia.
+    en: This information was not found in the provided documents.
+  disclaimer:
+    id: "Catatan: jawaban ini bukan nasihat hukum. Periksa teks resmi peraturan yang dikutip."
+    en: "Note: this is not legal advice. Check the official text of the cited regulations."
+  out_of_corpus:
+    id: "{doc} mungkin telah diubah oleh {amenders}, yang tidak termasuk dalam korpus; periksa kembali pasal yang dikutip."
+    en: "{doc} may have been amended by {amenders}, which are not in the corpus; check the cited Pasal against them."
+  partly_revoked:
+    id: "{doc} telah dicabut sebagian oleh {by}; korpus tidak mencatat pasal mana yang dicabut, jadi periksa apakah pasal yang dikutip masih berlaku."
+    en: "{doc} was partly revoked by {by}; the corpus does not record which Pasal, so check that the cited Pasal still applies."
+  cites_outdated:
+    id: "Jawaban mengutip teks yang sudah tidak berlaku: {cite} ({status})."
+    en: "The answer cites text that is no longer in force: {cite} ({status})."
+  invalid_citations:
+    id: "{n} kutipan tidak cocok dengan sumber yang diberikan dan ditandai/dihapus: {cites}"
+    en: "{n} citation(s) did not match the provided sources and were flagged/removed: {cites}"
+  unverified_marker: "[unverified citation: {cite}]"
+
+prompt:
+  system: |
+    You answer questions about Indonesian maritime and logistics regulations and the UNCTAD
+    Review of Maritime Transport, using ONLY the numbered SOURCES in the user message.
+
+    Rules:
+    1. Use only facts stated in the SOURCES. Do not use outside knowledge, do not guess, and do
+       not invent Pasal, ayat, numbers, or page numbers.
+    2. Write the answer in {language}.
+    3. Cite every claim right after it, in square brackets, in exactly this format:
+       [<document>, Pasal <X> ayat <Y>, p. <N>]. Copy the document name, Pasal and page from the
+       "cite as" line of the source you use; add "ayat <Y>" only if that ayat is in the source.
+       For the UNCTAD report use [UNCTAD RMT 2025, <section>, p. <N>].
+    4. Each source has a status. CURRENT text is the law in force. Prefer CURRENT sources.
+       Never present SUPERSEDED or REPEALED text as current law. If an older version was
+       replaced, say so briefly (e.g. "Pasal 71 PM 93/2013 diubah dengan PM 74/2016") and give
+       the current wording. If a Pasal was REPEALED, say that it was repealed.
+    5. If the SOURCES do not contain the answer, reply with exactly this sentence and nothing
+       else: {not_found}
+    6. Be concise: a short direct answer, then the details as a list if needed.

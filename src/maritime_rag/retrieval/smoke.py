@@ -1,7 +1,8 @@
-"""Smoke check: top-k per retriever for hand-written queries -> reports/retrieval_smoke.md.
+"""Smoke check: top-k per retriever for hand-written queries -> reports/retrieval_smoke_{norerank,rerank}.md.
 
 Not an evaluation: no gold labels and no metrics (the gold set comes in Phase 4).
 Usage: uv run maritime-smoke [--rerank [--reranker small]]
+Writes retrieval_smoke_rerank.md with --rerank, else retrieval_smoke_norerank.md.
 """
 
 from __future__ import annotations
@@ -79,7 +80,8 @@ def main() -> None:
     parser.add_argument("--reranker", help="default | small (key in rerank.models) or a model id")
     args = parser.parse_args()
     report = run(args.config, args.rerank, args.reranker)
-    out = resolve(load_config(args.config)["paths"]["reports_dir"]) / "retrieval_smoke.md"
+    name = "retrieval_smoke_rerank.md" if args.rerank else "retrieval_smoke_norerank.md"
+    out = resolve(load_config(args.config)["paths"]["reports_dir"]) / name
     out.write_text(report, encoding="utf-8")
     print(f"wrote {out}")
 

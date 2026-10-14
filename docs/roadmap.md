@@ -28,6 +28,11 @@ Decisions made while reviewing Phase 1 that later phases must implement.
     UU 6/2023, Cipta Kerja), show a warning that the cited text may have been changed by those
     laws, which are not in the corpus.
 - Never present superseded text as current law.
+- Implemented in Phase 3 (`maritime_rag.answer.versions`). Also added: PP 20/2010 and PP 61/2009
+  are `partially_revoked` by PP 31/2021 with no per-Pasal links, so their chunks carry a "this
+  Pasal may no longer apply" note and a warning when cited.
+- Open for Phase 4: calibrate `gate.min_rerank_score` (reranker score as the "nothing relevant"
+  signal), and decide whether the reranker stays on by default.
 
 ## Phase 4: evaluation
 
