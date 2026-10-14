@@ -188,4 +188,25 @@ Found in the same review, to apply before the freeze (a re-run of `validate`):
 
 ## Post-hoc changes
 
-(none)
+Decided 2026-10-14, **after the retrieval results** (`reports/eval_retrieval.md`) and **before
+any answer or judge result**. The rules above are unchanged; these change the answer-time context
+and the judge input only. The retrieval evaluation and its selection are not re-run or re-scored.
+
+1. **Penjelasan -> body expansion at answer time** (motivated by miss E03: the Penjelasan of UU
+   17/2008 Pasal 219 was retrieved at rank 1, but its body, which holds the answer, was not). When a
+   Penjelasan chunk is in the answer context, the body chunk(s) of the same Pasal are added before
+   it. This uses the same token budget (`versions.max_context_tokens`) and the same priority rules
+   as sibling expansion: top-2 retrieved hits first, cuts logged. Answer context only; retrieval
+   rankings, retrieval metrics and the selected configuration are unchanged.
+2. **Judge input** (section 4): the judge sees only the question, the gold chunk text, the reference
+   answer, **the sources the answer actually cited** (with their status), and the answer. It does
+   not see the full context. `faithfulness` is therefore judged against the cited sources:
+   `supported` = every statement follows from the sources it cites; `partly` = at least one
+   statement is not in the cited sources (even if it may be elsewhere in the context);
+   `unsupported` = the main claims are not in the cited sources. `correctness` and
+   `superseded_mentioned` are unchanged; for `superseded_mentioned`, "relevant superseded source" is
+   judged from the gold chunks and the cited sources' status.
+
+Not changed (future work, see `docs/roadmap.md`): no retrieval change, e.g. demoting REPEALED or
+revoked chunks in the ranking. Motivating example: F07, where the revoked PP 61/2009 Pasal 111 ranks
+first and the current PP 31/2021 Pasal 73, with near-identical text, is not in the top 10.

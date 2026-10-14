@@ -122,7 +122,9 @@ def test_profiles_in_config() -> None:
     q = p["groq-qwen"]
     assert (q["type"], q["base_url"], q["api_key_env"], q["model"]) == (
         "openai", "https://api.groq.com/openai/v1", "GROQ_API_KEY", "qwen/qwen3.8-27b")
-    assert q["probe"] and q["extra"] == {"reasoning_format": "hidden"} and q["tokens_per_minute"] == 8000
+    assert q["probe"] and q["extra"] == {"reasoning_format": "hidden"} and q["max_output_tokens"] == 2048
+    for name, price in (("groq", {"input": 0.15, "output": 0.60}), ("groq-qwen", {"input": 0.80, "output": 4.00})):
+        assert p[name]["tokens_per_minute"] == 250000 and p[name]["price_usd_per_mtok"] == price
     assert p["ollama"]["type"] == "ollama"
 
 
@@ -294,12 +296,32 @@ def test_reasoning_tokens_truncation_and_remaining_budget_are_recorded(
 def test_window_counts_the_reserved_output_limit(monkeypatch: pytest.MonkeyPatch, keys: None, clock: Clock) -> None:
     # Groq reserves prompt + max_completion_tokens; a short answer must not free the rest early
     serve(monkeypatch, completion(prompt=3000, output=100), completion(prompt=3000, output=100))
-    llm = make_provider(LLM, "groq")  # max_output_tokens 1024, 8000 tokens/min
+    cfg = copy.deepcopy(LLM)
+    cfg["profiles"]["groq"]["tokens_per_minute"] = 8000  # free-tier budget, to exercise the pacing
+    llm = make_provider(cfg, "groq")  # max_output_tokens 1024
     llm.generate(MSGS)
     assert llm.window.tokens() == 3000 + 1024
     clock.t += 5
     llm.generate([{"role": "user", "content": "x" * 12000}])  # ~3008 + 1024 more: 8056 > 8000 -> wait
     assert clock.sleeps and clock.sleeps[-1] == pytest.approx(55.5)
+
+
+def test_cost_is_estimated_per_call_and_totalled(monkeypatch: pytest.MonkeyPatch, keys: None, clock: Clock,
+                                                 tmp_path) -> None:
+    serve(monkeypatch, completion(prompt=4000, output=500), completion(prompt=2000, output=1000))
+    log_file = tmp_path / "calls.jsonl"
+    llm = make_provider(LLM, "groq-qwen", calls_file=log_file)  # $0.80 in / $4.00 out per 1M
+    g1, g2 = llm.generate(MSGS), llm.generate(MSGS)
+    assert g1.cost_usd == pytest.approx((4000 * 0.80 + 500 * 4.00) / 1e6)
+    assert g2.cost_usd == pytest.approx((2000 * 0.80 + 1000 * 4.00) / 1e6)
+    assert (llm.calls, llm.prompt_tokens, llm.output_tokens) == (2, 6000, 1500)
+    assert llm.cost_usd == pytest.approx(g1.cost_usd + g2.cost_usd)
+    rows = [json.loads(x) for x in log_file.read_text(encoding="utf-8").splitlines()]
+    assert rows[0]["cost_usd"] == pytest.approx(g1.cost_usd) and "ratelimit" not in rows[0]
+    cfg = copy.deepcopy(LLM)
+    cfg["profiles"]["groq"].pop("price_usd_per_mtok")
+    serve(monkeypatch, completion())
+    assert make_provider(cfg, "groq").generate(MSGS).cost_usd is None  # no price configured
 
 
 def test_logging_records_tokens_and_last_minute_usage(tmp_path, clock: Clock) -> None:

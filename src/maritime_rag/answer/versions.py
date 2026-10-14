@@ -10,7 +10,8 @@ the chunks needed to read it correctly, even when retrieval did not return them:
 Each context chunk gets a status: CURRENT, SUPERSEDED (by <doc>) or REPEALED (by <doc>).
 Sibling expansion: a long Pasal is split into several chunks (by ayat). When any of them is in
 the context, the others (same doc, Pasal, part) are added in ayat order, within a per-question
-token budget; siblings that do not fit are reported as cut.
+token budget; siblings that do not fit are reported as cut. A Penjelasan chunk also brings in
+the body of its Pasal (docs/eval_plan.md, post-hoc change 1).
 Per-Pasal revocations listed in a closing provision (PP 31/2021 Pasal 233 revokes listed Pasal of
 PP 20/2010 and PP 61/2009; see maritime_rag.revocations) make those Pasal REPEALED, or add an
 "ayat (n) revoked" note when only some ayat are listed. Other Pasal of a document marked
@@ -177,7 +178,7 @@ class ContextChunk:
 
     partly_revoked_by: list[str] = field(default_factory=list)  # doc-level revocation, Pasal not listed
     revocation: Revocation | None = None  # this Pasal (or some of its ayat) is listed as revoked
-    added_by: str | None = None  # None = retrieved; "version" | "sibling" = added by expansion
+    added_by: str | None = None  # None = retrieved; "version" | "sibling" | "body" = added by expansion
 
     @property
     def out_of_corpus(self) -> list[str]:
@@ -243,29 +244,53 @@ class SiblingExpansion:
     dropped: list[str] = field(default_factory=list)  # low-ranked retrieved hits removed to fit the top Pasal
 
 
+def body_key(chunk: Chunk) -> tuple | None:
+    """For a Penjelasan chunk: the key of its Pasal's body chunks (same doc, Pasal, amends_doc)."""
+    if chunk["part"] != "penjelasan" or not chunk.get("pasal"):
+        return None
+    return (chunk["doc_id"], chunk["pasal"], "body", chunk.get("amends_doc"))
+
+
 def expand_siblings(
     context: list[ContextChunk], index: VersionIndex, max_tokens: int, priority_hits: int = 2
 ) -> SiblingExpansion:
     """Group the chunks of each Pasal together in ayat order and add the missing ones while the
     context stays within max_tokens (chunk n_tokens). Mutates `context`.
 
-    Siblings of the Pasal of the top `priority_hits` retrieved hits come first; to fit them, the
+    A Penjelasan chunk also brings in the body chunk(s) of its Pasal, placed before it (a
+    Penjelasan alone rarely holds the rule itself). Same budget and priority as siblings.
+    Same-Pasal chunks of the top `priority_hits` retrieved hits come first; to fit them, the
     lowest-ranked retrieved hits below that (without linked versions) may be dropped, which is
-    logged. Siblings of other Pasal are added only while the budget allows."""
+    logged. Same-Pasal chunks of other hits are added only while the budget allows."""
     result = SiblingExpansion()
     present = {cc.chunk_id: cc for cc in context}
     used = sum(chunk_tokens(cc.chunk) for cc in context)
     retrieved = sorted((cc for cc in context if cc.retrieved_rank is not None), key=lambda c: c.retrieved_rank or 0)
     top = retrieved[:priority_hits]
-    top_keys = [k for cc in top if (k := sibling_key(cc.chunk)) is not None]
+    added_by: dict[str, str] = {}
 
-    def missing(key: tuple | None) -> list[Chunk]:
-        group = index.siblings.get(key, []) if key else []
-        return [s for s in sorted(group, key=index.ayat_order) if s["chunk_id"] not in present] if len(group) > 1 else []
+    def groups(chunk: Chunk) -> list[tuple[tuple, bool]]:
+        """(key, is_body_of_penjelasan) for the chunk's own Pasal part and, for a Penjelasan, its body."""
+        out = []
+        if (bk := body_key(chunk)) is not None and index.siblings.get(bk):
+            out.append((bk, True))
+        if (sk := sibling_key(chunk)) is not None:
+            out.append((sk, False))
+        return out
 
+    def missing(key: tuple, body: bool) -> list[Chunk]:
+        group = index.siblings.get(key, [])
+        if len(group) < 2 and not body:  # a single chunk has no siblings; a body is wanted even alone
+            return []
+        out = [s for s in sorted(group, key=index.ayat_order) if s["chunk_id"] not in present]
+        for s in out:
+            added_by.setdefault(s["chunk_id"], "body" if body else "sibling")
+        return out
+
+    top_keys = [k for cc in top for k, _ in groups(cc.chunk)]
     admitted: set[str] = set()
     decided: set[str] = set()
-    need = list({s["chunk_id"]: s for k in top_keys for s in missing(k)}.values())
+    need = list({s["chunk_id"]: s for cc in top for k, body in groups(cc.chunk) for s in missing(k, body)}.values())
     need_tokens = sum(chunk_tokens(s) for s in need)
     if used + need_tokens > max_tokens:
         top_ids = {cc.chunk_id for cc in top}
@@ -296,30 +321,35 @@ def expand_siblings(
 
     admit(need)
     for cc in list(context):
-        admit(missing(sibling_key(cc.chunk)))
+        for k, body in groups(cc.chunk):
+            admit(missing(k, body))
 
     out: list[ContextChunk] = []
     emitted: set[str] = set()
     for cc in context:
         if cc.chunk_id in emitted:
             continue
-        key = sibling_key(cc.chunk)
-        group = index.siblings.get(key, []) if key else []
-        members = [s for s in sorted(group, key=index.ayat_order) if s["chunk_id"] in present or s["chunk_id"] in admitted]
-        for sib in members or [cc.chunk]:
-            sid = sib["chunk_id"]
-            if sid in emitted:
-                continue
-            if sid not in present:
-                new = new_context_chunk(sib, index, added_by="sibling")
-                for other in index.newer(sib) + index.amended_base(sib):
-                    _link(new, present.get(other["chunk_id"]))
-                present[sid] = new
-            out.append(present[sid])
-            emitted.add(sid)
+        for key, _ in groups(cc.chunk) or [(None, False)]:
+            group = index.siblings.get(key, []) if key else []
+            members = [s for s in sorted(group, key=index.ayat_order)
+                       if s["chunk_id"] in present or s["chunk_id"] in admitted]
+            for sib in members or [cc.chunk]:
+                sid = sib["chunk_id"]
+                if sid in emitted or (sid not in present and sid not in admitted and sid != cc.chunk_id):
+                    continue
+                if sid not in present:
+                    new = new_context_chunk(sib, index, added_by=added_by.get(sid, "sibling"))
+                    for other in index.newer(sib) + index.amended_base(sib):
+                        _link(new, present.get(other["chunk_id"]))
+                    present[sid] = new
+                out.append(present[sid])
+                emitted.add(sid)
+        if cc.chunk_id not in emitted:
+            out.append(cc)
+            emitted.add(cc.chunk_id)
     context[:] = out
     if result.cut:
-        log.warning("token budget (%d) cut %d sibling chunk(s) of retrieved Pasal: %s",
+        log.warning("token budget (%d) cut %d same-Pasal chunk(s) of retrieved Pasal: %s",
                     max_tokens, len(result.cut), ", ".join(result.cut))
     return result
 

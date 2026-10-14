@@ -63,7 +63,8 @@ def source_rows(ans: Answer, names: DocNames) -> list[SourceRow]:
     rows = []
     for i, cc in enumerate(ans.context, start=1):
         if cc.retrieved_rank is None:
-            origin = "added: same Pasal" if cc.added_by == "sibling" else "added: version expansion"
+            origin = {"sibling": "added: same Pasal", "body": "added: body of the Penjelasan's Pasal"}.get(
+                cc.added_by or "", "added: version expansion")
         else:
             origin = f"retrieved #{cc.retrieved_rank}" + (f" ({cc.score:.3f})" if ans.reranked and cc.score is not None else "")
         rows.append(SourceRow(i, cite_as(cc.chunk, names), locator(cc.chunk), pages(cc.chunk),

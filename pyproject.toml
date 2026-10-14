@@ -36,6 +36,7 @@ maritime-ask = "maritime_rag.answer.cli:main"
 maritime-answer-examples = "maritime_rag.answer.examples:main"
 maritime-eval-questions = "maritime_rag.eval.questions:main"
 maritime-eval-retrieval = "maritime_rag.eval.retrieval:main"
+maritime-eval-answers = "maritime_rag.eval.answers:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

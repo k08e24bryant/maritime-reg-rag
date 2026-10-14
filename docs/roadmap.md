@@ -104,6 +104,16 @@ Decisions made while reviewing Phase 1 that later phases must implement.
 - Count answers refused only for citation format (zero parseable citations, draft otherwise
   fine) before deciding on an automatic re-ask.
 
+## Future work (not in the Phase 4 evaluation)
+
+- **Retrieval-time handling of REPEALED / revoked chunks.** F07 (Phase 4 retrieval): the revoked
+  PP 61/2009 Pasal 111 ranks first, and the current PP 31/2021 Pasal 73, with near-identical text,
+  is not in the top 10. Options: demote chunks labelled REPEALED by a revocation list, or map a
+  revoked Pasal to its successor (no explicit link exists; text similarity within the revoking
+  document). Deliberately not done during Phase 4 (docs/eval_plan.md, post-hoc changes).
+- **Cross-lingual gate.** English questions get low bge-reranker scores (E03/E04 about 0.014), in
+  the range of some out-of-scope questions; a single score threshold cannot separate them.
+
 ## Data follow-ups
 
 - PP 31/2021: swap the 2021 scan for the born-digital copy from peraturan.go.id (body +

@@ -80,8 +80,10 @@ llm:
       extra: {reasoning_effort: low}
       temperature: null    # provider default
       timeout_s: 120
-      min_interval_s: 2.0  # free tier 30 requests/min
-      tokens_per_minute: 8000   # free tier; prompt + output, so ~1 question per minute
+      # Groq Developer tier (headers 2026-10-14): 250,000 tokens/min, 500,000 requests/day; docs: 1K RPM
+      min_interval_s: 0.1
+      tokens_per_minute: 250000
+      price_usd_per_mtok: {input: 0.15, output: 0.60}   # console.groq.com/docs/models, 2026-10-14
     groq-qwen:             # second Groq model, to compare LLMs on identical retrieval (preview model)
       type: openai
       label: Groq (Qwen)
@@ -93,8 +95,10 @@ llm:
       extra: {reasoning_format: hidden}   # keep the reasoning out of the answer text
       temperature: null
       timeout_s: 120
-      min_interval_s: 2.0
-      tokens_per_minute: 8000   # x-ratelimit-limit-tokens reported by Groq for this model
+      # Groq Developer tier (headers 2026-10-14): 250,000 tokens/min, 500,000 requests/day; docs: 1K RPM
+      min_interval_s: 0.1
+      tokens_per_minute: 250000
+      price_usd_per_mtok: {input: 0.80, output: 4.00}   # preview model; console.groq.com/docs/models, 2026-10-14
     openai:
       type: openai
       label: OpenAI

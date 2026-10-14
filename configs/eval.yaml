@@ -33,3 +33,19 @@ retrieval:                 # Step 2 (docs/eval_plan.md section 2); local only, n
   gate_max_in_scope_refusals: 1
   output_json: reports/eval_retrieval.json
   output_md: reports/eval_retrieval.md
+
+answers:                   # Step 3 (docs/eval_plan.md section 3 + post-hoc change 1)
+  answer_config: configs/answer.yaml   # prompt, versions/sibling budget, LLM profiles (gate is forced off)
+  llms: [groq, groq-qwen]
+  selection_from: reports/eval_retrieval.json   # the retrieval configuration selected in Step 2
+  contexts: data/eval/cache/contexts.json       # one context per question, shared by both LLMs
+  cache_dir: data/eval/cache                    # answers_<llm>.jsonl, append-only, keyed (question, fingerprint, model, prompt version)
+  correct_refusal_reasons: [no_hits, gate, model_not_found, no_valid_citation]   # truncated is not a correct refusal
+  output_json: reports/eval_answers.json
+  output_md: reports/eval_answers.md
+  cost_estimate:           # `budget`, before answers exist (then actual tokens from the cache)
+    chars_per_token: 3.0   # conservative: Groq tokenizers average about 3.3-4 chars per token on this corpus
+    answer_output_tokens: 600        # incl. reasoning tokens (Phase 3: 11-906 per answer)
+    judge_prompt_overhead_tokens: 800   # rubric + framing (Step 4)
+    judge_output_tokens: 600
+    stop_above_usd: 2.0

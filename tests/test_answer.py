@@ -80,6 +80,11 @@ CHUNKS = [
            amends_doc="uu_17_2008", amends_pasal="195", amendment_kind="penjelasan"),
     _chunk("uu_66_2024-0102", "195", (60, 60), "Pasal 195 Huruf b Yang dimaksud ...", part="penjelasan",
            amends_doc="uu_17_2008", amends_pasal="195"),
+    _chunk("uu_17_2008-0228", "219", (90, 90), "Pasal 219 (1) Setiap kapal yang berlayar wajib memiliki Surat "
+           "Persetujuan Berlayar yang dikeluarkan oleh Syahbandar. (2) ... 24 jam ...", n_tokens=190,
+           may_be_amended_by_out_of_corpus=OOC),
+    _chunk("uu_17_2008-0451", "219", (190, 190), "Pasal 219 Ayat (1) Surat Persetujuan Berlayar yang dalam kelaziman "
+           "internasional disebut port clearance ...", part="penjelasan", n_tokens=55, may_be_amended_by_out_of_corpus=OOC),
     _chunk("pm_93_2013-0080", "69", (44, 44), "Pasal 69 (1) persyaratan: a. administrasi; dan b. teknis. (2) ...",
            ayat="1-2", n_tokens=300),
     _chunk("pm_93_2013-0081", "69", (44, 45), "(3) Persyaratan teknis ... (7) ...", ayat="3-7", n_tokens=400),
@@ -204,7 +209,7 @@ def test_sibling_expansion_respects_token_budget(corpus: Corpus, index: VersionI
     result = expand_siblings(ctx, index, max_tokens=550)  # room for the 100-token ayat (8), not the 300-token (1)-(2)
     assert result.cut == ["pm_93_2013-0080"] and result.dropped == []
     assert [c.chunk_id for c in ctx] == ["pm_93_2013-0081", "pm_93_2013-0082"]
-    assert "cut 1 sibling" in caplog.text
+    assert "cut 1 same-Pasal chunk" in caplog.text
 
 
 def test_top_pasal_siblings_win_over_the_lowest_ranked_hit(corpus: Corpus, index: VersionIndex, caplog) -> None:
@@ -217,6 +222,26 @@ def test_top_pasal_siblings_win_over_the_lowest_ranked_hit(corpus: Corpus, index
     assert got[:3] == ["pm_93_2013-0080", "pm_93_2013-0081", "pm_93_2013-0082"]  # Pasal 69 complete, ayat order
     assert "pm_93_2013-0085" in got and "uu_17_2008-0010" in got and "pp_20_2010-0084" not in got
     assert "dropped retrieved hit #4 pp_20_2010-0084" in caplog.text
+
+
+def test_penjelasan_brings_in_the_body_of_its_pasal(corpus: Corpus, index: VersionIndex, names: DocNames) -> None:
+    # E03: the Penjelasan of UU 17/2008 Pasal 219 was retrieved, its body (issuer, 24 h) was not
+    ctx = build_context(hits(corpus, "uu_17_2008-0451", "unctad_rmt_2025-0006"), index, 8)
+    result = expand_siblings(ctx, index, max_tokens=10_000)
+    assert [c.chunk_id for c in ctx] == ["uu_17_2008-0228", "uu_17_2008-0451", "unctad_rmt_2025-0006"]
+    assert ctx[0].added_by == "body" and ctx[0].retrieved_rank is None and ctx[1].retrieved_rank == 1
+    assert result.cut == []
+    # the body chunk counts against the same budget: 55 + 50 present, 190 does not fit in 200
+    ctx = build_context(hits(corpus, "uu_17_2008-0451", "unctad_rmt_2025-0006"), index, 8)
+    assert expand_siblings(ctx, index, max_tokens=200).cut == ["uu_17_2008-0228"]
+    assert [c.chunk_id for c in ctx] == ["uu_17_2008-0451", "unctad_rmt_2025-0006"]
+    # a retrieved body is not duplicated, and a body hit does not pull in its Penjelasan
+    ctx = build_context(hits(corpus, "uu_17_2008-0228", "uu_17_2008-0451"), index, 8)
+    expand_siblings(ctx, index, max_tokens=10_000)
+    assert [c.chunk_id for c in ctx] == ["uu_17_2008-0228", "uu_17_2008-0451"]
+    ctx = build_context(hits(corpus, "uu_17_2008-0228"), index, 8)
+    expand_siblings(ctx, index, max_tokens=10_000)
+    assert [c.chunk_id for c in ctx] == ["uu_17_2008-0228"]
 
 
 def test_siblings_of_superseded_pasal_keep_their_status(corpus: Corpus, index: VersionIndex, names: DocNames) -> None:

@@ -1,0 +1,2660 @@
+{
+ "meta": {
+  "created": "2026-10-14T12:09",
+  "selected_retrieval": "hybrid_rerank",
+  "k": 5,
+  "gold_sha256": "046a3c591e3f471f258273cf93958a24c24eb7039a34aae68f34c14eaadba73b",
+  "chunks_sha256": "70d67f44cf61a1df0a62688f674c8221b708a54abfaeb9198665aa27bd368fc7",
+  "versions": {
+   "max_added_chunks": 8,
+   "max_context_tokens": 2800,
+   "sibling_priority_hits": 2
+  }
+ },
+ "questions": {
+  "F01": {
+   "question": "Bolehkah satu kapal dijaminkan kepada beberapa kreditur sekaligus lewat hipotek, dan bagaimana urutan hak para kreditur itu ditentukan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0070",
+     0.84619140625,
+     1
+    ],
+    [
+     "uu_17_2008-0003",
+     0.51416015625,
+     2
+    ],
+    [
+     "uu_17_2008-0069",
+     0.378662109375,
+     3
+    ],
+    [
+     "uu_66_2024-0004",
+     0.3623046875,
+     4
+    ],
+    [
+     "uu_17_2008-0075",
+     0.131591796875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.5904194000013376,
+    "rerank_s": 0.29929969999830064
+   },
+   "top_score": 0.84619140625,
+   "context_ids": [
+    "uu_17_2008-0070",
+    "uu_66_2024-0003",
+    "uu_66_2024-0004",
+    "uu_66_2024-0005",
+    "uu_66_2024-0006",
+    "uu_66_2024-0007",
+    "uu_66_2024-0008",
+    "uu_66_2024-0009",
+    "uu_17_2008-0003"
+   ],
+   "fingerprint": "784f5197",
+   "siblings_cut": [
+    "uu_17_2008-0002",
+    "uu_17_2008-0004",
+    "uu_17_2008-0005",
+    "uu_17_2008-0006",
+    "uu_17_2008-0007",
+    "uu_17_2008-0008"
+   ],
+   "hits_dropped": [
+    "uu_17_2008-0075",
+    "uu_17_2008-0069"
+   ]
+  },
+  "F02": {
+   "question": "Atas dasar apa syahbandar boleh menahan sebuah kapal yang sedang berada di pelabuhan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0231",
+     0.994140625,
+     1
+    ],
+    [
+     "uu_17_2008-0218",
+     0.91455078125,
+     2
+    ],
+    [
+     "uu_17_2008-0224",
+     0.87255859375,
+     3
+    ],
+    [
+     "uu_17_2008-0227",
+     0.8564453125,
+     4
+    ],
+    [
+     "uu_17_2008-0226",
+     0.77197265625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01828899999964051,
+    "rerank_s": 0.20003859999997076
+   },
+   "top_score": 0.994140625,
+   "context_ids": [
+    "uu_17_2008-0231",
+    "uu_17_2008-0218",
+    "uu_17_2008-0224",
+    "uu_17_2008-0227",
+    "uu_17_2008-0226"
+   ],
+   "fingerprint": "ce7d7f7e",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F03": {
+   "question": "Jika kapal celaka ketika sedang berlayar di perairan negara lain, kepada siapa nakhodanya wajib melapor?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0257",
+     0.9931640625,
+     1
+    ],
+    [
+     "uu_17_2008-0253",
+     0.97998046875,
+     2
+    ],
+    [
+     "uu_17_2008-0256",
+     0.912109375,
+     3
+    ],
+    [
+     "pp_31_2021-0164",
+     0.90771484375,
+     4
+    ],
+    [
+     "uu_17_2008-0147",
+     0.9072265625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01518700000087847,
+    "rerank_s": 0.15556500000093365
+   },
+   "top_score": 0.9931640625,
+   "context_ids": [
+    "uu_17_2008-0257",
+    "uu_17_2008-0253",
+    "uu_17_2008-0256",
+    "pp_31_2021-0164",
+    "uu_17_2008-0147"
+   ],
+   "fingerprint": "a5c0ddeb",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F04": {
+   "question": "Tabrakan antara jenis kapal apa saja yang menjadi kewenangan Mahkamah Pelayaran untuk diperiksa?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0261",
+     0.9921875,
+     1
+    ],
+    [
+     "uu_66_2024-0067",
+     0.96240234375,
+     2
+    ],
+    [
+     "uu_17_2008-0230",
+     0.8974609375,
+     3
+    ],
+    [
+     "uu_66_2024-0066",
+     0.873046875,
+     4
+    ],
+    [
+     "uu_66_2024-0068",
+     0.8525390625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01713940000081493,
+    "rerank_s": 0.2303892000018095
+   },
+   "top_score": 0.9921875,
+   "context_ids": [
+    "uu_17_2008-0261",
+    "uu_66_2024-0067",
+    "uu_17_2008-0230",
+    "uu_66_2024-0066",
+    "uu_66_2024-0068"
+   ],
+   "fingerprint": "d4cebc7a",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F05": {
+   "question": "Apa saja yang harus dipenuhi seseorang sebelum boleh bekerja sebagai awak di atas kapal?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_59_2021-0112",
+     0.8994140625,
+     1
+    ],
+    [
+     "pm_59_2021-0104",
+     0.85791015625,
+     2
+    ],
+    [
+     "pm_59_2021-0005",
+     0.78662109375,
+     3
+    ],
+    [
+     "uu_17_2008-0233",
+     0.71044921875,
+     4
+    ],
+    [
+     "uu_17_2008-0006",
+     0.464111328125,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.012447900000552181,
+    "rerank_s": 0.23650390000148036
+   },
+   "top_score": 0.8994140625,
+   "context_ids": [
+    "pm_59_2021-0112",
+    "pm_59_2021-0104",
+    "uu_66_2024-0003",
+    "uu_66_2024-0004",
+    "uu_66_2024-0005",
+    "uu_66_2024-0006",
+    "uu_66_2024-0007",
+    "uu_66_2024-0008",
+    "uu_66_2024-0009",
+    "uu_17_2008-0006"
+   ],
+   "fingerprint": "7ea88123",
+   "siblings_cut": [
+    "pm_59_2021-0113",
+    "uu_17_2008-0002",
+    "uu_17_2008-0003",
+    "uu_17_2008-0004",
+    "uu_17_2008-0005",
+    "uu_17_2008-0007",
+    "uu_17_2008-0008"
+   ],
+   "hits_dropped": [
+    "uu_17_2008-0233",
+    "pm_59_2021-0005"
+   ]
+  },
+  "F06": {
+   "question": "Bila sebuah kapal tenggelam dan bangkainya tertinggal di perairan Indonesia, kepada siapa pemilik harus melapor dan data apa yang wajib dikumpulkan lewat survei?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_31_2021-0164",
+     0.97900390625,
+     1
+    ],
+    [
+     "pp_31_2021-0149",
+     0.74560546875,
+     2
+    ],
+    [
+     "uu_17_2008-0211",
+     0.6552734375,
+     3
+    ],
+    [
+     "uu_17_2008-0257",
+     0.63330078125,
+     4
+    ],
+    [
+     "pp_31_2021-0173",
+     0.5322265625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.017180200000439072,
+    "rerank_s": 0.24805420000120648
+   },
+   "top_score": 0.97900390625,
+   "context_ids": [
+    "pp_31_2021-0164",
+    "pp_31_2021-0149",
+    "uu_17_2008-0211",
+    "uu_17_2008-0257",
+    "pp_31_2021-0173"
+   ],
+   "fingerprint": "f68ef258",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F07": {
+   "question": "Dalam situasi apa suatu badan usaha diizinkan mendirikan dan mengoperasikan terminal khusus sendiri?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_61_2009-0114",
+     0.96826171875,
+     1
+    ],
+    [
+     "pp_61_2009-0132",
+     0.857421875,
+     2
+    ],
+    [
+     "pp_61_2009-0116",
+     0.8544921875,
+     3
+    ],
+    [
+     "pp_61_2009-0123",
+     0.8154296875,
+     4
+    ],
+    [
+     "uu_17_2008-0113",
+     0.79541015625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.0147636000001512,
+    "rerank_s": 0.15405769999961194
+   },
+   "top_score": 0.96826171875,
+   "context_ids": [
+    "pp_61_2009-0114",
+    "pp_61_2009-0132",
+    "pp_61_2009-0116",
+    "pp_61_2009-0123",
+    "uu_17_2008-0113"
+   ],
+   "fingerprint": "45aec89b",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F08": {
+   "question": "Bisakah perusahaan asing menjadi broker jual beli atau penyewaan kapal di Indonesia, dan apa syaratnya?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_31_2021-0054",
+     0.9638671875,
+     1
+    ],
+    [
+     "pm_59_2021-0076",
+     0.9580078125,
+     2
+    ],
+    [
+     "pp_20_2010-0003",
+     0.8046875,
+     3
+    ],
+    [
+     "pp_31_2021-0053",
+     0.68212890625,
+     4
+    ],
+    [
+     "pp_20_2010-0151",
+     0.60791015625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.014443100000789855,
+    "rerank_s": 0.24493210000036925
+   },
+   "top_score": 0.9638671875,
+   "context_ids": [
+    "pp_31_2021-0054",
+    "pm_59_2021-0076",
+    "pp_20_2010-0001",
+    "pp_20_2010-0002",
+    "pp_20_2010-0003",
+    "pp_20_2010-0004",
+    "pp_31_2021-0053",
+    "pp_20_2010-0151"
+   ],
+   "fingerprint": "1562d6cc",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F09": {
+   "question": "Apa kewajiban perusahaan freight forwarder untuk melindungi pihak yang mungkin dirugikan oleh kegiatannya?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_31_2021-0023",
+     0.483642578125,
+     1
+    ],
+    [
+     "pm_59_2021-0026",
+     0.41357421875,
+     2
+    ],
+    [
+     "pm_59_2021-0035",
+     0.2276611328125,
+     3
+    ],
+    [
+     "pm_59_2021-0019",
+     0.2166748046875,
+     4
+    ],
+    [
+     "pp_20_2010-0188",
+     0.1461181640625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.013886200000342797,
+    "rerank_s": 0.23259630000029574
+   },
+   "top_score": 0.483642578125,
+   "context_ids": [
+    "pp_31_2021-0023",
+    "pm_59_2021-0026",
+    "pm_59_2021-0035",
+    "pm_59_2021-0019",
+    "pp_20_2010-0188"
+   ],
+   "fingerprint": "b2cfacd8",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F10": {
+   "question": "Setelah perjanjian konsesi sebuah badan usaha pelabuhan habis, siapa yang menguasai tanah dan fasilitas pelabuhan yang dibangun selama konsesi?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_31_2021-0244",
+     0.92138671875,
+     1
+    ],
+    [
+     "pp_61_2009-0078",
+     0.85400390625,
+     2
+    ],
+    [
+     "pm_50_2021-0015",
+     0.7353515625,
+     3
+    ],
+    [
+     "uu_17_2008-0116",
+     0.6484375,
+     4
+    ],
+    [
+     "pp_61_2009-0132",
+     0.5703125,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01782699999967008,
+    "rerank_s": 0.2635114999993675
+   },
+   "top_score": 0.92138671875,
+   "context_ids": [
+    "pp_31_2021-0244",
+    "pp_61_2009-0078",
+    "pm_50_2021-0015",
+    "uu_17_2008-0116",
+    "pp_61_2009-0132"
+   ],
+   "fingerprint": "c5993067",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F11": {
+   "question": "Pelabuhan laut di Indonesia dibagi ke dalam tingkatan apa saja?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_50_2021-0002",
+     0.3857421875,
+     1
+    ],
+    [
+     "uu_17_2008-0079",
+     0.385498046875,
+     2
+    ],
+    [
+     "pp_61_2009-0009",
+     0.3203125,
+     3
+    ],
+    [
+     "uu_17_2008-0414",
+     0.30712890625,
+     4
+    ],
+    [
+     "pp_31_2021-0001",
+     0.2607421875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.015950900000461843,
+    "rerank_s": 0.24610240000038175
+   },
+   "top_score": 0.3857421875,
+   "context_ids": [
+    "pm_50_2021-0002",
+    "pm_50_2021-0003",
+    "pm_50_2021-0004",
+    "pm_50_2021-0005",
+    "uu_17_2008-0079",
+    "pp_61_2009-0009",
+    "uu_17_2008-0130",
+    "uu_17_2008-0414",
+    "pp_31_2021-0001",
+    "pp_31_2021-0002"
+   ],
+   "fingerprint": "d8eeb07b",
+   "siblings_cut": [
+    "pp_31_2021-0003",
+    "pp_31_2021-0004",
+    "pp_31_2021-0005",
+    "pp_31_2021-0006",
+    "pp_31_2021-0007",
+    "pp_31_2021-0008",
+    "pp_31_2021-0009"
+   ],
+   "hits_dropped": []
+  },
+  "F13": {
+   "question": "Muatan apa saja yang digolongkan sebagai barang khusus dalam pengangkutan di perairan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_93_2013-0117",
+     0.94091796875,
+     1
+    ],
+    [
+     "pp_20_2010-0191",
+     0.91357421875,
+     2
+    ],
+    [
+     "pm_59_2021-0002",
+     0.8330078125,
+     3
+    ],
+    [
+     "uu_17_2008-0055",
+     0.81494140625,
+     4
+    ],
+    [
+     "pm_93_2013-0118",
+     0.787109375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01421920000029786,
+    "rerank_s": 0.25039379999907396
+   },
+   "top_score": 0.94091796875,
+   "context_ids": [
+    "pm_93_2013-0117",
+    "pp_20_2010-0191",
+    "pm_59_2021-0002",
+    "pm_59_2021-0003",
+    "pm_59_2021-0004",
+    "pm_59_2021-0005",
+    "pm_59_2021-0006",
+    "uu_17_2008-0055",
+    "pm_93_2013-0118"
+   ],
+   "fingerprint": "857f6a05",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F14": {
+   "question": "Kelompok penumpang mana yang berhak memperoleh fasilitas dan kemudahan khusus dari perusahaan angkutan perairan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_93_2013-0116",
+     0.990234375,
+     1
+    ],
+    [
+     "pp_20_2010-0189",
+     0.98095703125,
+     2
+    ],
+    [
+     "uu_17_2008-0051",
+     0.9580078125,
+     3
+    ],
+    [
+     "uu_17_2008-0391",
+     0.84814453125,
+     4
+    ],
+    [
+     "pp_20_2010-0190",
+     0.7734375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.014486099998975988,
+    "rerank_s": 0.233375600000727
+   },
+   "top_score": 0.990234375,
+   "context_ids": [
+    "pm_93_2013-0116",
+    "pp_20_2010-0189",
+    "uu_17_2008-0051",
+    "uu_17_2008-0391",
+    "pp_20_2010-0190"
+   ],
+   "fingerprint": "bb17528f",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F15": {
+   "question": "Hal apa saja yang menjadi tanggung jawab pengelola depo kontainer?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_59_2021-0058",
+     0.57080078125,
+     1
+    ],
+    [
+     "pp_61_2009-0073",
+     0.0867919921875,
+     2
+    ],
+    [
+     "pp_31_2021-0038",
+     0.0782470703125,
+     3
+    ],
+    [
+     "pp_20_2010-0089",
+     0.06890869140625,
+     4
+    ],
+    [
+     "pm_59_2021-0050",
+     0.05718994140625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.012639700000363518,
+    "rerank_s": 0.23626429999967513
+   },
+   "top_score": 0.57080078125,
+   "context_ids": [
+    "pm_59_2021-0058",
+    "pp_61_2009-0073",
+    "pp_31_2021-0038",
+    "pp_20_2010-0089",
+    "pm_59_2021-0050"
+   ],
+   "fingerprint": "a5ad7924",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F16": {
+   "question": "Kepada siapa perusahaan tally mandiri melaporkan kegiatannya, dan dapatkah laporan itu disampaikan secara daring?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_59_2021-0046",
+     0.9892578125,
+     1
+    ],
+    [
+     "pm_59_2021-0044",
+     0.9873046875,
+     2
+    ],
+    [
+     "pp_31_2021-0036",
+     0.8876953125,
+     3
+    ],
+    [
+     "pp_20_2010-0139",
+     0.81884765625,
+     4
+    ],
+    [
+     "pm_59_2021-0048",
+     0.70361328125,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01577770000039891,
+    "rerank_s": 0.21818359999997483
+   },
+   "top_score": 0.9892578125,
+   "context_ids": [
+    "pm_59_2021-0046",
+    "pm_59_2021-0044",
+    "pp_31_2021-0036",
+    "pp_20_2010-0139",
+    "pm_59_2021-0048"
+   ],
+   "fingerprint": "930e9cc3",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F17": {
+   "question": "Sebelum izin usaha angkutan laut dibekukan, berapa kali perusahaan diberi peringatan tertulis dan berapa lama jangka tiap peringatan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_93_2013-0139",
+     0.9697265625,
+     1
+    ],
+    [
+     "pp_20_2010-0210",
+     0.9228515625,
+     2
+    ],
+    [
+     "pm_93_2013-0040",
+     0.67138671875,
+     3
+    ],
+    [
+     "pm_93_2013-0086",
+     0.6142578125,
+     4
+    ],
+    [
+     "pp_31_2021-0241",
+     0.5888671875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01667950000046403,
+    "rerank_s": 0.26008330000149726
+   },
+   "top_score": 0.9697265625,
+   "context_ids": [
+    "pm_93_2013-0139",
+    "pp_20_2010-0210",
+    "pm_93_2013-0040",
+    "pm_74_2016-0012",
+    "pm_93_2013-0086",
+    "pm_93_2013-0087",
+    "pp_31_2021-0241"
+   ],
+   "fingerprint": "e58ef100",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F18": {
+   "question": "Kapan izin usaha angkutan laut dapat dicabut seketika tanpa tahap peringatan dan pembekuan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_93_2013-0140",
+     0.990234375,
+     1
+    ],
+    [
+     "pm_93_2013-0139",
+     0.9140625,
+     2
+    ],
+    [
+     "pm_93_2013-0138",
+     0.8525390625,
+     3
+    ],
+    [
+     "pp_20_2010-0210",
+     0.76611328125,
+     4
+    ],
+    [
+     "pp_31_2021-0241",
+     0.60693359375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01654400000006717,
+    "rerank_s": 0.26044350000120176
+   },
+   "top_score": 0.990234375,
+   "context_ids": [
+    "pm_93_2013-0140",
+    "pm_93_2013-0139",
+    "pm_93_2013-0138",
+    "pp_20_2010-0210",
+    "pp_31_2021-0241"
+   ],
+   "fingerprint": "cec3eb6f",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F19": {
+   "question": "Kapal pelayaran internasional ingin singgah di pelabuhan domestik yang belum dibuka untuk perdagangan luar negeri. Apa yang wajib dilakukannya?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_20_2010-0027",
+     0.982421875,
+     1
+    ],
+    [
+     "pm_93_2013-0033",
+     0.978515625,
+     2
+    ],
+    [
+     "uu_17_2008-0120",
+     0.8369140625,
+     3
+    ],
+    [
+     "pm_93_2013-0031",
+     0.80810546875,
+     4
+    ],
+    [
+     "pp_20_2010-0033",
+     0.75146484375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.015827100000024075,
+    "rerank_s": 0.24561999999968975
+   },
+   "top_score": 0.982421875,
+   "context_ids": [
+    "pp_20_2010-0027",
+    "pm_93_2013-0033",
+    "uu_17_2008-0120",
+    "pm_93_2013-0031",
+    "pp_20_2010-0033"
+   ],
+   "fingerprint": "8cad942a",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F20": {
+   "question": "Apa akibatnya bila pelabuhan yang lokasinya sudah ditentukan tak kunjung memperoleh izin pembangunan dalam 24 bulan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_50_2021-0038",
+     0.478759765625,
+     1
+    ],
+    [
+     "pp_61_2009-0110",
+     0.436279296875,
+     2
+    ],
+    [
+     "pp_61_2009-0111",
+     0.21533203125,
+     3
+    ],
+    [
+     "pp_61_2009-0088",
+     0.12261962890625,
+     4
+    ],
+    [
+     "pm_50_2021-0062",
+     0.1175537109375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01736940000046161,
+    "rerank_s": 0.17431560000113677
+   },
+   "top_score": 0.478759765625,
+   "context_ids": [
+    "pm_50_2021-0038",
+    "pp_61_2009-0110",
+    "pp_61_2009-0111",
+    "pp_61_2009-0088",
+    "pm_50_2021-0062"
+   ],
+   "fingerprint": "938895a0",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F21": {
+   "question": "Rujukan apa saja yang harus dipakai penyelenggara pelabuhan ketika menyusun rencana induk pelabuhan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_50_2021-0039",
+     0.98388671875,
+     1
+    ],
+    [
+     "pp_61_2009-0023",
+     0.9775390625,
+     2
+    ],
+    [
+     "pm_50_2021-0045",
+     0.962890625,
+     3
+    ],
+    [
+     "pm_50_2021-0047",
+     0.9599609375,
+     4
+    ],
+    [
+     "uu_17_2008-0080",
+     0.94091796875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01412960000016028,
+    "rerank_s": 0.22059509999962756
+   },
+   "top_score": 0.98388671875,
+   "context_ids": [
+    "pm_50_2021-0039",
+    "pp_61_2009-0023",
+    "pm_50_2021-0045",
+    "pm_50_2021-0046",
+    "pm_50_2021-0047",
+    "uu_17_2008-0080"
+   ],
+   "fingerprint": "79baf431",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F22": {
+   "question": "Berdasarkan apa tarif jasa kepelabuhanan dikelompokkan, dan jenis terminal apa saja yang dibedakan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_72_2017-0028",
+     0.9892578125,
+     1
+    ],
+    [
+     "pm_72_2017-0012",
+     0.9892578125,
+     2
+    ],
+    [
+     "pm_72_2017-0007",
+     0.94677734375,
+     3
+    ],
+    [
+     "pm_72_2017-0033",
+     0.939453125,
+     4
+    ],
+    [
+     "pm_72_2017-0034",
+     0.92822265625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01916220000020985,
+    "rerank_s": 0.26652809999905
+   },
+   "top_score": 0.9892578125,
+   "context_ids": [
+    "pm_72_2017-0028",
+    "pm_72_2017-0012",
+    "pm_72_2017-0013",
+    "pm_72_2017-0014",
+    "pm_72_2017-0015",
+    "pm_72_2017-0007",
+    "pm_72_2017-0033",
+    "pm_72_2017-0034"
+   ],
+   "fingerprint": "3116b8c2",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F23": {
+   "question": "Jenis barang apa yang boleh diangkut dalam program tol laut?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_5_2024-0013",
+     0.84375,
+     1
+    ],
+    [
+     "pm_93_2013-0130",
+     0.8037109375,
+     2
+    ],
+    [
+     "pm_93_2013-0025",
+     0.5693359375,
+     3
+    ],
+    [
+     "pm_5_2024-0004",
+     0.56787109375,
+     4
+    ],
+    [
+     "pm_5_2024-0012",
+     0.498291015625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.015241400000377325,
+    "rerank_s": 0.23722909999924013
+   },
+   "top_score": 0.84375,
+   "context_ids": [
+    "pm_5_2024-0013",
+    "pm_93_2013-0130",
+    "pm_23_2022-0004",
+    "pm_93_2013-0025",
+    "pm_5_2024-0004",
+    "pm_5_2024-0012"
+   ],
+   "fingerprint": "58dce82a",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F24": {
+   "question": "Apa saja kewajiban perusahaan pelayaran yang ditunjuk melaksanakan angkutan barang tol laut?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_5_2024-0001",
+     0.97998046875,
+     1
+    ],
+    [
+     "pm_5_2024-0008",
+     0.94970703125,
+     2
+    ],
+    [
+     "pp_31_2021-0036",
+     0.9423828125,
+     3
+    ],
+    [
+     "pm_5_2024-0005",
+     0.91259765625,
+     4
+    ],
+    [
+     "uu_17_2008-0056",
+     0.90966796875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01782689999890863,
+    "rerank_s": 0.23471480000080192
+   },
+   "top_score": 0.97998046875,
+   "context_ids": [
+    "pm_5_2024-0001",
+    "pm_5_2024-0002",
+    "pm_5_2024-0008",
+    "pp_31_2021-0036",
+    "pm_5_2024-0005",
+    "uu_17_2008-0056"
+   ],
+   "fingerprint": "f5f4bfc0",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "F25": {
+   "question": "Lewat langkah apa saja pemerintah memberdayakan pelayaran-rakyat?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_66_2024-0011",
+     0.95849609375,
+     1
+    ],
+    [
+     "pm_93_2013-0064",
+     0.9384765625,
+     2
+    ],
+    [
+     "uu_66_2024-0014",
+     0.89013671875,
+     3
+    ],
+    [
+     "uu_66_2024-0010",
+     0.853515625,
+     4
+    ],
+    [
+     "uu_66_2024-0012",
+     0.83349609375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.013176100001146551,
+    "rerank_s": 0.25199980000070354
+   },
+   "top_score": 0.95849609375,
+   "context_ids": [
+    "uu_66_2024-0011",
+    "pm_93_2013-0064",
+    "pm_93_2013-0065",
+    "uu_66_2024-0014",
+    "uu_66_2024-0010",
+    "uu_66_2024-0012"
+   ],
+   "fingerprint": "e18b756b",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "W01": {
+   "question": "Pasal mana dalam UU Pelayaran yang menunjuk lembaga yang menyelidiki kecelakaan kapal demi mencegah kejadian serupa terulang?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0265",
+     0.99462890625,
+     1
+    ],
+    [
+     "uu_17_2008-0230",
+     0.9501953125,
+     2
+    ],
+    [
+     "uu_66_2024-0067",
+     0.9462890625,
+     3
+    ],
+    [
+     "uu_66_2024-0068",
+     0.9462890625,
+     4
+    ],
+    [
+     "uu_17_2008-0266",
+     0.9287109375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01594959999965795,
+    "rerank_s": 0.1858436000002257
+   },
+   "top_score": 0.99462890625,
+   "context_ids": [
+    "uu_17_2008-0265",
+    "uu_17_2008-0230",
+    "uu_66_2024-0067",
+    "uu_66_2024-0068",
+    "uu_17_2008-0266"
+   ],
+   "fingerprint": "41185dcb",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "W02": {
+   "question": "Ketentuan mana yang melarang kapal asing memakai Merah Putih sebagai identitas kebangsaannya?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0176",
+     0.7919921875,
+     1
+    ],
+    [
+     "uu_17_2008-0174",
+     0.767578125,
+     2
+    ],
+    [
+     "uu_17_2008-0016",
+     0.5107421875,
+     3
+    ],
+    [
+     "uu_17_2008-0175",
+     0.499267578125,
+     4
+    ],
+    [
+     "uu_17_2008-0145",
+     0.1363525390625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01336749999973108,
+    "rerank_s": 0.13570780000009108
+   },
+   "top_score": 0.7919921875,
+   "context_ids": [
+    "uu_17_2008-0176",
+    "uu_17_2008-0174",
+    "uu_17_2008-0016",
+    "uu_17_2008-0175",
+    "uu_17_2008-0145"
+   ],
+   "fingerprint": "74f6438f",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "W03": {
+   "question": "Di pasal mana PP 31/2021 mengatur tenggat bagi pemilik atau nakhoda untuk memberi tahu syahbandar sebelum kapal datang?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_31_2021-0180",
+     0.99755859375,
+     1
+    ],
+    [
+     "pp_31_2021-0231",
+     0.98828125,
+     2
+    ],
+    [
+     "pp_31_2021-0164",
+     0.97998046875,
+     3
+    ],
+    [
+     "pp_31_2021-0102",
+     0.8564453125,
+     4
+    ],
+    [
+     "uu_17_2008-0222",
+     0.8037109375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.015185999998720945,
+    "rerank_s": 0.14250920000085898
+   },
+   "top_score": 0.99755859375,
+   "context_ids": [
+    "pp_31_2021-0180",
+    "pp_31_2021-0231",
+    "pp_31_2021-0164",
+    "pp_31_2021-0102",
+    "uu_17_2008-0222"
+   ],
+   "fingerprint": "82d1023a",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "W04": {
+   "question": "Aturan mana yang menentukan pejabat yang berwenang mengesahkan rencana induk pelabuhan menurut hierarki pelabuhannya?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_61_2009-0011",
+     0.9306640625,
+     1
+    ],
+    [
+     "uu_17_2008-0080",
+     0.91357421875,
+     2
+    ],
+    [
+     "pp_61_2009-0031",
+     0.912109375,
+     3
+    ],
+    [
+     "pm_50_2021-0045",
+     0.869140625,
+     4
+    ],
+    [
+     "pm_50_2021-0049",
+     0.85986328125,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.016184399999474408,
+    "rerank_s": 0.21685290000095847
+   },
+   "top_score": 0.9306640625,
+   "context_ids": [
+    "pp_61_2009-0011",
+    "uu_17_2008-0080",
+    "pp_61_2009-0031",
+    "pm_50_2021-0045",
+    "pm_50_2021-0046",
+    "pm_50_2021-0049"
+   ],
+   "fingerprint": "66ffae3d",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "W05": {
+   "question": "Pasal berapa di PM 59/2021 yang membebankan ganti rugi kepada perusahaan tally bila hitungan muatannya keliru?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_59_2021-0049",
+     0.97119140625,
+     1
+    ],
+    [
+     "pm_59_2021-0042",
+     0.92822265625,
+     2
+    ],
+    [
+     "pm_59_2021-0044",
+     0.802734375,
+     3
+    ],
+    [
+     "pm_59_2021-0045",
+     0.71484375,
+     4
+    ],
+    [
+     "pm_59_2021-0046",
+     0.62255859375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.014880000000630389,
+    "rerank_s": 0.22901070000079926
+   },
+   "top_score": 0.97119140625,
+   "context_ids": [
+    "pm_59_2021-0049",
+    "pm_59_2021-0042",
+    "pm_59_2021-0044",
+    "pm_59_2021-0045",
+    "pm_59_2021-0046"
+   ],
+   "fingerprint": "5aff93e4",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "W06": {
+   "question": "Pasal mana dalam PM 72/2017 yang membatasi berapa lama tarif yang dipasang badan usaha pelabuhan boleh berlaku?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_72_2017-0040",
+     0.9853515625,
+     1
+    ],
+    [
+     "pm_72_2017-0036",
+     0.892578125,
+     2
+    ],
+    [
+     "pm_72_2017-0047",
+     0.88623046875,
+     3
+    ],
+    [
+     "pm_72_2017-0032",
+     0.87109375,
+     4
+    ],
+    [
+     "pm_72_2017-0038",
+     0.861328125,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.015700500000093598,
+    "rerank_s": 0.2538686999996571
+   },
+   "top_score": 0.9853515625,
+   "context_ids": [
+    "pm_72_2017-0040",
+    "pm_72_2017-0035",
+    "pm_72_2017-0036",
+    "pm_72_2017-0047",
+    "pm_72_2017-0032",
+    "pm_72_2017-0038"
+   ],
+   "fingerprint": "e77f7f0f",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "W07": {
+   "question": "Pasal mana dalam peraturan tol laut yang mengatur siapa yang menentukan tarif angkutan barangnya?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_93_2013-0129",
+     0.98095703125,
+     1
+    ],
+    [
+     "pm_5_2024-0001",
+     0.9501953125,
+     2
+    ],
+    [
+     "pm_5_2024-0014",
+     0.9443359375,
+     3
+    ],
+    [
+     "uu_17_2008-0044",
+     0.943359375,
+     4
+    ],
+    [
+     "pm_5_2024-0013",
+     0.9375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01497179999932996,
+    "rerank_s": 0.22985929999958898
+   },
+   "top_score": 0.98095703125,
+   "context_ids": [
+    "pm_93_2013-0129",
+    "pm_5_2024-0001",
+    "pm_5_2024-0002",
+    "pm_5_2024-0014",
+    "uu_17_2008-0044",
+    "pm_5_2024-0013"
+   ],
+   "fingerprint": "fd1c69f3",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "A01": {
+   "question": "Ke instansi mana perusahaan pelayaran yang melayani rute antarprovinsi harus mengajukan izin usahanya?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_93_2013-0098",
+     0.9033203125,
+     1
+    ],
+    [
+     "pp_20_2010-0104",
+     0.83642578125,
+     2
+    ],
+    [
+     "uu_17_2008-0037",
+     0.68017578125,
+     3
+    ],
+    [
+     "uu_17_2008-0036",
+     0.64013671875,
+     4
+    ],
+    [
+     "pp_20_2010-0112",
+     0.62353515625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.014910500000041793,
+    "rerank_s": 0.2603633000016998
+   },
+   "top_score": 0.9033203125,
+   "context_ids": [
+    "pm_93_2013-0098",
+    "pm_93_2013-0099",
+    "pp_20_2010-0104",
+    "pp_20_2010-0105",
+    "uu_17_2008-0036",
+    "uu_17_2008-0037",
+    "pp_20_2010-0112"
+   ],
+   "fingerprint": "517ed5d7",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "A02": {
+   "question": "Jika perusahaan pelayaran joint venture berubah menjadi perusahaan terbuka, kepada siapa perubahan status itu harus dilaporkan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_93_2013-0093",
+     0.9912109375,
+     1
+    ],
+    [
+     "pm_74_2016-0016",
+     0.98974609375,
+     2
+    ],
+    [
+     "pm_93_2013-0090",
+     0.9599609375,
+     3
+    ],
+    [
+     "pm_93_2013-0094",
+     0.8076171875,
+     4
+    ],
+    [
+     "pm_74_2016-0015",
+     0.7919921875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.014852300000711693,
+    "rerank_s": 0.23692779999873892
+   },
+   "top_score": 0.9912109375,
+   "context_ids": [
+    "pm_74_2016-0016",
+    "pm_93_2013-0093",
+    "pm_74_2016-0015",
+    "pm_93_2013-0090",
+    "pm_74_2016-0017",
+    "pm_93_2013-0094"
+   ],
+   "fingerprint": "0170ff06",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "A03": {
+   "question": "Muatan apa saja yang boleh dibawa perusahaan pelayaran nasional yang kapalnya beroperasi tanpa trayek tetap (tramper)?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_20_2010-0020",
+     0.982421875,
+     1
+    ],
+    [
+     "pm_93_2013-0025",
+     0.95263671875,
+     2
+    ],
+    [
+     "pm_23_2022-0004",
+     0.94921875,
+     3
+    ],
+    [
+     "pm_93_2013-0026",
+     0.93798828125,
+     4
+    ],
+    [
+     "pp_20_2010-0002",
+     0.7802734375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.015083899999808636,
+    "rerank_s": 0.24204979999922216
+   },
+   "top_score": 0.982421875,
+   "context_ids": [
+    "pp_20_2010-0020",
+    "pm_23_2022-0004",
+    "pm_93_2013-0025",
+    "pm_23_2022-0005",
+    "pm_93_2013-0026",
+    "pp_20_2010-0001",
+    "pp_20_2010-0002",
+    "pp_20_2010-0003",
+    "pp_20_2010-0004"
+   ],
+   "fingerprint": "2531866a",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "A04": {
+   "question": "Apakah kapal tramper masih perlu meminta persetujuan Dirjen lewat laporan urgensi muatan sebelum mengangkut barang umum?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_93_2013-0026",
+     0.97216796875,
+     1
+    ],
+    [
+     "pm_93_2013-0060",
+     0.7958984375,
+     2
+    ],
+    [
+     "pm_93_2013-0057",
+     0.59375,
+     3
+    ],
+    [
+     "pm_93_2013-0089",
+     0.388671875,
+     4
+    ],
+    [
+     "pm_93_2013-0074",
+     0.2451171875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01667290000114008,
+    "rerank_s": 0.26480440000159433
+   },
+   "top_score": 0.97216796875,
+   "context_ids": [
+    "pm_23_2022-0005",
+    "pm_93_2013-0026",
+    "pm_23_2022-0008",
+    "pm_93_2013-0060",
+    "pm_93_2013-0056",
+    "pm_93_2013-0057",
+    "pm_74_2016-0013",
+    "pm_74_2016-0014",
+    "pm_93_2013-0089",
+    "pm_93_2013-0074"
+   ],
+   "fingerprint": "5f8b95ba",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "A05": {
+   "question": "Bagaimana kompetensi pegawai perusahaan jasa terkait angkutan perairan (di luar buruh bongkar muat) harus dibuktikan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_3_2026-0005",
+     0.9951171875,
+     1
+    ],
+    [
+     "pm_59_2021-0008",
+     0.958984375,
+     2
+    ],
+    [
+     "pm_59_2021-0011",
+     0.9345703125,
+     3
+    ],
+    [
+     "pm_59_2021-0010",
+     0.9189453125,
+     4
+    ],
+    [
+     "pm_59_2021-0138",
+     0.91650390625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.020233100000041304,
+    "rerank_s": 0.230457399999068
+   },
+   "top_score": 0.9951171875,
+   "context_ids": [
+    "pm_3_2026-0005",
+    "pm_3_2026-0003",
+    "pm_59_2021-0008",
+    "pm_59_2021-0011",
+    "pm_59_2021-0010",
+    "pm_59_2021-0138"
+   ],
+   "fingerprint": "673913db",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "A06": {
+   "question": "Apakah tenaga kerja bongkar muat masih wajib membuktikan kompetensinya hanya dengan sertifikat kompetensi?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_3_2026-0004",
+     0.9912109375,
+     1
+    ],
+    [
+     "pm_59_2021-0008",
+     0.98095703125,
+     2
+    ],
+    [
+     "pm_3_2026-0005",
+     0.97607421875,
+     3
+    ],
+    [
+     "pm_59_2021-0011",
+     0.93994140625,
+     4
+    ],
+    [
+     "pp_61_2009-0050",
+     0.81591796875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.014476599999397877,
+    "rerank_s": 0.22590870000021823
+   },
+   "top_score": 0.9912109375,
+   "context_ids": [
+    "pm_3_2026-0004",
+    "pm_3_2026-0003",
+    "pm_59_2021-0008",
+    "pm_3_2026-0005",
+    "pm_59_2021-0011",
+    "pp_61_2009-0050"
+   ],
+   "fingerprint": "804acdb6",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "A07": {
+   "question": "Menurut UU Pelayaran yang berlaku sekarang, siapa yang menjalankan pengawasan dan penegakan hukum di bidang pelayaran?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0008",
+     0.98974609375,
+     1
+    ],
+    [
+     "uu_66_2024-0072",
+     0.98876953125,
+     2
+    ],
+    [
+     "uu_17_2008-0216",
+     0.98876953125,
+     3
+    ],
+    [
+     "uu_66_2024-0073",
+     0.9638671875,
+     4
+    ],
+    [
+     "pm_50_2021-0008",
+     0.95751953125,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01880889999847568,
+    "rerank_s": 0.2371686000005866
+   },
+   "top_score": 0.98974609375,
+   "context_ids": [
+    "uu_66_2024-0003",
+    "uu_66_2024-0004",
+    "uu_66_2024-0005",
+    "uu_66_2024-0006",
+    "uu_66_2024-0007",
+    "uu_66_2024-0008",
+    "uu_66_2024-0009",
+    "uu_17_2008-0008",
+    "uu_66_2024-0072"
+   ],
+   "fingerprint": "f0d33cf4",
+   "siblings_cut": [
+    "uu_17_2008-0002",
+    "uu_17_2008-0003",
+    "uu_17_2008-0004",
+    "uu_17_2008-0005",
+    "uu_17_2008-0006",
+    "uu_17_2008-0007"
+   ],
+   "hits_dropped": [
+    "pm_50_2021-0008",
+    "uu_66_2024-0073",
+    "uu_17_2008-0216"
+   ]
+  },
+  "A08": {
+   "question": "Apakah aturan UU Pelayaran tentang pangkalan armada dan identitas petugas penjaga pantai masih berlaku?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0288",
+     0.9814453125,
+     1
+    ],
+    [
+     "uu_17_2008-0289",
+     0.75244140625,
+     2
+    ],
+    [
+     "uu_17_2008-0368",
+     0.5302734375,
+     3
+    ],
+    [
+     "uu_17_2008-0361",
+     0.466796875,
+     4
+    ],
+    [
+     "uu_17_2008-0287",
+     0.46337890625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.016664299999320065,
+    "rerank_s": 0.2141327999997884
+   },
+   "top_score": 0.9814453125,
+   "context_ids": [
+    "uu_66_2024-0075",
+    "uu_17_2008-0288",
+    "uu_66_2024-0076",
+    "uu_17_2008-0289",
+    "uu_17_2008-0368",
+    "uu_17_2008-0361",
+    "uu_66_2024-0074",
+    "uu_17_2008-0287"
+   ],
+   "fingerprint": "5c70aa9e",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "E01": {
+   "question": "How much did the benchmark Shanghai container spot-rate index average in 2024, and how did that compare with the year before?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "unctad_rmt_2025-0013",
+     0.99560546875,
+     1
+    ],
+    [
+     "unctad_rmt_2025-0014",
+     0.7734375,
+     2
+    ],
+    [
+     "unctad_rmt_2025-0001",
+     0.07330322265625,
+     3
+    ],
+    [
+     "unctad_rmt_2025-0015",
+     0.06512451171875,
+     4
+    ],
+    [
+     "unctad_rmt_2025-0006",
+     0.042327880859375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.017107600000599632,
+    "rerank_s": 0.2542966000000888
+   },
+   "top_score": 0.99560546875,
+   "context_ids": [
+    "unctad_rmt_2025-0013",
+    "unctad_rmt_2025-0014",
+    "unctad_rmt_2025-0001",
+    "unctad_rmt_2025-0015",
+    "unctad_rmt_2025-0006"
+   ],
+   "fingerprint": "6b2168c7",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "E02": {
+   "question": "When did the international treaty on safe and environmentally sound ship recycling take effect?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "unctad_rmt_2025-0023",
+     0.98046875,
+     1
+    ],
+    [
+     "unctad_rmt_2025-0025",
+     0.280029296875,
+     2
+    ],
+    [
+     "unctad_rmt_2025-0019",
+     0.00864410400390625,
+     3
+    ],
+    [
+     "uu_17_2008-0461",
+     0.0038700103759765625,
+     4
+    ],
+    [
+     "unctad_rmt_2025-0027",
+     0.001361846923828125,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.014699400000608875,
+    "rerank_s": 0.2587402999997721
+   },
+   "top_score": 0.98046875,
+   "context_ids": [
+    "unctad_rmt_2025-0023",
+    "unctad_rmt_2025-0025",
+    "unctad_rmt_2025-0019",
+    "uu_17_2008-0250",
+    "uu_17_2008-0461",
+    "unctad_rmt_2025-0027"
+   ],
+   "fingerprint": "a27f355c",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "E03": {
+   "question": "Who grants the clearance a ship needs before leaving an Indonesian port, and when does that clearance lapse?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0451",
+     0.0141754150390625,
+     1
+    ],
+    [
+     "pp_31_2021-0149",
+     0.002620697021484375,
+     2
+    ],
+    [
+     "pm_59_2021-0061",
+     0.001941680908203125,
+     3
+    ],
+    [
+     "pp_31_2021-0045",
+     0.0017480850219726562,
+     4
+    ],
+    [
+     "pp_31_2021-0223",
+     0.0017414093017578125,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01975520000087272,
+    "rerank_s": 0.2605146000005334
+   },
+   "top_score": 0.0141754150390625,
+   "context_ids": [
+    "uu_17_2008-0228",
+    "uu_17_2008-0451",
+    "pp_31_2021-0149",
+    "pm_59_2021-0061",
+    "pp_31_2021-0045",
+    "pp_31_2021-0223"
+   ],
+   "fingerprint": "0af432fa",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "E04": {
+   "question": "Can a ship registered in Indonesia be used as collateral for a loan, and who draws up the security deed?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0069",
+     0.01358795166015625,
+     1
+    ],
+    [
+     "uu_17_2008-0167",
+     0.0017070770263671875,
+     2
+    ],
+    [
+     "pm_59_2021-0100",
+     0.0011653900146484375,
+     3
+    ],
+    [
+     "pp_31_2021-0104",
+     0.0008592605590820312,
+     4
+    ],
+    [
+     "pm_93_2013-0082",
+     0.0004673004150390625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01313789999949222,
+    "rerank_s": 0.245518899999297
+   },
+   "top_score": 0.01358795166015625,
+   "context_ids": [
+    "uu_17_2008-0069",
+    "uu_17_2008-0167",
+    "pm_59_2021-0100",
+    "pp_31_2021-0104",
+    "pm_93_2013-0080",
+    "pm_93_2013-0081",
+    "pm_93_2013-0082"
+   ],
+   "fingerprint": "b7f0a6f3",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "E05": {
+   "question": "Which vessels are exempt from the duty to insure against the cost of removing a wreck?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_59_2021-0065",
+     0.0703125,
+     1
+    ],
+    [
+     "pp_31_2021-0049",
+     0.060302734375,
+     2
+    ],
+    [
+     "pp_31_2021-0163",
+     0.045013427734375,
+     3
+    ],
+    [
+     "unctad_rmt_2025-0009",
+     0.0020198822021484375,
+     4
+    ],
+    [
+     "uu_17_2008-0212",
+     0.0018825531005859375,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01249429999916174,
+    "rerank_s": 0.2638323000010132
+   },
+   "top_score": 0.0703125,
+   "context_ids": [
+    "pm_59_2021-0065",
+    "pp_31_2021-0049",
+    "pp_31_2021-0163",
+    "unctad_rmt_2025-0009",
+    "uu_17_2008-0212"
+   ],
+   "fingerprint": "8bcbde0d",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O01": {
+   "question": "Berapa kilogram batas maksimal bagasi kabin untuk penumpang pesawat rute domestik?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0300",
+     0.00395965576171875,
+     1
+    ],
+    [
+     "uu_17_2008-0322",
+     0.0029582977294921875,
+     2
+    ],
+    [
+     "uu_17_2008-0303",
+     0.0029125213623046875,
+     3
+    ],
+    [
+     "uu_17_2008-0429",
+     0.002811431884765625,
+     4
+    ],
+    [
+     "uu_17_2008-0304",
+     0.002002716064453125,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.016552900000533555,
+    "rerank_s": 0.2369472999998834
+   },
+   "top_score": 0.00395965576171875,
+   "context_ids": [
+    "uu_17_2008-0300",
+    "uu_17_2008-0322",
+    "uu_17_2008-0303",
+    "uu_17_2008-0178",
+    "uu_17_2008-0429",
+    "uu_17_2008-0304"
+   ],
+   "fingerprint": "5cdbd1e2",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O02": {
+   "question": "Berapa denda bagi pengendara sepeda motor yang tidak memakai helm?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "uu_17_2008-0326",
+     0.0292510986328125,
+     1
+    ],
+    [
+     "uu_17_2008-0305",
+     0.0129241943359375,
+     2
+    ],
+    [
+     "uu_17_2008-0336",
+     0.012054443359375,
+     3
+    ],
+    [
+     "uu_17_2008-0301",
+     0.01177978515625,
+     4
+    ],
+    [
+     "uu_17_2008-0302",
+     0.011199951171875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.01664340000024822,
+    "rerank_s": 0.16998509999939415
+   },
+   "top_score": 0.0292510986328125,
+   "context_ids": [
+    "uu_17_2008-0326",
+    "uu_17_2008-0305",
+    "uu_17_2008-0336",
+    "uu_17_2008-0301",
+    "uu_17_2008-0302"
+   ],
+   "fingerprint": "5da4ab19",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O03": {
+   "question": "Apa saja persyaratan membuat SIM C untuk pertama kali?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_31_2021-0212",
+     0.08990478515625,
+     1
+    ],
+    [
+     "pp_31_2021-0296",
+     0.015838623046875,
+     2
+    ],
+    [
+     "pp_31_2021-0293",
+     0.004718780517578125,
+     3
+    ],
+    [
+     "pp_31_2021-0223",
+     0.004039764404296875,
+     4
+    ],
+    [
+     "pp_61_2009-0103",
+     0.0022430419921875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.06005310000000463,
+    "rerank_s": 0.20621009999922535
+   },
+   "top_score": 0.08990478515625,
+   "context_ids": [
+    "pp_31_2021-0212",
+    "pp_31_2021-0119",
+    "pp_31_2021-0295",
+    "pp_31_2021-0296",
+    "pp_31_2021-0116",
+    "pp_31_2021-0293",
+    "pp_31_2021-0223",
+    "pp_61_2009-0103"
+   ],
+   "fingerprint": "ccda42a0",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O04": {
+   "question": "Berapa ukuran minimum mata jaring yang boleh dipakai nelayan untuk menangkap ikan?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_31_2021-0103",
+     0.0038700103759765625,
+     1
+    ],
+    [
+     "uu_17_2008-0417",
+     0.0033512115478515625,
+     2
+    ],
+    [
+     "pp_31_2021-0114",
+     0.001220703125,
+     3
+    ],
+    [
+     "pp_31_2021-0098",
+     0.0012159347534179688,
+     4
+    ],
+    [
+     "uu_17_2008-0427",
+     0.0009622573852539062,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.013805200000206241,
+    "rerank_s": 0.2499934999996185
+   },
+   "top_score": 0.0038700103759765625,
+   "context_ids": [
+    "pp_31_2021-0103",
+    "uu_17_2008-0135",
+    "uu_17_2008-0417",
+    "pp_31_2021-0114",
+    "pp_31_2021-0098",
+    "uu_17_2008-0172",
+    "uu_17_2008-0427"
+   ],
+   "fingerprint": "c8bf3d45",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O05": {
+   "question": "Berapa tarif PPh final atas penghasilan dari menyewakan gedung?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_72_2017-0026",
+     0.0006747245788574219,
+     1
+    ],
+    [
+     "pm_72_2017-0009",
+     0.00048041343688964844,
+     2
+    ],
+    [
+     "pp_31_2021-0162",
+     0.0002715587615966797,
+     3
+    ],
+    [
+     "pp_61_2009-0150",
+     0.00019407272338867188,
+     4
+    ],
+    [
+     "pp_20_2010-0182",
+     0.00018095970153808594,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.013088299998344155,
+    "rerank_s": 0.25452799999948184
+   },
+   "top_score": 0.0006747245788574219,
+   "context_ids": [
+    "pm_72_2017-0026",
+    "pm_72_2017-0027",
+    "pm_72_2017-0009",
+    "pm_72_2017-0010",
+    "pp_31_2021-0162",
+    "pp_61_2009-0150",
+    "pp_20_2010-0182"
+   ],
+   "fingerprint": "b766f554",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O06": {
+   "question": "Bagaimana cara mendaftar BPJS Kesehatan sebagai pekerja mandiri?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pp_31_2021-0035",
+     0.000865936279296875,
+     1
+    ],
+    [
+     "pm_59_2021-0043",
+     0.0005526542663574219,
+     2
+    ],
+    [
+     "pm_3_2026-0011",
+     0.0003859996795654297,
+     3
+    ],
+    [
+     "pp_20_2010-0138",
+     0.0003712177276611328,
+     4
+    ],
+    [
+     "pm_59_2021-0045",
+     0.0002199411392211914,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.012987300000531832,
+    "rerank_s": 0.16941550000046846
+   },
+   "top_score": 0.000865936279296875,
+   "context_ids": [
+    "pp_31_2021-0035",
+    "pm_59_2021-0043",
+    "pm_3_2026-0011",
+    "pp_20_2010-0138",
+    "pm_59_2021-0045"
+   ],
+   "fingerprint": "6a396959",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O07": {
+   "question": "Kapan Pelabuhan Patimban mulai beroperasi secara komersial?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_50_2021-0066",
+     0.0999755859375,
+     1
+    ],
+    [
+     "uu_66_2024-0030",
+     0.0836181640625,
+     2
+    ],
+    [
+     "pp_61_2009-0075",
+     0.07275390625,
+     3
+    ],
+    [
+     "pm_50_2021-0034",
+     0.054412841796875,
+     4
+    ],
+    [
+     "uu_66_2024-0031",
+     0.0341796875,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.015411800000947551,
+    "rerank_s": 0.20990689999962342
+   },
+   "top_score": 0.0999755859375,
+   "context_ids": [
+    "pm_50_2021-0066",
+    "uu_66_2024-0030",
+    "pp_61_2009-0075",
+    "pm_50_2021-0034",
+    "uu_66_2024-0031"
+   ],
+   "fingerprint": "7ba0e91e",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O08": {
+   "question": "Berapa harga tiket kapal Pelni kelas ekonomi dari Jakarta ke Makassar?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "pm_93_2013-0127",
+     0.010009765625,
+     1
+    ],
+    [
+     "pp_31_2021-0030",
+     0.007694244384765625,
+     2
+    ],
+    [
+     "uu_17_2008-0044",
+     0.006717681884765625,
+     3
+    ],
+    [
+     "pp_20_2010-0078",
+     0.006565093994140625,
+     4
+    ],
+    [
+     "pp_20_2010-0178",
+     0.006412506103515625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.017257299999982934,
+    "rerank_s": 0.2546480999990308
+   },
+   "top_score": 0.010009765625,
+   "context_ids": [
+    "pm_93_2013-0127",
+    "pp_31_2021-0030",
+    "uu_17_2008-0044",
+    "pp_20_2010-0078",
+    "pp_20_2010-0178"
+   ],
+   "fingerprint": "4ea589ad",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O09": {
+   "question": "What net profit did the shipping line Maersk report for 2024?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "unctad_rmt_2025-0001",
+     0.043121337890625,
+     1
+    ],
+    [
+     "unctad_rmt_2025-0007",
+     0.039276123046875,
+     2
+    ],
+    [
+     "unctad_rmt_2025-0006",
+     0.027374267578125,
+     3
+    ],
+    [
+     "unctad_rmt_2025-0015",
+     0.015777587890625,
+     4
+    ],
+    [
+     "unctad_rmt_2025-0014",
+     0.01177978515625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.015312500001527951,
+    "rerank_s": 0.2590521999991324
+   },
+   "top_score": 0.043121337890625,
+   "context_ids": [
+    "unctad_rmt_2025-0001",
+    "unctad_rmt_2025-0007",
+    "unctad_rmt_2025-0006",
+    "unctad_rmt_2025-0015",
+    "unctad_rmt_2025-0014"
+   ],
+   "fingerprint": "e90b7403",
+   "siblings_cut": [],
+   "hits_dropped": []
+  },
+  "O10": {
+   "question": "How many cruise ship passengers visited Bali in 2024?",
+   "retriever": "hybrid+rerank",
+   "reranked": true,
+   "hits": [
+    [
+     "unctad_rmt_2025-0014",
+     0.030670166015625,
+     1
+    ],
+    [
+     "unctad_rmt_2025-0001",
+     0.0216217041015625,
+     2
+    ],
+    [
+     "unctad_rmt_2025-0013",
+     0.0135345458984375,
+     3
+    ],
+    [
+     "unctad_rmt_2025-0009",
+     0.00319671630859375,
+     4
+    ],
+    [
+     "unctad_rmt_2025-0011",
+     0.002349853515625,
+     5
+    ]
+   ],
+   "times": {
+    "retrieve_s": 0.012470800000301097,
+    "rerank_s": 0.2448024000004807
+   },
+   "top_score": 0.030670166015625,
+   "context_ids": [
+    "unctad_rmt_2025-0014",
+    "unctad_rmt_2025-0001",
+    "unctad_rmt_2025-0013",
+    "unctad_rmt_2025-0009",
+    "unctad_rmt_2025-0011"
+   ],
+   "fingerprint": "e7f91887",
+   "siblings_cut": [],
+   "hits_dropped": []
+  }
+ }
+}

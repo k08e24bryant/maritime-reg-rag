@@ -14,7 +14,8 @@ Rate limits: HTTP 429 (and other configured statuses) are retried with exponenti
 honouring Retry-After; a profile can also set a minimum interval between calls and a
 tokens-per-minute budget. A missing key, an unknown model, an unreachable server or an
 exhausted quota raises ProviderError; there is never a silent fallback to another LLM.
-Every call is logged with its tokens, latency, and the calls/tokens of the last 60 seconds.
+Every call is logged with its tokens, latency, estimated cost (profile `price_usd_per_mtok`),
+and the calls/tokens of the last 60 seconds.
 
 Token accounting follows Groq's: measured 2026-10-14, the remaining-tokens header dropped by
 prompt + max_completion_tokens (not the tokens actually used) on a fresh budget, so each call
@@ -69,6 +70,8 @@ class Generation:
     reasoning_tokens: int | None = None  # part of output_tokens, when the API reports it
     ratelimit_remaining_tokens: int | None = None  # x-ratelimit-remaining-tokens after the call
     max_output_tokens: int | None = None  # the limit sent with the request
+    ratelimit: dict[str, str] = field(default_factory=dict)  # x-ratelimit-* response headers
+    cost_usd: float | None = None  # estimated from the profile's prices (None = no price configured)
 
     @property
     def truncated(self) -> bool:
@@ -331,6 +334,7 @@ class OpenAICompatibleProvider:
             reasoning_tokens=(usage.get("completion_tokens_details") or {}).get("reasoning_tokens"),
             ratelimit_remaining_tokens=_int(r.headers.get("x-ratelimit-remaining-tokens")),
             max_output_tokens=limit,
+            ratelimit={k: v for k, v in r.headers.items() if k.startswith("x-ratelimit")},
         )
 
 
@@ -402,6 +406,21 @@ class _Window:
         return sum(t for _, t in self.calls)
 
 
+@dataclass
+class Price:
+    """USD per 1M tokens. Reasoning tokens are billed as output (they are part of completion_tokens)."""
+
+    input: float
+    output: float
+
+    @classmethod
+    def from_cfg(cls, cfg: dict[str, Any] | None) -> Price | None:
+        return cls(float(cfg["input"]), float(cfg["output"])) if cfg else None
+
+    def cost(self, prompt_tokens: int | None, output_tokens: int | None) -> float:
+        return ((prompt_tokens or 0) * self.input + (output_tokens or 0) * self.output) / 1e6
+
+
 def estimate_tokens(messages: list[Message]) -> int:
     """Rough prompt size before the call (~4 characters per token); usage from the API replaces it."""
     return sum(len(m["content"]) for m in messages) // 4 + 8 * len(messages)
@@ -412,15 +431,22 @@ class LoggingProvider:
     of every call, and appends them to a JSONL file."""
 
     def __init__(self, inner: Provider, calls_file: Path | None, limits: Limits | None = None,
-                 probe: bool = False) -> None:
+                 probe: bool = False, price: Price | None = None) -> None:
         self.inner = inner
         self.name = inner.name
         self.model = inner.model
         self.calls_file = calls_file
         self.limits = limits or Limits()
         self.probe = probe
+        self.price = price
         self.window = _Window()
         self.last_call: float | None = None
+        self.last_probe: Generation | None = None
+        # totals since this provider was created (including the probe)
+        self.calls = 0
+        self.prompt_tokens = 0
+        self.output_tokens = 0
+        self.cost_usd = 0.0
 
     def check(self) -> None:
         """Model id listed, then (probe) one tiny request: a listed model can still be unusable."""
@@ -434,6 +460,7 @@ class LoggingProvider:
         finally:
             self.last_call = _now()
         self._record(gen, probe=True)
+        self.last_probe = gen
 
     def _throttle(self, messages: list[Message]) -> float:
         waited = 0.0
@@ -469,6 +496,12 @@ class LoggingProvider:
         return gen
 
     def _record(self, gen: Generation, probe: bool = False) -> None:
+        if self.price is not None:
+            gen.cost_usd = self.price.cost(gen.prompt_tokens, gen.output_tokens)
+        self.calls += 1
+        self.prompt_tokens += gen.prompt_tokens or 0
+        self.output_tokens += gen.output_tokens or 0
+        self.cost_usd += gen.cost_usd or 0.0
         now = self.last_call if self.last_call is not None else _now()
         self.window.trim(now)
         # count what the provider reserves: prompt + the full output limit (Groq), not just what was used
@@ -478,14 +511,16 @@ class LoggingProvider:
         reasoning = f" ({gen.reasoning_tokens} reasoning)" if gen.reasoning_tokens is not None else ""
         remaining = (f"; provider reports {gen.ratelimit_remaining_tokens} tokens left"
                      if gen.ratelimit_remaining_tokens is not None else "")
-        log.info("%s%s %s: %s prompt + %s output%s tokens in %.1f s (waited %.1f s, %d retries)%s; "
+        cost = f", est. ${gen.cost_usd:.5f}" if gen.cost_usd is not None else ""
+        log.info("%s%s %s: %s prompt + %s output%s tokens%s in %.1f s (waited %.1f s, %d retries)%s; "
                  "last 60 s: %d calls, %d tokens counted%s", "probe " if probe else "", gen.provider, gen.model,
-                 gen.prompt_tokens, gen.output_tokens, reasoning, gen.latency_s, gen.wait_s, gen.retries,
+                 gen.prompt_tokens, gen.output_tokens, reasoning, cost, gen.latency_s, gen.wait_s, gen.retries,
                  " TRUNCATED" if gen.truncated and not probe else "", calls_60s, tokens_60s, remaining)
         if self.calls_file is not None:
             self.calls_file.parent.mkdir(parents=True, exist_ok=True)
             row = {"time": datetime.now(timezone.utc).isoformat(timespec="seconds"), "probe": probe} | asdict(gen)
             row.pop("text")
+            row.pop("ratelimit")
             row["truncated"] = gen.truncated
             row |= {"calls_last_60s": calls_60s, "tokens_last_60s": tokens_60s}
             with self.calls_file.open("a", encoding="utf-8") as f:
@@ -530,4 +565,4 @@ def make_provider(
     inner = _TYPES[prof["type"]](name, prof, cfg["max_output_tokens"], model, RetryPolicy.from_cfg(cfg.get("retry")))
     limits = Limits(prof.get("min_interval_s") or 0.0, prof.get("tokens_per_minute"))
     probe = bool(prof.get("probe")) and prof["type"] != "ollama"  # an Ollama probe would load the model locally
-    return LoggingProvider(inner, calls_file, limits, probe)
+    return LoggingProvider(inner, calls_file, limits, probe, Price.from_cfg(prof.get("price_usd_per_mtok")))

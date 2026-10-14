@@ -30,6 +30,7 @@ from maritime_rag.answer.versions import (
     CURRENT,
     ContextChunk,
     DocNames,
+    SiblingExpansion,
     VersionIndex,
     build_context,
     cite_as,
@@ -137,14 +138,20 @@ class Answerer:
         self.match_doc = DocMatcher(self.names)
         self.msgs = cfg["messages"]
 
-    def answer(self, question: str) -> Answer:
+    def context_for(self, hits: list[Hit]) -> tuple[list[ContextChunk], SiblingExpansion]:
+        """The answer context for retrieved hits: version expansion, then same-Pasal expansion."""
+        v = self.cfg["versions"]
+        context = build_context(hits, self.index, v["max_added_chunks"])
+        sib = expand_siblings(context, self.index, v["max_context_tokens"], v["sibling_priority_hits"])
+        return context, sib
+
+    def answer(self, question: str, retrieval: Retrieval | None = None) -> Answer:
+        """retrieval: a precomputed (e.g. cached) retrieval instead of calling self.retrieve."""
         lang = self.detect(question)
-        r = self.retrieve(question)
+        r = retrieval if retrieval is not None else self.retrieve(question)
         times = dict(r.times)
         top = r.hits[0].score if r.hits and r.reranked else None
-        v = self.cfg["versions"]
-        context = build_context(r.hits, self.index, v["max_added_chunks"])
-        sib = expand_siblings(context, self.index, v["max_context_tokens"], v["sibling_priority_hits"])
+        context, sib = self.context_for(r.hits)
         ans = Answer(question, lang, "", False, None, context, r.reranked, top, times,
                      siblings_cut=sib.cut, hits_dropped=sib.dropped)
         if not r.hits:

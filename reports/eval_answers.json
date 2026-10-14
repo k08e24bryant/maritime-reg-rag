@@ -1,0 +1,178 @@
+{
+  "meta": {
+    "generated": "2026-10-14T12:15",
+    "questions": 54,
+    "selected_retrieval": "hybrid_rerank",
+    "k": 5,
+    "gold_sha256": "046a3c591e3f471f258273cf93958a24c24eb7039a34aae68f34c14eaadba73b",
+    "chunks_sha256": "70d67f44cf61a1df0a62688f674c8221b708a54abfaeb9198665aa27bd368fc7"
+  },
+  "llms": {
+    "groq": {
+      "model": "openai/gpt-oss-120b",
+      "prompt_version": "545e28f41d",
+      "stale_cache_rows": 0,
+      "missing": [],
+      "metrics": {
+        "n": {
+          "total": 54,
+          "in_scope": 44,
+          "out_of_scope": 10,
+          "answered": 44
+        },
+        "refusal_accuracy": [
+          10,
+          10
+        ],
+        "false_refusals": [
+          0,
+          44
+        ],
+        "false_refusal_reasons": {},
+        "truncated": 0,
+        "citations": {
+          "parsed": 83,
+          "valid": 83,
+          "normalized": 3,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 0
+        },
+        "context_hit": [
+          39,
+          44
+        ],
+        "amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 2
+        },
+        "cipta_kerja_warning_when_uu17_cited": [
+          10,
+          10
+        ],
+        "latency_generate_s": {
+          "median": 1.0943556999991415,
+          "p90": 4.009707200000776
+        },
+        "rate_limit_wait_s": 4.9590000000047425,
+        "tokens": {
+          "prompt": 151918,
+          "output": 8650,
+          "reasoning": 2437
+        },
+        "cost_usd": 0.027977699999999998,
+        "per_slice": {
+          "factual_id": {
+            "n": 24,
+            "answered": 24,
+            "context_hit": 20
+          },
+          "which_pasal": {
+            "n": 7,
+            "answered": 7,
+            "context_hit": 7
+          },
+          "amended": {
+            "n": 8,
+            "answered": 8,
+            "context_hit": 7
+          },
+          "english": {
+            "n": 5,
+            "answered": 5,
+            "context_hit": 5
+          },
+          "out_of_scope": {
+            "n": 10,
+            "answered": 0,
+            "context_hit": 0
+          }
+        }
+      }
+    },
+    "groq-qwen": {
+      "model": "qwen/qwen3.8-27b",
+      "prompt_version": "56e657a18b",
+      "stale_cache_rows": 0,
+      "missing": [],
+      "metrics": {
+        "n": {
+          "total": 54,
+          "in_scope": 44,
+          "out_of_scope": 10,
+          "answered": 44
+        },
+        "refusal_accuracy": [
+          10,
+          10
+        ],
+        "false_refusals": [
+          0,
+          44
+        ],
+        "false_refusal_reasons": {},
+        "truncated": 0,
+        "citations": {
+          "parsed": 133,
+          "valid": 133,
+          "normalized": 1,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 1
+        },
+        "context_hit": [
+          39,
+          44
+        ],
+        "amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 2
+        },
+        "cipta_kerja_warning_when_uu17_cited": [
+          12,
+          12
+        ],
+        "latency_generate_s": {
+          "median": 0.6704715999994733,
+          "p90": 1.2209703999997146
+        },
+        "rate_limit_wait_s": 19.335999999999693,
+        "tokens": {
+          "prompt": 143047,
+          "output": 8944,
+          "reasoning": 0
+        },
+        "cost_usd": 0.15021359999999997,
+        "per_slice": {
+          "factual_id": {
+            "n": 24,
+            "answered": 24,
+            "context_hit": 20
+          },
+          "which_pasal": {
+            "n": 7,
+            "answered": 7,
+            "context_hit": 7
+          },
+          "amended": {
+            "n": 8,
+            "answered": 8,
+            "context_hit": 7
+          },
+          "english": {
+            "n": 5,
+            "answered": 5,
+            "context_hit": 5
+          },
+          "out_of_scope": {
+            "n": 10,
+            "answered": 0,
+            "context_hit": 0
+          }
+        }
+      }
+    }
+  }
+}
