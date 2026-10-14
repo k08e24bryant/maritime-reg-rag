@@ -1,0 +1,21 @@
+# Phase 4 evaluation config. The rules themselves are fixed in docs/eval_plan.md (written
+# before any result); this file only holds paths and the parameters those rules name.
+
+paths:
+  chunks_file: data/processed/chunks.jsonl
+  draft: data/eval/questions_draft.yaml          # drafted questions (source of the review workbook)
+  draft_xlsx: data/eval/questions_draft.xlsx     # review workbook: decisions are made here
+  gold_csv: data/eval/questions_gold.csv         # written by `maritime-eval-questions validate`
+
+slices:                    # target sizes from the plan (validate warns when a slice drops below 80 %)
+  factual_id: 25
+  which_pasal: 7
+  amended: 8
+  english: 5
+  out_of_scope: 10
+
+review:
+  decisions: [keep, edit, delete]
+  shared_words_warn: 5     # auto_check warns when a question shares >= this many consecutive words with its gold text
+
+seed: 42

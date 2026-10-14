@@ -1,0 +1,341 @@
+# Phase 4 draft question set (see docs/eval_plan.md). Drafted from specific chunks by the system
+# author; reviewed by hand via data/eval/questions_draft.xlsx (maritime-eval-questions export).
+# gold_chunk_ids: chunks that contain (part of) the answer; amended slice = current version +
+# superseded base; out_of_scope = none. reference_answer is written from the gold chunk text.
+
+questions:
+# --- factual_id ---------------------------------------------------------------------------------
+- id: F01
+  slice: factual_id
+  lang: id
+  question: Bolehkah satu kapal dijaminkan kepada beberapa kreditur sekaligus lewat hipotek, dan bagaimana urutan hak para kreditur itu ditentukan?
+  gold_chunk_ids: [uu_17_2008-0070]
+  reference_answer: Boleh; kapal dapat dibebani lebih dari satu hipotek, dan peringkat tiap hipotek ditentukan menurut tanggal dan nomor urut akta hipotek (UU 17/2008 Pasal 61).
+- id: F02
+  slice: factual_id
+  lang: id
+  question: Atas dasar apa syahbandar boleh menahan sebuah kapal yang sedang berada di pelabuhan?
+  gold_chunk_ids: [uu_17_2008-0231]
+  reference_answer: Hanya atas perintah tertulis pengadilan, dengan alasan kapal terkait perkara pidana atau perkara perdata (UU 17/2008 Pasal 222).
+- id: F03
+  slice: factual_id
+  lang: id
+  question: Jika kapal celaka ketika sedang berlayar di perairan negara lain, kepada siapa nakhodanya wajib melapor?
+  gold_chunk_ids: [uu_17_2008-0257]
+  reference_answer: Kepada Pejabat Perwakilan Republik Indonesia terdekat dan pejabat pemerintah negara setempat yang berwenang (UU 17/2008 Pasal 248 huruf b); di dalam perairan Indonesia kepada Syahbandar pelabuhan terdekat.
+- id: F04
+  slice: factual_id
+  lang: id
+  question: Tabrakan antara jenis kapal apa saja yang menjadi kewenangan Mahkamah Pelayaran untuk diperiksa?
+  gold_chunk_ids: [uu_17_2008-0261]
+  reference_answer: Tubrukan kapal niaga dengan kapal niaga, kapal niaga dengan kapal negara, dan kapal niaga dengan kapal perang (UU 17/2008 Pasal 252).
+- id: F05
+  slice: factual_id
+  lang: id
+  question: Apa saja yang harus dipenuhi seseorang sebelum boleh bekerja sebagai awak di atas kapal?
+  gold_chunk_ids: [uu_17_2008-0233]
+  reference_answer: Harus memiliki kompetensi dan dokumen pelaut serta disijil oleh Syahbandar; penyijilan melalui penandatanganan perjanjian kerja laut yang diketahui Syahbandar, lalu nakhoda mencatat nama dan jabatan awak di buku sijil (UU 17/2008 Pasal 224).
+- id: F06
+  slice: factual_id
+  lang: id
+  question: Bila sebuah kapal tenggelam dan bangkainya tertinggal di perairan Indonesia, kepada siapa pemilik harus melapor dan data apa yang wajib dikumpulkan lewat survei?
+  gold_chunk_ids: [pp_31_2021-0164]
+  reference_answer: Pemilik kapal dan/atau nakhoda segera melapor kepada Syahbandar; pemilik/operator bersama Syahbandar wajib menyurvei posisi pasti kerangka kapal (koordinat lintang-bujur) dan kondisi perairan (peta batimetri) (PP 31/2021 Pasal 151).
+- id: F07
+  slice: factual_id
+  lang: id
+  question: Dalam situasi apa suatu badan usaha diizinkan mendirikan dan mengoperasikan terminal khusus sendiri?
+  gold_chunk_ids: [pp_31_2021-0082, pp_61_2009-0114]
+  reference_answer: Bila pelabuhan terdekat tidak dapat menampung kegiatan pokoknya, atau bila secara ekonomis dan teknis operasional lebih efektif, efisien, dan lebih menjamin keselamatan dan keamanan pelayaran (PP 31/2021 Pasal 73; PP 61/2009 Pasal 111 memakai "dan").
+- id: F08
+  slice: factual_id
+  lang: id
+  question: Bisakah perusahaan asing menjadi broker jual beli atau penyewaan kapal di Indonesia, dan apa syaratnya?
+  gold_chunk_ids: [pp_31_2021-0054, pm_59_2021-0076]
+  reference_answer: Bisa, tetapi wajib mendirikan usaha patungan dengan perusahaan dalam negeri, dan usaha patungan/PMA itu wajib memiliki Perizinan Berusaha (PP 31/2021 Pasal 46; PM 59/2021 Pasal 71).
+- id: F09
+  slice: factual_id
+  lang: id
+  question: Apa kewajiban perusahaan freight forwarder untuk melindungi pihak yang mungkin dirugikan oleh kegiatannya?
+  gold_chunk_ids: [pp_31_2021-0023]
+  reference_answer: Perusahaan jasa pengurusan transportasi wajib mengasuransikan barangnya dan/atau tanggung jawabnya (PP 31/2021 Pasal 15).
+- id: F10
+  slice: factual_id
+  lang: id
+  question: Setelah perjanjian konsesi sebuah badan usaha pelabuhan habis, siapa yang menguasai tanah dan fasilitas pelabuhan yang dibangun selama konsesi?
+  gold_chunk_ids: [pp_31_2021-0244]
+  reference_answer: Lahan dan fasilitas pelabuhan hasil konsesi beralih atau diserahkan kepada penyelenggara pelabuhan (PP 31/2021 Pasal 226 ayat (2)).
+- id: F11
+  slice: factual_id
+  lang: id
+  question: Pelabuhan laut di Indonesia dibagi ke dalam tingkatan apa saja?
+  gold_chunk_ids: [pp_61_2009-0009]
+  reference_answer: Secara hierarki pelabuhan laut terdiri atas pelabuhan utama, pelabuhan pengumpul, dan pelabuhan pengumpan (PP 61/2009 Pasal 6 ayat (3)).
+- id: F12
+  slice: factual_id
+  lang: id
+  question: Berapa lama masa berlaku izin operasi terminal khusus dan apakah bisa diperpanjang?
+  gold_chunk_ids: [pp_61_2009-0125]
+  reference_answer: Lima tahun dan dapat diperpanjang selama persyaratan tetap dipenuhi; permohonan perpanjangan diajukan kepada Menteri (PP 61/2009 Pasal 122).
+- id: F13
+  slice: factual_id
+  lang: id
+  question: Muatan apa saja yang digolongkan sebagai barang khusus dalam pengangkutan di perairan?
+  gold_chunk_ids: [pp_20_2010-0192]
+  reference_answer: Kayu gelondongan, barang curah, rel, dan ternak (PP 20/2010 Pasal 185 ayat (1)).
+- id: F14
+  slice: factual_id
+  lang: id
+  question: Kelompok penumpang mana yang berhak memperoleh fasilitas dan kemudahan khusus dari perusahaan angkutan perairan?
+  gold_chunk_ids: [pp_20_2010-0189, pm_93_2013-0116]
+  reference_answer: Penyandang cacat, wanita hamil, anak di bawah lima tahun, orang sakit, dan orang lanjut usia (PP 20/2010 Pasal 182); PM 93/2013 Pasal 95 menambahkan wanita menyusui.
+- id: F15
+  slice: factual_id
+  lang: id
+  question: Hal apa saja yang menjadi tanggung jawab pengelola depo kontainer?
+  gold_chunk_ids: [pm_59_2021-0058]
+  reference_answer: Keamanan peti kemas di dalam depo, serta kesehatan, keselamatan, dan keamanan pelaksanaan kegiatan depo peti kemas (PM 59/2021 Pasal 53).
+- id: F16
+  slice: factual_id
+  lang: id
+  question: Kepada siapa perusahaan tally mandiri melaporkan kegiatannya, dan dapatkah laporan itu disampaikan secara daring?
+  gold_chunk_ids: [pm_59_2021-0046]
+  reference_answer: Kepada Gubernur dan Penyelenggara Pelabuhan setempat; laporan dapat disampaikan melalui aplikasi dalam jaringan yang ditetapkan Pemerintah (PM 59/2021 Pasal 41).
+- id: F17
+  slice: factual_id
+  lang: id
+  question: Sebelum izin usaha angkutan laut dibekukan, berapa kali perusahaan diberi peringatan tertulis dan berapa lama jangka tiap peringatan?
+  gold_chunk_ids: [pm_93_2013-0139]
+  reference_answer: Tiga kali berturut-turut, masing-masing 30 hari kalender; bila kewajiban tetap tidak dipenuhi, izin dibekukan selama 30 hari kalender (PM 93/2013 Pasal 115).
+- id: F18
+  slice: factual_id
+  lang: id
+  question: Kapan izin usaha angkutan laut dapat dicabut seketika tanpa tahap peringatan dan pembekuan?
+  gold_chunk_ids: [pm_93_2013-0140]
+  reference_answer: Antara lain bila perusahaan melakukan kegiatan yang membahayakan keamanan negara, mengoperasikan kapal tidak laik laut yang dapat menimbulkan korban jiwa dan harta benda, atau membubarkan diri/pailit, masing-masing berdasarkan keputusan instansi yang berwenang (PM 93/2013 Pasal 116).
+- id: F19
+  slice: factual_id
+  lang: id
+  question: Kapal pelayaran internasional ingin singgah di pelabuhan domestik yang belum dibuka untuk perdagangan luar negeri. Apa yang wajib dilakukannya?
+  gold_chunk_ids: [pm_93_2013-0033]
+  reference_answer: Wajib singgah dulu di pelabuhan/terminal khusus terdekat yang terbuka bagi perdagangan luar negeri untuk melapor (check point) kepada petugas Bea dan Cukai, Imigrasi, dan Karantina, atau mendatangkan petugas tersebut (PM 93/2013 Pasal 25).
+- id: F20
+  slice: factual_id
+  lang: id
+  question: Apa akibatnya bila pelabuhan yang lokasinya sudah ditentukan tak kunjung memperoleh izin pembangunan dalam 24 bulan?
+  gold_chunk_ids: [pm_50_2021-0038]
+  reference_answer: Penetapan lokasi pelabuhan ditinjau kembali dan dapat dicabut (PM 50/2021 Pasal 34).
+- id: F21
+  slice: factual_id
+  lang: id
+  question: Rujukan apa saja yang harus dipakai penyelenggara pelabuhan ketika menyusun rencana induk pelabuhan?
+  gold_chunk_ids: [pm_50_2021-0039, pp_61_2009-0023]
+  reference_answer: Rencana Induk Pelabuhan Nasional, RTRW provinsi, RTRW kabupaten/kota, keserasian dengan kegiatan lain di lokasi, kelayakan teknis/ekonomis/lingkungan, serta keselamatan dan keamanan lalu lintas kapal (PM 50/2021 Pasal 35 ayat (2); PP 61/2009 Pasal 20 ayat (2)).
+- id: F22
+  slice: factual_id
+  lang: id
+  question: Berdasarkan apa tarif jasa kepelabuhanan dikelompokkan, dan jenis terminal apa saja yang dibedakan?
+  gold_chunk_ids: [pm_72_2017-0028]
+  reference_answer: Berdasarkan jenis pelayanan, fasilitas, dan peralatan di terminal; terminalnya serbaguna, peti kemas, curah cair/gas, curah kering, kendaraan, terapung, pelabuhan daratan (dry port), dan Ro-Ro (PM 72/2017 Pasal 11).
+- id: F23
+  slice: factual_id
+  lang: id
+  question: Jenis barang apa yang boleh diangkut dalam program tol laut?
+  gold_chunk_ids: [pm_5_2024-0004]
+  reference_answer: Barang kebutuhan pokok dan barang penting, serta barang lain sesuai kebutuhan daerah tertinggal, terpencil, terluar, dan perbatasan; termasuk ternak, ikan, dan muatan balik dari daerah yang disinggahi (PM 5/2024 Pasal 3).
+- id: F24
+  slice: factual_id
+  lang: id
+  question: Apa saja kewajiban perusahaan pelayaran yang ditunjuk melaksanakan angkutan barang tol laut?
+  gold_chunk_ids: [pm_5_2024-0011]
+  reference_answer: Antara lain memiliki/menguasai kapal, menyediakan kapal pengganti bila kapal utama rusak atau docking (kecuali kapal khusus ternak), mematuhi kontrak, menyampaikan laporan penyelenggaraan, dan memeriksa kesesuaian shipping instruction dengan dokumen muatan (PM 5/2024 Pasal 10).
+- id: F25
+  slice: factual_id
+  lang: id
+  question: Lewat langkah apa saja pemerintah memberdayakan pelayaran-rakyat?
+  gold_chunk_ids: [uu_66_2024-0011]
+  reference_answer: Oleh Pemerintah dan/atau Pemerintah Daerah melalui pengembangan SDM, pengembangan armada kapal pelayaran-rakyat, pembangunan terminalnya, peningkatan kapasitas pengelolaan usaha, dan pemaksimalan ketersediaan muatan (UU 17/2008 Pasal 15B, disisipkan oleh UU 66/2024).
+# --- which_pasal --------------------------------------------------------------------------------
+- id: W01
+  slice: which_pasal
+  lang: id
+  question: Pasal mana dalam UU Pelayaran yang menunjuk lembaga yang menyelidiki kecelakaan kapal demi mencegah kejadian serupa terulang?
+  gold_chunk_ids: [uu_17_2008-0265]
+  reference_answer: UU 17/2008 Pasal 256 (investigasi oleh Komite Nasional Keselamatan Transportasi, tidak untuk menentukan kesalahan).
+- id: W02
+  slice: which_pasal
+  lang: id
+  question: Ketentuan mana yang melarang kapal asing memakai Merah Putih sebagai identitas kebangsaannya?
+  gold_chunk_ids: [uu_17_2008-0174]
+  reference_answer: UU 17/2008 Pasal 165 ayat (2).
+- id: W03
+  slice: which_pasal
+  lang: id
+  question: Di pasal mana PP 31/2021 mengatur tenggat bagi pemilik atau nakhoda untuk memberi tahu syahbandar sebelum kapal datang?
+  gold_chunk_ids: [pp_31_2021-0180]
+  reference_answer: PP 31/2021 Pasal 167 (paling lambat 1x24 jam sebelum kapal tiba, dengan surat, dokumen, dan warta kapal).
+- id: W04
+  slice: which_pasal
+  lang: id
+  question: Aturan mana yang menentukan pejabat yang berwenang mengesahkan rencana induk pelabuhan menurut hierarki pelabuhannya?
+  gold_chunk_ids: [pm_50_2021-0044, pp_61_2009-0031]
+  reference_answer: PM 50/2021 Pasal 40 (juga PP 61/2009 Pasal 28) - Menteri untuk pelabuhan utama dan pengumpul, gubernur untuk pengumpan regional, bupati/wali kota untuk pengumpan lokal.
+- id: W05
+  slice: which_pasal
+  lang: id
+  question: Pasal berapa di PM 59/2021 yang membebankan ganti rugi kepada perusahaan tally bila hitungan muatannya keliru?
+  gold_chunk_ids: [pm_59_2021-0049]
+  reference_answer: PM 59/2021 Pasal 44.
+- id: W06
+  slice: which_pasal
+  lang: id
+  question: Pasal mana dalam PM 72/2017 yang membatasi berapa lama tarif yang dipasang badan usaha pelabuhan boleh berlaku?
+  gold_chunk_ids: [pm_72_2017-0040]
+  reference_answer: PM 72/2017 Pasal 22 ayat (1) (paling lama 2 tahun).
+- id: W07
+  slice: which_pasal
+  lang: id
+  question: Pasal mana dalam peraturan tol laut yang mengatur siapa yang menentukan tarif angkutan barangnya?
+  gold_chunk_ids: [pm_5_2024-0014]
+  reference_answer: PM 5/2024 Pasal 13 (tarif ditetapkan oleh Menteri).
+# --- amended ------------------------------------------------------------------------------------
+- id: A01
+  slice: amended
+  lang: id
+  question: Ke instansi mana perusahaan pelayaran yang melayani rute antarprovinsi harus mengajukan izin usahanya?
+  gold_chunk_ids: [pm_74_2016-0010, pm_93_2013-0084]
+  reference_answer: Kepada Kepala BKPM (lintas antarprovinsi dan internasional); gubernur untuk lintas dalam provinsi dan bupati/wali kota untuk lintas dalam kabupaten/kota. Pasal 71 PM 93/2013 telah diubah oleh PM 74/2016.
+- id: A02
+  slice: amended
+  lang: id
+  question: Jika perusahaan pelayaran joint venture berubah menjadi perusahaan terbuka, kepada siapa perubahan status itu harus dilaporkan?
+  gold_chunk_ids: [pm_74_2016-0016, pm_93_2013-0093]
+  reference_answer: Kepada Direktur Jenderal dengan tembusan Kepala BKPM, gubernur, atau bupati/wali kota sesuai kewenangannya (Pasal 78 sebagaimana diubah PM 74/2016; versi lama PM 93/2013 tanpa tembusan BKPM).
+- id: A03
+  slice: amended
+  lang: id
+  question: Muatan apa saja yang boleh dibawa perusahaan pelayaran nasional yang kapalnya beroperasi tanpa trayek tetap (tramper)?
+  gold_chunk_ids: [pm_23_2022-0004, pm_93_2013-0025]
+  reference_answer: Barang curah kering dan cair, barang sejenis, barang tidak sejenis untuk menunjang kegiatan tertentu (lepas pantai/proyek), dan barang umum (Pasal 17 PM 93/2013 sebagaimana diubah PM 23/2022, yang menambahkan barang umum).
+- id: A04
+  slice: amended
+  lang: id
+  question: Apakah kapal tramper masih harus mengajukan laporan urgensi muatan ke Dirjen sebelum mengangkut barang umum?
+  gold_chunk_ids: [pm_23_2022-0005, pm_93_2013-0026, pm_23_2022-0004]
+  reference_answer: Tidak lagi; Pasal 18 PM 93/2013 yang mengatur laporan penambahan urgensi muatan telah dihapus oleh PM 23/2022, dan Pasal 17 yang baru membolehkan trayek tidak tetap mengangkut barang umum.
+- id: A05
+  slice: amended
+  lang: id
+  question: Bagaimana kompetensi pegawai perusahaan jasa terkait angkutan perairan (di luar buruh bongkar muat) harus dibuktikan?
+  gold_chunk_ids: [pm_3_2026-0005, pm_59_2021-0138]
+  reference_answer: Dengan sertifikat kompetensi dan/atau sertifikat pelatihan; sertifikat pelatihan berlaku bila belum ada standar kompetensi kerja nasional (Pasal 132 PM 59/2021 sebagaimana diubah PM 3/2026).
+- id: A06
+  slice: amended
+  lang: id
+  question: Apakah tenaga kerja bongkar muat masih wajib membuktikan kompetensinya hanya dengan sertifikat kompetensi?
+  gold_chunk_ids: [pm_3_2026-0003, pm_3_2026-0004, pm_59_2021-0008]
+  reference_answer: Tidak; Pasal 3 ayat (7) PM 59/2021 dihapus oleh PM 3/2026, dan Pasal 3A yang baru membolehkan sertifikat kompetensi, sertifikat pelatihan, dan/atau surat keterangan pengalaman kerja (berlaku 2 tahun, di pelabuhan pengumpan lokal/regional).
+- id: A07
+  slice: amended
+  lang: id
+  question: Menurut UU Pelayaran yang berlaku sekarang, siapa yang menjalankan pengawasan dan penegakan hukum di bidang pelayaran?
+  gold_chunk_ids: [uu_66_2024-0072, uu_17_2008-0285]
+  reference_answer: Menteri (Pasal 276 sebagaimana diubah UU 66/2024); sebelumnya dilakukan oleh penjaga laut dan pantai yang bertanggung jawab kepada Presiden.
+- id: A08
+  slice: amended
+  lang: id
+  question: Apakah aturan UU Pelayaran tentang pangkalan armada dan identitas petugas penjaga pantai masih berlaku?
+  gold_chunk_ids: [uu_66_2024-0075, uu_17_2008-0288]
+  reference_answer: Tidak; Pasal 279 UU 17/2008 (pangkalan armada, kualifikasi, dan identitas penjaga laut dan pantai) telah dihapus oleh UU 66/2024.
+# --- english ------------------------------------------------------------------------------------
+- id: E01
+  slice: english
+  lang: en
+  question: How much did the benchmark Shanghai container spot-rate index average in 2024, and how did that compare with the year before?
+  gold_chunk_ids: [unctad_rmt_2025-0013]
+  reference_answer: The SCFI averaged 2,496 points in 2024, up 149 per cent from 2023 (UNCTAD RMT 2025, freight rates section).
+- id: E02
+  slice: english
+  lang: en
+  question: When did the international treaty on safe and environmentally sound ship recycling take effect?
+  gold_chunk_ids: [unctad_rmt_2025-0023]
+  reference_answer: The Hong Kong Convention for the Safe and Environmentally Sound Recycling of Ships, 2009, entered into force in June 2025 (UNCTAD RMT 2025).
+- id: E03
+  slice: english
+  lang: en
+  question: Who grants the clearance a ship needs before leaving an Indonesian port, and when does that clearance lapse?
+  gold_chunk_ids: [uu_17_2008-0228]
+  reference_answer: The harbour master (Syahbandar) issues the Surat Persetujuan Berlayar; it is no longer valid if the ship has not departed within 24 hours of approval (UU 17/2008 Pasal 219).
+- id: E04
+  slice: english
+  lang: en
+  question: Can a ship registered in Indonesia be used as collateral for a loan, and who draws up the security deed?
+  gold_chunk_ids: [uu_17_2008-0069]
+  reference_answer: Yes, through a ship mortgage (hipotek); the mortgage deed is made by the Pejabat Pendaftar dan Pencatat Balik Nama Kapal where the ship is registered and recorded in the main register (UU 17/2008 Pasal 60).
+- id: E05
+  slice: english
+  lang: en
+  question: Which vessels are exempt from the duty to insure against the cost of removing a wreck?
+  gold_chunk_ids: [pp_31_2021-0163]
+  reference_answer: Warships, state ships on government duty, sailing ships and motor sailing ships, and motor ships under GT 35 (PP 31/2021 Pasal 150 ayat (3)).
+# --- out_of_scope (no answer in the corpus; checked by keyword search when drafting) -------------
+- id: O01
+  slice: out_of_scope
+  lang: id
+  question: Berapa kilogram batas maksimal bagasi kabin untuk penumpang pesawat rute domestik?
+  gold_chunk_ids: []
+  reference_answer: Tidak ada dalam dokumen (penerbangan di luar cakupan korpus).
+- id: O02
+  slice: out_of_scope
+  lang: id
+  question: Berapa denda bagi pengendara sepeda motor yang tidak memakai helm?
+  gold_chunk_ids: []
+  reference_answer: Tidak ada dalam dokumen (lalu lintas jalan).
+- id: O03
+  slice: out_of_scope
+  lang: id
+  question: Apa saja persyaratan membuat SIM C untuk pertama kali?
+  gold_chunk_ids: []
+  reference_answer: Tidak ada dalam dokumen (perizinan mengemudi).
+- id: O04
+  slice: out_of_scope
+  lang: id
+  question: Berapa ukuran minimum mata jaring yang boleh dipakai nelayan untuk menangkap ikan?
+  gold_chunk_ids: []
+  reference_answer: Tidak ada dalam dokumen (perikanan; dekat dengan domain maritim).
+- id: O05
+  slice: out_of_scope
+  lang: id
+  question: Berapa tarif PPh final atas penghasilan dari menyewakan gedung?
+  gold_chunk_ids: []
+  reference_answer: Tidak ada dalam dokumen (perpajakan).
+- id: O06
+  slice: out_of_scope
+  lang: id
+  question: Bagaimana cara mendaftar BPJS Kesehatan sebagai pekerja mandiri?
+  gold_chunk_ids: []
+  reference_answer: Tidak ada dalam dokumen (jaminan sosial).
+- id: O07
+  slice: out_of_scope
+  lang: id
+  question: Kapan Pelabuhan Patimban mulai beroperasi secara komersial?
+  gold_chunk_ids: []
+  reference_answer: Tidak ada dalam dokumen (fakta pelabuhan tertentu; dekat dengan domain).
+- id: O08
+  slice: out_of_scope
+  lang: id
+  question: Berapa harga tiket kapal Pelni kelas ekonomi dari Jakarta ke Makassar?
+  gold_chunk_ids: []
+  reference_answer: Tidak ada dalam dokumen (harga tiket tertentu; korpus hanya mengatur jenis tarif secara umum).
+- id: O09
+  slice: out_of_scope
+  lang: en
+  question: What net profit did the shipping line Maersk report for 2024?
+  gold_chunk_ids: []
+  reference_answer: Not in the documents (company financials).
+- id: O10
+  slice: out_of_scope
+  lang: en
+  question: How many cruise ship passengers visited Bali in 2024?
+  gold_chunk_ids: []
+  reference_answer: Not in the documents (tourism statistics).
