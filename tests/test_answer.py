@@ -370,6 +370,19 @@ def test_answer_with_only_unbracketed_citations_is_not_refused(corpus: Corpus) -
     assert ans.text == "Persyaratan administrasi meliputi akta pendirian dan NPWP [PM 93/2013, Pasal 69 ayat (2), p. 44]."
 
 
+def test_bracketed_prose_note_is_not_a_citation(names: DocNames) -> None:
+    # Qwen F10 (Phase 4, Step 3): the note was rewritten to "[PP 61/2009, Pasal 75, p. 38]" and lost its message
+    note = "[Keterangan: Pasal 75 PP 61/2009 tentang kepelabuhanan telah dicabut oleh PP 31/2021.]"
+    text = "Lahan beralih kepada penyelenggara Pelabuhan [PP 31/2021, Pasal 1, p. 2]." + "\n\n" + note
+    cits = parse_citations(text, DocMatcher(names))
+    assert [c.raw for c in cits] == ["PP 31/2021, Pasal 1, p. 2"]
+    assert rewrite(text, cits, "flag", CFG["messages"]["unverified_marker"]).endswith(note)
+    # still citations: a prefix word, a "tentang <title>" up to the comma, huruf, Penjelasan
+    for raw in ("Sumber: PM 93/2013, Pasal 69, ayat (2), p. 44", "PM 74/2016 tentang Perubahan atas PM 93/2013, Pasal 71, p. 11",
+                "PM 93/2013, Pasal 69 ayat (2) huruf a, p. 44", "UU 17/2008, Penjelasan Pasal 219, p. 190"):
+        assert [c.raw for c in parse_citations(f"x [{raw}] y", DocMatcher(names))] == [raw], raw
+
+
 def test_rewrite_flag_and_drop() -> None:
     from maritime_rag.answer.citations import Citation
 

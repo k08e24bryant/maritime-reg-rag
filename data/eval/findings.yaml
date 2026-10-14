@@ -1,0 +1,32 @@
+# Findings from the Phase 4 Step 2/3 checks, shown in reports/eval_answers.md. Gold is frozen:
+# these are reported next to the numbers, never used to re-score.
+
+questionable_gold:
+  - id: F07
+    note: >-
+      Gold is PP 31/2021 Pasal 73 only. UU 17/2008 Pasal 104 states the same conditions for building a
+      special terminal, and both LLMs answered from it (Qwen also cited the revoked PP 61/2009 Pasal 111
+      and said it was revoked). A legally sound answer that misses the gold chunk.
+  - id: F13
+    note: >-
+      The same list of special goods (kayu gelondongan, barang curah, rel, ternak) is in PM 93/2013
+      Pasal 96 (retrieved at rank 1), UU 17/2008 Pasal 45 and PP 31/2021 Pasal 23, not only in the gold
+      PP 20/2010 Pasal 185.
+  - id: A01
+    note: >-
+      UU 17/2008 Pasal 28 ayat (1) also answers who grants the licence (the Minister, for
+      inter-provincial routes; retrieved at rank 4). The amended-slice target, PM 74/2016 Pasal 71
+      (application to the Head of BKPM), is not in the context, so the amendment is not tested.
+
+weaknesses:
+  - id: F24
+    note: >-
+      Answering from a neighbouring Pasal instead of refusing: the gold (PM 5/2024 Pasal 10, the
+      operator's obligations) is not in the context, and both LLMs present PM 5/2024 Pasal 4 (the
+      programme's principles) as the operator's obligations. Faithful to what they cite, but it answers
+      a different question.
+  - id: F05
+    note: >-
+      Same pattern in the as-run answers: the gold UU 17/2008 Pasal 224 had been dropped from the context
+      (bug 1), and both LLMs answered with the crew-recruitment requirements of PM 59/2021 Pasal 99. The
+      fixed run tests whether restoring the gold changes the answer.

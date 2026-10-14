@@ -207,6 +207,25 @@ and the judge input only. The retrieval evaluation and its selection are not re-
    `superseded_mentioned` are unchanged; for `superseded_mentioned`, "relevant superseded source" is
    judged from the gold chunks and the cited sources' status.
 
+3. **Two bug fixes found in the Step 3 answers** (decided 2026-10-14, **after the Step 3 answer
+   results**, before any judge result). Step 3 is reported **both as-run and fixed**: the as-run
+   state is preserved in commit ea06e6e and `reports/eval_answers_asrun.md`/`.json`, and
+   `reports/eval_answers.md` shows both side by side, with every changed question and why.
+   - **Bug 1, same-Pasal budget**: to fit the chunks of the top-2 retrieved Pasal, lower-ranked hits
+     were dropped even when dropping could not make enough room. In F01, F05 and A07, UU 17/2008
+     Pasal 1 (definitions, 7 chunks) was a top-2 Pasal. Its chunks were cut anyway, and 2-3 hits were
+     lost per question, including **F05's gold** (UU 17/2008 Pasal 224, retrieval rank 4). Fix:
+     lower-ranked hits are dropped only if the drops make the priority chunks fit; otherwise none is
+     dropped. The contexts are rebuilt (`contexts --force`); only questions whose context
+     fingerprint changed are re-asked.
+   - **Bug 2, bracketed notes**: a bracket naming a regulation was always parsed as a citation, so
+     Qwen's F10 note "[Keterangan: Pasal 75 PP 61/2009 ... telah dicabut oleh PP 31/2021.]" was
+     rewritten to "[PP 61/2009, Pasal 75, p. 38]" and lost its message. Fix: a bracket is a citation
+     only if almost nothing but document, Pasal, ayat, huruf and page remains, and it has no sentence
+     verb. Re-applied to the cached outputs with `recheck` (no LLM calls); only Qwen F10 changes
+     among the 108 as-run answers.
+   - Prompt, rubric and gold are unchanged. Step 4 judges the fixed answers.
+
 Not changed (future work, see `docs/roadmap.md`): no retrieval change, e.g. demoting REPEALED or
 revoked chunks in the ranking. Motivating example: F07, where the revoked PP 61/2009 Pasal 111 ranks
 first and the current PP 31/2021 Pasal 73, with near-identical text, is not in the top 10.

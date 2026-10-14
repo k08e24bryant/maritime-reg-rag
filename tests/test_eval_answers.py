@@ -146,6 +146,24 @@ def test_changed_prompt_or_stale_context_is_not_reused(s: Setup) -> None:
         run_llm(s, "groq", FakeLLM(), io.StringIO())
 
 
+def test_recheck_reapplies_postcheck_without_llm_calls(s: Setup) -> None:
+    from maritime_rag.eval.answers import current_records, recheck_llm
+
+    run_llm(s, "groq", FakeLLM(), io.StringIO())
+    path = cache_path(s, "groq")
+    rows = read_cache(path)
+    rows[0]["postcheck_version"] = "1"  # pretend A01 was checked by the old parser
+    rows[0]["text"] = "old text"
+    path.write_text("".join(json.dumps(r) + "\n" for r in rows), encoding="utf-8")
+    out = io.StringIO()
+    assert recheck_llm(s, "groq", out) == 1
+    data = json.loads(resolve(s.ecfg["answers"]["contexts"]).read_text(encoding="utf-8"))
+    latest = {r["id"]: r for r in current_records(s, "groq", data)[0]}
+    assert latest["A01"]["rechecked"] and latest["A01"]["text"] != "old text"
+    assert latest["A01"]["generation"]["cost_usd"] == 0.001  # the stored generation is kept
+    assert recheck_llm(s, "groq", io.StringIO()) == 0  # idempotent
+
+
 def test_metrics_and_report(s: Setup) -> None:
     run_llm(s, "groq", FakeLLM(), io.StringIO())
     data = json.loads(resolve(s.ecfg["answers"]["contexts"]).read_text(encoding="utf-8"))
@@ -158,10 +176,37 @@ def test_metrics_and_report(s: Setup) -> None:
     assert m["cipta_kerja_warning_when_uu17_cited"] == [1, 1]
     assert m["tokens"] == {"prompt": 3000, "output": 300, "reasoning": 0} and m["cost_usd"] == pytest.approx(0.003)
     s.ecfg["answers"]["llms"] = ["groq"]
+    s.ecfg["answers"]["asrun_report"] = str(cache_path(s, "groq").parent / "none.json")
     res = report(s)
-    assert res["llms"]["groq"]["missing"] == [] and res["llms"]["groq"]["stale_cache_rows"] == 0
+    v = res["llms"]["groq"]
+    assert v["missing"] == [] and v["rows_not_current"] == 0 and v["changes"] == []
+    assert v["asrun"] == v["fixed"]  # nothing re-run yet: as-run and fixed are the same answers
     md = render_md(res)
-    assert "refusal accuracy (out-of-scope refused) | 1/1 (100%)" in md
+    assert "| refusal accuracy (out-of-scope refused) | 1/1 (100%) | 1/1 (100%) |" in md
+
+
+def test_report_lists_changed_contexts_side_by_side(s: Setup) -> None:
+    run_llm(s, "groq", FakeLLM(), io.StringIO())
+    ctx_path = resolve(s.ecfg["answers"]["contexts"])
+    data = json.loads(ctx_path.read_text(encoding="utf-8"))
+    # as-run: F01 had a hit dropped (bug 1); fixed: the rebuilt context keeps two hits
+    data["questions"]["F01"]["hits_dropped"] = ["pm_93_2013-0001"]
+    ctx_path.with_name("contexts_asrun.json").write_text(json.dumps(data), encoding="utf-8")
+    by_id = s.corpus.by_id()
+    hits = [Hit(c, 0.9, r, "hybrid+rerank", by_id[c]) for r, c in enumerate(["uu_17_2008-0001", "pm_93_2013-0001"], 1)]
+    context, sib = answerer_for(s, None).context_for(hits)
+    data["questions"]["F01"] |= {"hits": [[h.chunk_id, h.score, h.rank] for h in hits], "hits_dropped": [],
+                                 "context_ids": [c.chunk_id for c in context], "fingerprint": fingerprint(context)}
+    ctx_path.write_text(json.dumps(data), encoding="utf-8")
+    llm = FakeLLM()
+    assert run_llm(s, "groq", llm, io.StringIO()) == 1 and llm.calls == 1  # only F01 re-asked
+    s.ecfg["answers"]["llms"] = ["groq"]
+    res = report(s)
+    ch = res["llms"]["groq"]["changes"]
+    assert [c["id"] for c in ch] == ["F01"]
+    assert ch[0]["reasons"] == ["context: bug 1, hits no longer dropped (pm_93_2013-0001)"]
+    md = render_md(res)
+    assert "| metric | groq as-run | groq fixed |" in md and "| F01 | factual_id | context: bug 1" in md
 
 
 def test_cost_estimate_uses_prices_and_cross_judging(s: Setup) -> None:

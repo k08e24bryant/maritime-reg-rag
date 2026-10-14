@@ -294,11 +294,21 @@ def expand_siblings(
     need_tokens = sum(chunk_tokens(s) for s in need)
     if used + need_tokens > max_tokens:
         top_ids = {cc.chunk_id for cc in top}
-        for cc in reversed(retrieved):
-            if used + need_tokens <= max_tokens:
+        droppable = [cc for cc in reversed(retrieved)
+                     if cc.chunk_id not in top_ids and sibling_key(cc.chunk) not in top_keys and not cc.related]
+        # drop only if it actually makes the priority chunks fit; otherwise keep every retrieved hit
+        # (post-hoc change 3, bug 1: F05 lost its gold to drops that could not make room anyway)
+        to_drop, freed = [], 0
+        for cc in droppable:
+            if used - freed + need_tokens <= max_tokens:
                 break
-            if cc.chunk_id in top_ids or sibling_key(cc.chunk) in top_keys or cc.related:
-                continue
+            to_drop.append(cc)
+            freed += chunk_tokens(cc.chunk)
+        if used - freed + need_tokens > max_tokens:
+            to_drop = []
+            log.info("priority same-Pasal chunks (%d tokens) cannot fit even after dropping lower hits; "
+                     "no hit dropped", need_tokens)
+        for cc in to_drop:
             context.remove(cc)
             del present[cc.chunk_id]
             used -= chunk_tokens(cc.chunk)

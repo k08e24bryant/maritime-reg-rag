@@ -30,9 +30,12 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+import yaml
+
+from maritime_rag.answer.citations import POSTCHECK_VERSION
 from maritime_rag.answer.pipeline import Answer, Answerer, Retrieval
 from maritime_rag.answer.prompt import LanguageDetector, build_messages
-from maritime_rag.answer.providers import Message, ProviderError, make_provider
+from maritime_rag.answer.providers import Generation, Message, ProviderError, make_provider
 from maritime_rag.answer.versions import CURRENT, ContextChunk
 from maritime_rag.config import load_config, load_env_file, resolve
 from maritime_rag.eval.questions import OUT_OF_SCOPE, load_gold_csv
@@ -183,7 +186,8 @@ def serialize(ans: Answer, q: dict[str, Any], llm: str, model: str, fp: str, pv:
     by_source = {i: cc for i, cc in enumerate(ans.context, start=1)}
     return {
         "key": cache_key(q["id"], fp, model, pv), "id": q["id"], "slice": q["slice"], "llm": llm, "model": model,
-        "fingerprint": fp, "prompt_version": pv, "time": datetime.now().isoformat(timespec="seconds"),
+        "fingerprint": fp, "prompt_version": pv, "postcheck_version": POSTCHECK_VERSION,
+        "time": datetime.now().isoformat(timespec="seconds"),
         "language": ans.language, "result": ans.result, "refused": ans.refused, "refusal_reason": ans.refusal_reason,
         "text": ans.text, "raw_text": ans.raw_text, "warnings": ans.warnings, "disclaimer": ans.disclaimer,
         "citations": [{"raw": c.raw, "valid": c.valid, "chunk_id": by_source[c.source].chunk_id if c.valid else None,
@@ -247,6 +251,42 @@ def run_llm(s: Setup, llm: str, provider: Any = None, out: Any = sys.stdout) -> 
               f"{getattr(p, 'output_tokens', 0)} output tokens, est. ${getattr(p, 'cost_usd', 0.0):.4f}; "
               f"all cached {llm} answers: est. ${total:.4f}", file=out)
     return new
+
+
+def recheck_llm(s: Setup, llm: str, out: Any = sys.stdout) -> int:
+    """Re-run only the post-check (citation parsing/validation) on cached raw outputs whose
+    postcheck_version is older than the current one. No LLM calls. Appends a row with the same key
+    (the latest row per key wins) marked `rechecked`. Returns the number of rows rechecked."""
+    data = load_contexts(s)
+    records, _ = current_records(s, llm, data)
+    by_id, by_q = s.corpus.by_id(), {q["id"]: q for q in s.questions}
+    answerer = answerer_for(s, provider=None)
+    path, n = cache_path(s, llm), 0
+    for r in records:
+        if r.get("postcheck_version") == POSTCHECK_VERSION or r["raw_text"] is None or r["result"] == "TRUNCATED":
+            continue
+        e, q = data["questions"][r["id"]], by_q[r["id"]]
+        retrieval = stored_retrieval(e, by_id)
+        context, sib = answerer.context_for(retrieval.hits)
+        top = retrieval.hits[0].score if retrieval.hits and retrieval.reranked else None
+        ans = Answer(q["question"], r["language"], "", False, None, context, retrieval.reranked, top, dict(r["times"]),
+                     siblings_cut=sib.cut, hits_dropped=sib.dropped)
+        g = r["generation"]
+        ans.generation = Generation(r["raw_text"], g["provider"], g["model"], g["prompt_tokens"], g["output_tokens"],
+                                    g["latency_s"], retries=g["retries"], wait_s=g["wait_s"],
+                                    finish_reason=g["finish_reason"], reasoning_tokens=g.get("reasoning_tokens"),
+                                    cost_usd=g.get("cost_usd"))
+        ans.raw_text = r["raw_text"]
+        ans = answerer._postcheck(ans)
+        row = serialize(ans, q, llm, r["model"], r["fingerprint"], r["prompt_version"])
+        row |= {"rechecked": True, "answered_time": r["time"], "previous_postcheck_version": r.get("postcheck_version", "1")}
+        with path.open("a", encoding="utf-8") as f:
+            f.write(json.dumps(row, ensure_ascii=False) + "\n")
+        n += 1
+        if row["text"] != r["text"]:
+            print(f"  {r['id']}: post-check changed the answer text", file=out)
+    print(f"{llm}: rechecked {n} cached answer(s) to post-check version {POSTCHECK_VERSION}", file=out)
+    return n
 
 
 # --- budget --------------------------------------------------------------------------------------
@@ -374,72 +414,170 @@ def _frac(pair: list[int]) -> str:
     return f"{k}/{n}" + (f" ({k / n:.0%})" if n else "")
 
 
+METRIC_ROWS: list[tuple[str, Any]] = [
+    ("answers complete", lambda x: str(x["n"]["total"])),
+    ("refusal accuracy (out-of-scope refused)", lambda x: _frac(x["refusal_accuracy"])),
+    ("false refusals (in-scope refused, any reason)", lambda x: _frac(x["false_refusals"])),
+    ("false-refusal reasons", lambda x: ", ".join(f"{k} {v}" for k, v in x["false_refusal_reasons"].items()) or "-"),
+    ("truncated", lambda x: str(x["truncated"])),
+    ("citations valid / parsed", lambda x: f"{x['citations']['valid']}/{x['citations']['parsed']}"),
+    ("valid citations normalized", lambda x: str(x["citations"]["normalized"])),
+    ("answers with an invalid citation", lambda x: str(x["citations"]["answers_with_invalid"])),
+    ("answers with a flagged ayat", lambda x: str(x["citations"]["answers_with_flagged_ayat"])),
+    ("context hit (gold chunk in context)", lambda x: _frac(x["context_hit"])),
+    ("amended: answered", lambda x: f"{x['amended']['answered']}/{x['amended']['n']}"),
+    ("amended: cites the current version", lambda x: f"{x['amended']['cites_current_version']}/{x['amended']['answered']}"),
+    ("amended: cites superseded text", lambda x: str(x["amended"]["cites_superseded_text"])),
+    ("Cipta Kerja warning when UU 17/2008 cited", lambda x: _frac(x["cipta_kerja_warning_when_uu17_cited"])),
+    ("generate latency median / p90 (s)",
+     lambda x: f"{x['latency_generate_s']['median'] or 0:.1f} / {x['latency_generate_s']['p90'] or 0:.1f}"),
+    ("rate-limit wait (s)", lambda x: f"{x['rate_limit_wait_s']:.0f}"),
+    ("tokens prompt / output (reasoning)",
+     lambda x: f"{x['tokens']['prompt']} / {x['tokens']['output']} ({x['tokens']['reasoning']})"),
+    ("estimated cost of these answers (USD)", lambda x: f"{x['cost_usd']:.4f}"),
+]
+
+
+def asrun_contexts(s: Setup, current: dict[str, Any]) -> dict[str, Any]:
+    """The contexts the as-run answers used: the backup kept by `contexts --force`, else the current file."""
+    path = resolve(s.ecfg["answers"]["contexts"])
+    backup = path.with_name(path.stem + "_asrun.json")
+    return json.loads(backup.read_text(encoding="utf-8")) if backup.exists() else current
+
+
+def asrun_records(s: Setup, llm: str) -> list[dict[str, Any]]:
+    """The as-run answers: the first row written per question (the original Step 3 run)."""
+    first: dict[str, dict[str, Any]] = {}
+    for r in read_cache(cache_path(s, llm)):
+        if not r.get("rechecked"):
+            first.setdefault(r["id"], r)
+    order = {q["id"]: i for i, q in enumerate(s.questions)}
+    return sorted(first.values(), key=lambda r: order.get(r["id"], 10**6))
+
+
+def _hit(r: dict[str, Any], gold: dict[str, Any], ctx: dict[str, Any]) -> bool:
+    return bool(set(gold[r["id"]]["gold_chunk_ids"]) & set(ctx["questions"][r["id"]]["context_ids"]))
+
+
+def changes(s: Setup, before: list[dict[str, Any]], after: list[dict[str, Any]], ctx_before: dict[str, Any],
+            ctx_after: dict[str, Any]) -> list[dict[str, Any]]:
+    """Questions whose context or answer text changed between the as-run and the fixed answers, with why."""
+    gold = {q["id"]: q for q in s.questions}
+    old = {r["id"]: r for r in before}
+    out = []
+    for r in after:
+        o = old.get(r["id"])
+        if o is None:
+            continue
+        reasons = []
+        if o["fingerprint"] != r["fingerprint"]:
+            eb, ea = ctx_before["questions"][r["id"]], ctx_after["questions"][r["id"]]
+            if eb["hits_dropped"] and not ea["hits_dropped"]:
+                reasons.append(f"context: bug 1, hits no longer dropped ({', '.join(eb['hits_dropped'])})")
+            elif [h[0] for h in eb["hits"]] != [h[0] for h in ea["hits"]]:
+                reasons.append("context: the retrieval re-run returned different hits (fp16 near-tie)")
+            else:
+                reasons.append("context: expansion changed")
+        if r.get("rechecked") and r["text"] != o["text"]:
+            reasons.append("post-check: bug 2, bracketed note no longer rewritten as a citation")
+        if not reasons and r["text"] != o["text"]:
+            reasons.append("answer text changed")
+        if reasons:
+            out.append({
+                "id": r["id"], "slice": r["slice"], "reasons": reasons,
+                "result": [o["result"], r["result"]],
+                "context_hit": [_hit(o, gold, ctx_before), _hit(r, gold, ctx_after)],
+                "cited": [[c["chunk_id"] for c in o["cited"]], [c["chunk_id"] for c in r["cited"]]],
+            })
+    return out
+
+
+def load_findings(s: Setup) -> dict[str, Any]:
+    path = resolve(s.ecfg["answers"]["findings"])
+    return yaml.safe_load(path.read_text(encoding="utf-8")) if path.exists() else {}
+
+
 def render_md(res: dict[str, Any]) -> str:
     llms = list(res["llms"])
-    m = {llm: res["llms"][llm]["metrics"] for llm in llms}
-    head = "| metric | " + " | ".join(f"{llm} (`{res['llms'][llm]['model']}`)" for llm in llms) + " |"
-    sep = "|---|" + "---|" * len(llms)
-
-    def row(name: str, f) -> str:
-        return f"| {name} | " + " | ".join(f(m[llm]) for llm in llms) + " |"
-
+    cols = [(llm, phase) for llm in llms for phase in ("asrun", "fixed")]
+    head = "| metric | " + " | ".join(f"{llm} {'as-run' if p == 'asrun' else 'fixed'}" for llm, p in cols) + " |"
+    sep = "|---|" + "---|" * len(cols)
     out = [
         "# Answer evaluation (Phase 4, Step 3)",
         "",
         f"{res['meta']['questions']} gold questions; both LLMs answer from the same stored context per question "
         f"(retrieval `{res['meta']['selected_retrieval']}`, k={res['meta']['k']}, version + same-Pasal + "
-        "Penjelasan->body expansion; score gate off). Rules: `docs/eval_plan.md` section 3 and post-hoc change 1. "
-        "Counts are k/n; n is small.",
+        "Penjelasan->body expansion; score gate off). Rules: `docs/eval_plan.md` section 3 and post-hoc changes "
+        "1 and 3. Counts are k/n; n is small.",
         "",
-        head, sep,
-        row("answers complete", lambda x: f"{x['n']['total']}/{res['meta']['questions']}"),
-        row("refusal accuracy (out-of-scope refused)", lambda x: _frac(x["refusal_accuracy"])),
-        row("false refusals (in-scope refused, any reason)", lambda x: _frac(x["false_refusals"])),
-        row("false-refusal reasons", lambda x: ", ".join(f"{k} {v}" for k, v in x["false_refusal_reasons"].items()) or "-"),
-        row("truncated", lambda x: str(x["truncated"])),
-        row("citations valid / parsed", lambda x: f"{x['citations']['valid']}/{x['citations']['parsed']}"),
-        row("valid citations normalized", lambda x: str(x["citations"]["normalized"])),
-        row("answers with an invalid citation", lambda x: str(x["citations"]["answers_with_invalid"])),
-        row("answers with a flagged ayat", lambda x: str(x["citations"]["answers_with_flagged_ayat"])),
-        row("context hit (gold chunk in context)", lambda x: _frac(x["context_hit"])),
-        row("amended: answered", lambda x: f"{x['amended']['answered']}/{x['amended']['n']}"),
-        row("amended: cites the current version", lambda x: f"{x['amended']['cites_current_version']}/{x['amended']['answered']}"),
-        row("amended: cites superseded text", lambda x: str(x["amended"]["cites_superseded_text"])),
-        row("Cipta Kerja warning when UU 17/2008 cited", lambda x: _frac(x["cipta_kerja_warning_when_uu17_cited"])),
-        row("generate latency median / p90 (s)",
-            lambda x: f"{x['latency_generate_s']['median'] or 0:.1f} / {x['latency_generate_s']['p90'] or 0:.1f}"),
-        row("rate-limit wait (s)", lambda x: f"{x['rate_limit_wait_s']:.0f}"),
-        row("tokens prompt / output (reasoning)",
-            lambda x: f"{x['tokens']['prompt']} / {x['tokens']['output']} ({x['tokens']['reasoning']})"),
-        row("estimated cost (USD)", lambda x: f"{x['cost_usd']:.4f}"),
+        "**As-run** = the original Step 3 run (commit ea06e6e, `reports/eval_answers_asrun.md`). **Fixed** = after "
+        "post-hoc change 3: bug 1 (the same-Pasal budget dropped retrieved hits even when that could not make room; "
+        "contexts rebuilt, only changed contexts re-asked) and bug 2 (a bracketed prose note was rewritten as a "
+        "citation; post-check re-applied to the cached outputs, no new LLM calls).",
         "",
-        "## Per slice (answered / n; context hit)",
-        "",
-        "| slice | " + " | ".join(llms) + " |",
-        "|---|" + "---|" * len(llms),
     ]
-    for sl in next(iter(m.values()))["per_slice"]:
+    for llm in llms:
+        v = res["llms"][llm]
+        check = "match" if v["asrun_matches_saved_report"] else "DO NOT match"
+        out.append(f"- {llm}: `{v['model']}`, prompt version `{v['prompt_version']}`; as-run metrics recomputed from "
+                   f"the cache {check} the saved as-run report"
+                   + (f"; no fixed answer yet for {', '.join(v['missing'])}" if v["missing"] else "") + ".")
+    out += ["", head, sep]
+    for name, f in METRIC_ROWS:
+        out.append(f"| {name} | " + " | ".join(f(res["llms"][llm][p]) for llm, p in cols) + " |")
+
+    out += ["", "## Questions that changed (as-run -> fixed)", ""]
+    for llm in llms:
+        ch = res["llms"][llm]["changes"]
+        out += [f"**{llm}**: {len(ch)} question(s)", ""]
+        if ch:
+            out += ["| id | slice | why | result | gold in context | cited |", "|---|---|---|---|---|---|"]
+            for c in ch:
+                cited = " -> ".join(", ".join(x) or "-" for x in c["cited"])
+                out.append(f"| {c['id']} | {c['slice']} | {'; '.join(c['reasons'])} | {c['result'][0]} -> {c['result'][1]} "
+                           f"| {c['context_hit'][0]} -> {c['context_hit'][1]} | {cited} |")
+            out.append("")
+
+    out += ["## Per slice, fixed (answered / n; gold in context)", "",
+            "| slice | " + " | ".join(llms) + " |", "|---|" + "---|" * len(llms)]
+    for sl in res["llms"][llms[0]]["fixed"]["per_slice"]:
         out.append(f"| {sl} | " + " | ".join(
-            f"{m[llm]['per_slice'][sl]['answered']}/{m[llm]['per_slice'][sl]['n']}; {m[llm]['per_slice'][sl]['context_hit']}"
-            for llm in llms) + " |")
+            f"{res['llms'][llm]['fixed']['per_slice'][sl]['answered']}/{res['llms'][llm]['fixed']['per_slice'][sl]['n']}; "
+            f"{res['llms'][llm]['fixed']['per_slice'][sl]['context_hit']}" for llm in llms) + " |")
+
+    f = res.get("findings") or {}
+    titles = {"questionable_gold": "Questionable gold (no question changed; reported, not re-scored)",
+              "weaknesses": "System weaknesses seen in the answers"}
+    for key, title in titles.items():
+        if f.get(key):
+            out += ["", f"## {title}", ""] + [f"- **{x['id']}**: {x['note']}" for x in f[key]]
     out += ["", "Correctness and faithfulness are judged in Step 4 (LLM-as-judge, validated by hand)."]
     return "\n".join(out) + "\n"
 
 
 def report(s: Setup) -> dict[str, Any]:
     data = load_contexts(s)
+    before_ctx = asrun_contexts(s, data)
+    saved = resolve(s.ecfg["answers"]["asrun_report"])
+    saved_llms = json.loads(saved.read_text(encoding="utf-8"))["llms"] if saved.exists() else {}
     res: dict[str, Any] = {"meta": {"generated": datetime.now().isoformat(timespec="minutes"),
                                     "questions": len(s.questions), **{k: data["meta"][k] for k in
                                                                       ("selected_retrieval", "k", "gold_sha256",
                                                                        "chunks_sha256")}},
-                           "llms": {}}
+                           "llms": {}, "findings": load_findings(s)}
     for llm in s.ecfg["answers"]["llms"]:
-        records, stale = current_records(s, llm, data)
+        fixed, stale = current_records(s, llm, data)
+        asrun = asrun_records(s, llm)
         profile = s.acfg["llm"]["profiles"][llm]
-        res["llms"][llm] = {"model": profile["model"], "prompt_version": prompt_version(s.acfg, profile),
-                            "stale_cache_rows": stale, "missing": [q["id"] for q in s.questions
-                                                                   if q["id"] not in {r["id"] for r in records}],
-                            "metrics": metrics_for(records, s, data)}
+        asrun_m = metrics_for(asrun, s, before_ctx)
+        saved_m = (saved_llms.get(llm) or {}).get("metrics")
+        res["llms"][llm] = {
+            "model": profile["model"], "prompt_version": prompt_version(s.acfg, profile),
+            "rows_not_current": stale, "missing": [q["id"] for q in s.questions if q["id"] not in {r["id"] for r in fixed}],
+            "asrun": asrun_m, "fixed": metrics_for(fixed, s, data),
+            "asrun_matches_saved_report": saved_m is not None and json.loads(json.dumps(asrun_m)) == saved_m,
+            "changes": changes(s, asrun, fixed, before_ctx, data),
+        }
     return res
 
 
@@ -447,7 +585,7 @@ def report(s: Setup) -> dict[str, Any]:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["contexts", "budget", "run", "report"])
+    parser.add_argument("command", choices=["contexts", "budget", "run", "recheck", "report"])
     parser.add_argument("--config", default="configs/eval.yaml")
     parser.add_argument("--llm", help="run: LLM profile (groq | groq-qwen)")
     parser.add_argument("--force", action="store_true", help="contexts: overwrite existing contexts")
@@ -462,6 +600,10 @@ def main() -> None:
         path = resolve(a["contexts"])
         if path.exists() and not args.force:
             sys.exit(f"{path} exists; answers are keyed to it. Pass --force to rebuild (answers are then re-asked).")
+        backup = path.with_name(path.stem + "_asrun.json")
+        if path.exists() and not backup.exists():  # keep the as-run contexts for the as-run vs fixed report
+            backup.write_bytes(path.read_bytes())
+            print(f"kept the previous contexts as {backup}")
         data = build_contexts(s)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(data, indent=1, ensure_ascii=False), encoding="utf-8")
@@ -497,6 +639,9 @@ def main() -> None:
             print(f"ABOVE ${a['cost_estimate']['stop_above_usd']}: do not run without approval")
             sys.exit(1)
         print(f"below the ${a['cost_estimate']['stop_above_usd']} stop line")
+    elif args.command == "recheck":
+        for llm in a["llms"]:
+            recheck_llm(s, llm)
     elif args.command == "run":
         if args.llm not in a["llms"]:
             sys.exit(f"--llm must be one of {a['llms']}")

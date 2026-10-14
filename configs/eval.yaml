@@ -43,9 +43,52 @@ answers:                   # Step 3 (docs/eval_plan.md section 3 + post-hoc chan
   correct_refusal_reasons: [no_hits, gate, model_not_found, no_valid_citation]   # truncated is not a correct refusal
   output_json: reports/eval_answers.json
   output_md: reports/eval_answers.md
+  asrun_report: reports/eval_answers_asrun.json   # the original Step 3 report (before post-hoc change 3)
+  findings: data/eval/findings.yaml              # questionable gold and observed weaknesses, shown in the report
   cost_estimate:           # `budget`, before answers exist (then actual tokens from the cache)
     chars_per_token: 3.0   # conservative: Groq tokenizers average about 3.3-4 chars per token on this corpus
     answer_output_tokens: 600        # incl. reasoning tokens (Phase 3: 11-906 per answer)
     judge_prompt_overhead_tokens: 800   # rubric + framing (Step 4)
     judge_output_tokens: 600
     stop_above_usd: 2.0
+
+judge:                     # Step 4 (docs/eval_plan.md section 4 + post-hoc change 2)
+  pairs: {groq: groq-qwen, groq-qwen: groq}   # judge profile -> the LLM whose answers it judges (no self-judging)
+  labels:
+    correctness: [correct, partial, wrong]
+    faithfulness: [supported, partly, unsupported]
+    superseded_mentioned: ["yes", "no", "n.a."]
+  kappa_min: 0.40          # below this, a criterion's judge labels are not used for the headline comparison
+  manual:
+    per_llm: 10            # 20 answers in total, slices in proportion, seed = `seed`
+    xlsx: data/eval/manual_labels.xlsx
+    sample: data/eval/manual_sample.json   # blind mapping sample id -> answer (kept out of the workbook)
+  output_json: reports/eval_judge.json
+  output_md: reports/eval_judge.md
+  prompt:
+    system: |
+      You grade one answer of a question-answering system over Indonesian maritime regulations and
+      the UNCTAD Review of Maritime Transport. Grade only from the material given in the user message.
+
+      You receive: the QUESTION; the REFERENCE ANSWER and the GOLD SOURCES (the text that answers the
+      question, each with its version status); the CITED SOURCES (only the sources the answer cited,
+      each with its status); and the ANSWER.
+
+      Criteria:
+      1. correctness, against the GOLD SOURCES and the REFERENCE ANSWER:
+         "correct" = all key points of the reference answer, nothing contradicting the gold text;
+         "partial" = some key points missing, or a minor error that does not change the main answer;
+         "wrong" = contradicts the gold text, answers a different question, or the main point is missing.
+         An answer based on a different provision that states the same rule can be correct.
+      2. faithfulness, against the CITED SOURCES only (not the gold, not your own knowledge):
+         "supported" = every statement follows from the sources the answer cites;
+         "partly" = mostly supported, but at least one statement is not in the cited sources (an added
+         qualifier, a duty attributed to the wrong party, an inference stated as fact);
+         "unsupported" = the main claims are not in the cited sources.
+      3. superseded_mentioned: "n.a." if no source relevant to the question is marked SUPERSEDED or
+         REPEALED, judged from the gold sources and the cited sources; otherwise "yes" if the answer
+         says that the old version was amended or repealed (and by which document), else "no".
+
+      The system adds a fixed "not legal advice" line and warnings itself; do not grade them.
+      Reply with only this JSON object, no other text:
+      {"correctness": "...", "faithfulness": "...", "superseded_mentioned": "...", "rationale": "one sentence"}

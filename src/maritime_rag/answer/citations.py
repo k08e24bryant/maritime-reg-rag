@@ -11,6 +11,10 @@ chunks (UNCTAD) match on document and page. A citation without a page is accepte
 maps unambiguously to one chunk; its page is then filled from that chunk. Valid citations that
 were not in the standard form are rewritten as "[doc, Pasal X ayat (Y), p. N]" and record what
 was normalized. Citations that do not map to a provided source stay invalid.
+
+A bracket that names a regulation is a citation only if almost nothing but document, Pasal,
+ayat, huruf and page remains; a bracketed note in prose ("[Keterangan: Pasal 75 PP 61/2009 ...
+telah dicabut oleh PP 31/2021.]") is left untouched (post-hoc change 3, bug 2).
 """
 
 from __future__ import annotations
@@ -48,6 +52,37 @@ _INNER = (
     r"(?:\s*,?\s*(?:pp?\.|hlm\.?|hal\.?|halaman)\s*\d+(?:\s*[-‐-–]\s*\d+)?)?"
 )
 _UNBRACKETED = re.compile(r"\(\s*(" + _INNER + r")\s*\)|(" + _INNER + r")", re.IGNORECASE)
+
+
+POSTCHECK_VERSION = "2"  # bump when parsing/validation changes; `maritime-eval-answers recheck` re-applies it
+
+# sentence verbs that mark a bracket as a note rather than a citation
+_PROSE_VERBS = re.compile(
+    r"\b(telah|dicabut|diubah|dihapus|berlaku|menyatakan|mengatur|bahwa|adalah|merupakan|"
+    r"is|are|was|were|has|have|repealed|amended|states|provides)\b", re.IGNORECASE)
+_CITATION_FILLER = re.compile(r"\b(penjelasan|umum|sumber|source|lihat|see|jo|juncto|cf)\b\.?", re.IGNORECASE)
+MAX_PROSE_WORDS = 3  # words allowed besides doc / Pasal / ayat / huruf / page / a "tentang <title>"
+
+
+def leftover_words(raw: str) -> list[str]:
+    """Words of a bracket that are not citation parts (title after "tentang" up to the next comma)."""
+    t = _REG_DOC.sub(" ", raw)
+    t = re.sub(r"\btentang\b[^,;]*", " ", t, flags=re.IGNORECASE)
+    t = re.sub(r"\bPasal\s+\S+", " ", t, flags=re.IGNORECASE)
+    t = re.sub(r"\bayat\s*\(?\s*\d+[a-z]?\s*\)?(?:\s*(?:[-\u2010-\u2013,]|dan|sampai|s\.d\.?)\s*\(?\s*\d+[a-z]?\s*\)?)*",
+               " ", t, flags=re.IGNORECASE)
+    t = re.sub(r"\b(?:huruf|angka)\s+\w+", " ", t, flags=re.IGNORECASE)
+    t = _PAGE.sub(" ", t)
+    t = _CITATION_FILLER.sub(" ", t)
+    return re.findall(r"[^\W\d_]{2,}", t)
+
+
+def is_prose_bracket(raw: str) -> bool:
+    """A bracket naming a regulation that reads as a sentence. Report (UNCTAD) citations, whose
+    section titles are words, are never treated as prose."""
+    if not _REG_DOC.search(raw):
+        return False
+    return bool(_PROSE_VERBS.search(raw)) or len(leftover_words(raw)) > MAX_PROSE_WORDS
 
 
 def normalize_brackets(text: str) -> str:
@@ -139,8 +174,11 @@ def parse_citations(text: str, match_doc: DocMatcher) -> list[Citation]:
     out: list[Citation] = []
     masked = list(text)
     for b in _BRACKET.finditer(text):
-        for part in b[1].split(";"):
-            if cit := _parse_one(part.strip(), b.span(), True, match_doc):
+        parts = [p.strip() for p in b[1].split(";")]
+        if all(is_prose_bracket(p) for p in parts):
+            continue  # a note in brackets: not a citation, not rewritten, scanned like prose below
+        for part in parts:
+            if not is_prose_bracket(part) and (cit := _parse_one(part, b.span(), True, match_doc)):
                 out.append(cit)
         masked[b.start():b.end()] = " " * (b.end() - b.start())
     for m in _UNBRACKETED.finditer("".join(masked)):
