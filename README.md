@@ -106,3 +106,22 @@ version expansion -> prompt -> LLM -> citation post-check.
 - An optional reranker-score gate (off) refuses before the LLM call; its threshold comes from Phase 4.
 - Every LLM call is logged to `logs/llm_calls.jsonl`: profile, model id, tokens, latency, retries,
   wait, and calls/tokens in the last 60 s (to watch free-tier limits).
+
+## Phase 5: demo (FastAPI + Gradio)
+
+```bash
+uv run maritime-demo            # config: configs/demo.yaml; needs GROQ_API_KEY in .env
+```
+
+One server, models loaded once: the Gradio UI at <http://127.0.0.1:7860/ui> and a JSON API with
+interactive docs at <http://127.0.0.1:7860/docs>.
+
+- **UI**: ask in Indonesian or English, pick the LLM (`groq` = gpt-oss-120b, `groq-qwen` = Qwen3.8-27B)
+  and the reranker, and see the answer with citations, warnings (amended / repealed / Cipta Kerja), the
+  sources given to the model with their version status, latency, tokens and estimated cost. Any source
+  can be opened in full. The *Evaluation* tab shows the Phase 4 headline results and figures.
+- **API**: `POST /ask {"question": "...", "llm": "groq", "rerank": true}` returns the same content as
+  JSON; `GET /sources/{chunk_id}` returns one chunk; `GET /health`, `GET /examples`. An invalid question
+  returns 422, an LLM provider error 503 (no fallback).
+- Only the cloud profiles are offered; the local Ollama profile is never used by the demo. The server
+  binds to 127.0.0.1 and has no authentication: keep it local.

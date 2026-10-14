@@ -31,3 +31,6 @@ build/
 
 # Office lock files (an open .xlsx review workbook)
 ~$*
+
+# Gradio runtime cache (demo)
+.gradio/

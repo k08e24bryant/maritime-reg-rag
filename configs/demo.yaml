@@ -1,0 +1,23 @@
+# Phase 5 demo: FastAPI (JSON API) + Gradio UI in one server (uv run maritime-demo).
+# Retrieval models load once at startup; LLM calls go to the cloud profiles in configs/answer.yaml.
+
+answer_config: configs/answer.yaml
+host: 127.0.0.1            # local only; use 0.0.0.0 to expose on the network (no auth: keep it local)
+port: 7860
+ui_path: /ui               # Gradio UI; "/" redirects here. JSON API: /ask, /sources/{chunk_id}, /health, docs at /docs
+
+llms: [groq, groq-qwen]    # cloud profiles only: the local ollama profile is never offered in the demo
+default_llm: groq          # gpt-oss-120b: production model, lower cost; groq-qwen (preview) scored higher in Phase 4
+rerank_default: true       # the configuration selected in Phase 4 (hybrid + bge reranker)
+max_question_chars: 500
+
+eval_report: reports/eval.json          # headline results shown on the "Evaluation" tab
+figures: [reports/figures/retrievers.svg, reports/figures/llm_comparison.svg]
+
+examples:                  # smoke queries (not the Phase 4 gold set), covering the main behaviours
+  - Apa persyaratan untuk memperoleh izin usaha perusahaan angkutan laut?
+  - Apa saja kewajiban perusahaan bongkar muat dan persyaratan tenaga kerja bongkar muat?
+  - Apa saja jenis tarif jasa kepelabuhanan untuk pelayanan jasa kapal?
+  - Can a foreign-flagged ship carry cargo between Indonesian domestic ports?
+  - How much did seaborne trade volumes grow in 2024 and why did ton-miles increase?
+  - Berapa tarif tiket pesawat Jakarta ke Bali pada musim liburan?
