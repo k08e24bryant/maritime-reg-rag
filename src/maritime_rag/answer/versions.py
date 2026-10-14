@@ -8,16 +8,23 @@ the chunks needed to read it correctly, even when retrieval did not return them:
   amending chunk         for an insert/partial amendment: the base Pasal it amends (still in force);
                          for a "Penjelasan Pasal X diubah" instruction: the new Penjelasan text
 Each context chunk gets a status: CURRENT, SUPERSEDED (by <doc>) or REPEALED (by <doc>).
+Sibling expansion: a long Pasal is split into several chunks (by ayat). When any of them is in
+the context, the others (same doc, Pasal, part) are added in ayat order, within a per-question
+token budget; siblings that do not fit are reported as cut.
 Documents marked partially_revoked in the manifest (PP 20/2010, PP 61/2009 by PP 31/2021) have
 no per-Pasal links, so their chunks stay CURRENT with a note that the Pasal may be revoked.
 """
 
 from __future__ import annotations
 
+import logging
+import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 
 from maritime_rag.retrieval.corpus import Chunk, Corpus, Hit
+
+log = logging.getLogger(__name__)
 
 CURRENT, SUPERSEDED, REPEALED = "CURRENT", "SUPERSEDED", "REPEALED"
 
@@ -66,6 +73,12 @@ class VersionIndex:
 
     def __init__(self, corpus: Corpus) -> None:
         self.corpus = corpus
+        self.position = {c["chunk_id"]: i for i, c in enumerate(corpus.chunks)}
+        # (doc, pasal, part, amends_doc) -> all chunks of that Pasal (a long Pasal is split by ayat)
+        self.siblings: dict[tuple, list[Chunk]] = defaultdict(list)
+        for c in corpus.chunks:
+            if (key := sibling_key(c)) is not None:
+                self.siblings[key].append(c)
         # (amending doc, base doc, pasal) -> amending chunks (body instructions and new Penjelasan)
         self.amending: dict[tuple[str, str, str], list[Chunk]] = defaultdict(list)
         # (base doc, pasal) -> the base document's own chunks
@@ -112,6 +125,10 @@ class VersionIndex:
             out += [c for c in self.amending.get(key, []) if c["part"] == "penjelasan"]
         return out
 
+    def ayat_order(self, chunk: Chunk) -> tuple[int, int]:
+        m = re.match(r"\d+", chunk.get("ayat") or "")
+        return (int(m[0]) if m else 0, self.position.get(chunk["chunk_id"], 0))
+
     def amended_base(self, chunk: Chunk) -> list[Chunk]:
         """For an amending chunk: base chunks it changed only partly (they stay in force)."""
         if not chunk.get("amends_doc"):
@@ -121,6 +138,12 @@ class VersionIndex:
             c for c in self.base.get((chunk["amends_doc"], chunk["amends_pasal"]), [])
             if c["part"] == part and chunk["doc_id"] in (c.get("partially_amended_by") or [])
         ]
+
+
+def sibling_key(chunk: Chunk) -> tuple | None:
+    if not chunk.get("pasal"):
+        return None
+    return (chunk["doc_id"], chunk["pasal"], chunk["part"], chunk.get("amends_doc"))
 
 
 @dataclass
@@ -137,6 +160,7 @@ class ContextChunk:
         return self.chunk["chunk_id"]
 
     partly_revoked_by: list[str] = field(default_factory=list)  # doc-level revocation, Pasal unknown
+    added_by: str | None = None  # None = retrieved; "version" | "sibling" = added by expansion
 
     @property
     def out_of_corpus(self) -> list[str]:
@@ -161,7 +185,7 @@ def build_context(hits: list[Hit], index: VersionIndex, max_added: int) -> list[
         cid = chunk["chunk_id"]
         if cid in pos:
             if hit is not None and pos[cid].retrieved_rank is None:  # expanded earlier, retrieved too
-                pos[cid].retrieved_rank, pos[cid].score = hit.rank, hit.score
+                pos[cid].retrieved_rank, pos[cid].score, pos[cid].added_by = hit.rank, hit.score, None
             return
         if hit is None:
             if added >= max_added:
@@ -169,7 +193,8 @@ def build_context(hits: list[Hit], index: VersionIndex, max_added: int) -> list[
             added += 1
         status, by = status_of(chunk, index)
         cc = ContextChunk(chunk, status, by, hit.rank if hit else None, hit.score if hit else None,
-                          partly_revoked_by=list(index.revoked_by.get(chunk["doc_id"], [])))
+                          partly_revoked_by=list(index.revoked_by.get(chunk["doc_id"], [])),
+                          added_by=None if hit else "version")
         pos[cid] = cc
         for newer in index.newer(chunk):
             place(newer, None)
@@ -182,6 +207,99 @@ def build_context(hits: list[Hit], index: VersionIndex, max_added: int) -> list[
     for hit in hits:
         place(hit.chunk, hit)
     return out
+
+
+def chunk_tokens(chunk: Chunk) -> int:
+    return int(chunk.get("n_tokens") or 0)
+
+
+@dataclass
+class SiblingExpansion:
+    cut: list[str] = field(default_factory=list)  # siblings left out by the token budget
+    dropped: list[str] = field(default_factory=list)  # low-ranked retrieved hits removed to fit the top Pasal
+
+
+def expand_siblings(
+    context: list[ContextChunk], index: VersionIndex, max_tokens: int, priority_hits: int = 2
+) -> SiblingExpansion:
+    """Group the chunks of each Pasal together in ayat order and add the missing ones while the
+    context stays within max_tokens (chunk n_tokens). Mutates `context`.
+
+    Siblings of the Pasal of the top `priority_hits` retrieved hits come first; to fit them, the
+    lowest-ranked retrieved hits below that (without linked versions) may be dropped, which is
+    logged. Siblings of other Pasal are added only while the budget allows."""
+    result = SiblingExpansion()
+    present = {cc.chunk_id: cc for cc in context}
+    used = sum(chunk_tokens(cc.chunk) for cc in context)
+    retrieved = sorted((cc for cc in context if cc.retrieved_rank is not None), key=lambda c: c.retrieved_rank or 0)
+    top = retrieved[:priority_hits]
+    top_keys = [k for cc in top if (k := sibling_key(cc.chunk)) is not None]
+
+    def missing(key: tuple | None) -> list[Chunk]:
+        group = index.siblings.get(key, []) if key else []
+        return [s for s in sorted(group, key=index.ayat_order) if s["chunk_id"] not in present] if len(group) > 1 else []
+
+    admitted: set[str] = set()
+    decided: set[str] = set()
+    need = list({s["chunk_id"]: s for k in top_keys for s in missing(k)}.values())
+    need_tokens = sum(chunk_tokens(s) for s in need)
+    if used + need_tokens > max_tokens:
+        top_ids = {cc.chunk_id for cc in top}
+        for cc in reversed(retrieved):
+            if used + need_tokens <= max_tokens:
+                break
+            if cc.chunk_id in top_ids or sibling_key(cc.chunk) in top_keys or cc.related:
+                continue
+            context.remove(cc)
+            del present[cc.chunk_id]
+            used -= chunk_tokens(cc.chunk)
+            result.dropped.append(cc.chunk_id)
+            log.warning("dropped retrieved hit #%d %s (%d tokens) to fit the rest of the top-%d Pasal",
+                        cc.retrieved_rank, cc.chunk_id, chunk_tokens(cc.chunk), priority_hits)
+
+    def admit(sibs: list[Chunk]) -> None:
+        nonlocal used
+        for s in sibs:
+            sid = s["chunk_id"]
+            if sid in decided:
+                continue
+            decided.add(sid)
+            if used + chunk_tokens(s) <= max_tokens:
+                used += chunk_tokens(s)
+                admitted.add(sid)
+            else:
+                result.cut.append(sid)
+
+    admit(need)
+    for cc in list(context):
+        admit(missing(sibling_key(cc.chunk)))
+
+    out: list[ContextChunk] = []
+    emitted: set[str] = set()
+    for cc in context:
+        if cc.chunk_id in emitted:
+            continue
+        key = sibling_key(cc.chunk)
+        group = index.siblings.get(key, []) if key else []
+        members = [s for s in sorted(group, key=index.ayat_order) if s["chunk_id"] in present or s["chunk_id"] in admitted]
+        for sib in members or [cc.chunk]:
+            sid = sib["chunk_id"]
+            if sid in emitted:
+                continue
+            if sid not in present:
+                status, by = status_of(sib, index)
+                new = ContextChunk(sib, status, by, partly_revoked_by=list(index.revoked_by.get(sib["doc_id"], [])),
+                                   added_by="sibling")
+                for other in index.newer(sib) + index.amended_base(sib):
+                    _link(new, present.get(other["chunk_id"]))
+                present[sid] = new
+            out.append(present[sid])
+            emitted.add(sid)
+    context[:] = out
+    if result.cut:
+        log.warning("token budget (%d) cut %d sibling chunk(s) of retrieved Pasal: %s",
+                    max_tokens, len(result.cut), ", ".join(result.cut))
+    return result
 
 
 def _link(a: ContextChunk, b: ContextChunk | None) -> None:

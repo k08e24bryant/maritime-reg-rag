@@ -15,51 +15,104 @@ gate:
 
 versions:
   max_added_chunks: 8      # cap on chunks added by version expansion per question
+  # Token budget per question (sum of chunk n_tokens, e5 tokenizer) for adding the other chunks
+  # of a retrieved Pasal; siblings that do not fit are cut and logged. Measured on q02 (Groq,
+  # 2026-10-14): prompt tokens ~= 2.09 x context n_tokens, so 2800 -> ~5850 prompt + 1024 output
+  # ~= 6900, under Groq's 8000 tokens/min. (2500 cut PM 93/2013 Pasal 69 ayat 3-7 from q02.)
+  max_context_tokens: 2800
+  # Siblings of the Pasal of the top-N retrieved hits come first; to fit them, lower-ranked hits
+  # (without linked versions) may be dropped, which is logged and shown in the report.
+  sibling_priority_hits: 2
 
 postcheck:
   invalid_citations: flag  # flag = keep the text, mark it unverified | drop = remove it from the answer
-  require_page: true       # a citation without a page that matches the source is invalid
+  # A citation without a page (or without brackets) is accepted when doc + Pasal (+ ayat) map to
+  # exactly one provided chunk: the page is filled from it and the citation rewritten as
+  # [doc, Pasal X ayat (Y), p. N]. false = a citation without a page is invalid.
+  fill_missing_page: true
 
 short_names:               # citation name for documents without a "<type> <number>/<year>" name
   unctad_rmt_2025: UNCTAD RMT 2025
 
-provider:
-  default: ollama          # ollama | openai | anthropic | groq | google (--provider overrides)
-  max_output_tokens: 1024
-  ollama:
-    base_url: http://localhost:11434
-    model: qwen2.5:7b-instruct   # fallback: --model qwen2.5:3b-instruct (never switched automatically)
-    num_ctx: 8192          # Ollama's default context is smaller and truncates the prompt silently
-    temperature: 0.0
-    seed: 42
-    timeout_s: 600         # the first call loads the model into memory
-  openai:
-    base_url: https://api.openai.com/v1
-    model: gpt-5-mini
-    api_key_env: OPENAI_API_KEY
-    temperature: null      # null = provider default (some models accept only the default)
-    timeout_s: 120
-  anthropic:
-    base_url: https://api.anthropic.com
-    model: claude-sonnet-5-5
-    api_key_env: ANTHROPIC_API_KEY
-    api_version: "2023-06-01"
-    temperature: null
-    timeout_s: 120
-  groq:                    # OpenAI-compatible API
-    base_url: https://api.groq.com/openai/v1
-    model: llama-3.3-70b-versatile
-    api_key_env: GROQ_API_KEY
-    temperature: 0.0
-    timeout_s: 120
-  google:                  # Gemini through its OpenAI-compatible endpoint
-    base_url: https://generativelanguage.googleapis.com/v1beta/openai
-    model: gemini-2.5-flash
-    api_key_env: GOOGLE_API_KEY
-    max_tokens_param: max_tokens
-    max_output_tokens: 4096  # Gemini 2.5 "thinking" tokens count against this limit
-    temperature: 0.0
-    timeout_s: 120
+llm:
+  default: groq            # profile name; --llm overrides (groq | gemini | openai | anthropic | ollama)
+  max_output_tokens: 1024  # default; a profile may set its own
+  retry:                   # HTTP 429/503: exponential backoff (base * 2^n), Retry-After honoured when sent
+    max_retries: 5
+    base_delay_s: 2.0
+    max_delay_s: 90        # a longer Retry-After means the quota is exhausted: fail with a clear error
+    statuses: [429, 503]
+  profiles:
+    # type: ollama (native API, honours num_ctx) | openai (OpenAI-compatible) | anthropic.
+    # Cloud model ids are checked against the provider's /models endpoint before any work, and
+    # probe: true sends one tiny request (5 output tokens): a listed model can still be unusable.
+    # min_interval_s / tokens_per_minute pace calls client-side for free tiers.
+    ollama:
+      # Local LLM: refused unless run with --llm ollama --allow-local (low RAM on this laptop).
+      type: ollama
+      base_url: http://localhost:11434
+      model: qwen2.5:7b-instruct   # fallback: --model qwen2.5:3b-instruct (never switched automatically)
+      num_ctx: 8192        # Ollama's default context is smaller and truncates the prompt silently
+      temperature: 0.0
+      seed: 42
+      timeout_s: 600       # the first call loads the model into memory
+    gemini:
+      type: openai
+      label: Google Gemini
+      base_url: https://generativelanguage.googleapis.com/v1beta/openai/
+      api_key_env: GEMINI_API_KEY
+      model: gemini-3.8-flash   # gemini-2.5-flash is still listed but refused for new accounts (HTTP 404)
+      probe: true
+      max_tokens_param: max_tokens
+      max_output_tokens: 4096   # Gemini "thinking" tokens count against this limit
+      temperature: 0.0
+      timeout_s: 300       # gemini-3.8-flash took 53-81 s for a 5-token probe on 2026-10-14 (503s too)
+      min_interval_s: 6.5  # free tier ~10 requests/min
+      tokens_per_minute: null
+    groq:
+      type: openai
+      label: Groq
+      base_url: https://api.groq.com/openai/v1
+      api_key_env: GROQ_API_KEY
+      model: openai/gpt-oss-120b
+      probe: true
+      max_output_tokens: 1024   # gpt-oss reasoning tokens count against this limit (largest seen: 600)
+      extra: {reasoning_effort: low}
+      temperature: null    # provider default
+      timeout_s: 120
+      min_interval_s: 2.0  # free tier 30 requests/min
+      tokens_per_minute: 8000   # free tier; prompt + output, so ~1 question per minute
+    groq-qwen:             # second Groq model, to compare LLMs on identical retrieval (preview model)
+      type: openai
+      label: Groq (Qwen)
+      base_url: https://api.groq.com/openai/v1
+      api_key_env: GROQ_API_KEY
+      model: qwen/qwen3.8-27b   # qwen/qwen3.6-27b is not on Groq (HTTP 404); listed 2026-10-14: qwen3.8-27b
+      probe: true
+      max_output_tokens: 2048   # hidden reasoning counts against this limit; 1024 truncated q02
+      extra: {reasoning_format: hidden}   # keep the reasoning out of the answer text
+      temperature: null
+      timeout_s: 120
+      min_interval_s: 2.0
+      tokens_per_minute: 8000   # x-ratelimit-limit-tokens reported by Groq for this model
+    openai:
+      type: openai
+      label: OpenAI
+      base_url: https://api.openai.com/v1
+      api_key_env: OPENAI_API_KEY
+      model: gpt-5-mini
+      probe: true
+      temperature: null    # null = provider default (some models accept only the default)
+      timeout_s: 120
+    anthropic:
+      type: anthropic
+      base_url: https://api.anthropic.com
+      api_key_env: ANTHROPIC_API_KEY
+      api_version: "2023-06-01"
+      model: claude-sonnet-5-5
+      probe: true
+      temperature: null
+      timeout_s: 120
 
 env_file: .env               # API keys (gitignored); shell environment variables take precedence
 
@@ -67,9 +120,10 @@ logging:
   calls_file: logs/llm_calls.jsonl   # one JSON line per LLM call: provider, model, tokens, latency (gitignored)
 
 examples:
-  # maritime-answer-examples: these smoke query ids -> reports/answer_examples.md
+  # maritime-answer-examples: these smoke query ids -> output (--only picks a subset)
   queries: [q02_amended_pm74, q04_bongkar_muat, q06_tarif, q09_cabotage_en, q05_unctad_en, q10_out_of_scope]
   output: reports/answer_examples.md
+  output_per_llm: reports/answer_examples_{llm}.md   # --per-llm: one file per profile, to compare LLMs
 
 messages:
   # Fixed texts, chosen by the detected language of the question.
@@ -85,12 +139,18 @@ messages:
   partly_revoked:
     id: "{doc} telah dicabut sebagian oleh {by}; korpus tidak mencatat pasal mana yang dicabut, jadi periksa apakah pasal yang dikutip masih berlaku."
     en: "{doc} was partly revoked by {by}; the corpus does not record which Pasal, so check that the cited Pasal still applies."
+  ayat_not_in_text:
+    id: "{n} kutipan menyebut ayat yang tidak terdapat dalam teks sumber yang dikutip: {cites}"
+    en: "{n} citation(s) name an ayat that does not appear in the cited source text: {cites}"
   cites_outdated:
     id: "Jawaban mengutip teks yang sudah tidak berlaku: {cite} ({status})."
     en: "The answer cites text that is no longer in force: {cite} ({status})."
   invalid_citations:
     id: "{n} kutipan tidak cocok dengan sumber yang diberikan dan ditandai/dihapus: {cites}"
     en: "{n} citation(s) did not match the provided sources and were flagged/removed: {cites}"
+  truncated:
+    id: "Jawaban model terpotong karena batas panjang keluaran, sehingga tidak ditampilkan. Coba lagi atau persempit pertanyaannya."
+    en: "The model's answer was cut off by its output limit, so it is not shown. Try again or ask a narrower question."
   unverified_marker: "[unverified citation: {cite}]"
 
 prompt:
@@ -107,9 +167,15 @@ prompt:
        "cite as" line of the source you use; add "ayat <Y>" only if that ayat is in the source.
        For the UNCTAD report use [UNCTAD RMT 2025, <section>, p. <N>].
     4. Each source has a status. CURRENT text is the law in force. Prefer CURRENT sources.
-       Never present SUPERSEDED or REPEALED text as current law. If an older version was
-       replaced, say so briefly (e.g. "Pasal 71 PM 93/2013 diubah dengan PM 74/2016") and give
-       the current wording. If a Pasal was REPEALED, say that it was repealed.
-    5. If the SOURCES do not contain the answer, reply with exactly this sentence and nothing
+       Never present SUPERSEDED or REPEALED text as current law.
+    5. If a SUPERSEDED or REPEALED source is relevant to the question, your answer must say so
+       in one sentence, in the answer language, built from this template:
+         Indonesian: "<Pasal lama> <dokumen lama> tentang <topik> telah diubah oleh <dokumen pengubah>."
+         English: "<old Pasal> of <old document> on <topic> was amended by <amending document>."
+       For a REPEALED Pasal use "telah dicabut oleh" / "was repealed by". Replace every <...>
+       with the real Pasal, documents and topic from the SOURCES, then give the CURRENT wording.
+       Never copy template text or <placeholders> literally. Do not mention superseded sources
+       that are unrelated to the question.
+    6. If the SOURCES do not contain the answer, reply with exactly this sentence and nothing
        else: {not_found}
-    6. Be concise: a short direct answer, then the details as a list if needed.
+    7. Be concise: a short direct answer, then the details as a list if needed.

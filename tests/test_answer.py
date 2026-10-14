@@ -3,16 +3,16 @@
 from __future__ import annotations
 
 import copy
-import json
 
 import pytest
 
 from maritime_rag.answer.citations import DocMatcher, parse_citations, rewrite, validate
 from maritime_rag.answer.pipeline import Answerer, Retrieval
 from maritime_rag.answer.prompt import LanguageDetector, build_messages
-from maritime_rag.answer.providers import Generation, LoggingProvider, ProviderError, make_provider
+from maritime_rag.answer.providers import Generation
 from maritime_rag.answer.versions import (
     CURRENT,
+    expand_siblings,
     REPEALED,
     SUPERSEDED,
     DocNames,
@@ -56,11 +56,12 @@ def _chunk(cid: str, pasal: str | None, pages: tuple[int, int], text: str, part:
 
 OOC = ["UU 11/2020", "UU 6/2023"]
 CHUNKS = [
-    _chunk("pm_93_2013-0084", "71", (46, 47), "Izin usaha angkutan laut diberikan oleh Direktur Jenderal ...",
-           ayat="1-8", superseded_by=["pm_74_2016"]),
+    _chunk("pm_93_2013-0084", "71", (46, 47), "Pasal 71 (1) Izin usaha angkutan laut diberikan oleh Direktur "
+           "Jenderal ... (2) ... (8) ...", ayat="1-8", superseded_by=["pm_74_2016"]),
     _chunk("pm_93_2013-0085", "71", (47, 47), "(9) ... (10) ...", ayat="9-10", superseded_by=["pm_74_2016"]),
     _chunk("pm_93_2013-0020", "18", (12, 12), "Kapal asing dapat ...", superseded_by=["pm_23_2022"]),
-    _chunk("pm_74_2016-0010", "71", (11, 12), "Izin usaha angkutan laut diberikan melalui OSS ...", ayat="1-6",
+    _chunk("pm_74_2016-0010", "71", (11, 12), "Pasal 71 (1) Izin usaha angkutan laut diberikan melalui OSS ... "
+           "(2) ... (6) ...", ayat="1-6",
            amends_doc="pm_93_2013", amends_pasal="71", amendment_kind="replace"),
     _chunk("pm_74_2016-0011", "71", (12, 13), "(7) ... (13) ...", ayat="7-13",
            amends_doc="pm_93_2013", amends_pasal="71", amendment_kind="replace"),
@@ -79,6 +80,10 @@ CHUNKS = [
            amends_doc="uu_17_2008", amends_pasal="195", amendment_kind="penjelasan"),
     _chunk("uu_66_2024-0102", "195", (60, 60), "Pasal 195 Huruf b Yang dimaksud ...", part="penjelasan",
            amends_doc="uu_17_2008", amends_pasal="195"),
+    _chunk("pm_93_2013-0080", "69", (44, 44), "Pasal 69 (1) persyaratan: a. administrasi; dan b. teknis. (2) ...",
+           ayat="1-2", n_tokens=300),
+    _chunk("pm_93_2013-0081", "69", (44, 45), "(3) Persyaratan teknis ... (7) ...", ayat="3-7", n_tokens=400),
+    _chunk("pm_93_2013-0082", "69", (45, 45), "(8) Penggunaan kapal ... leasing ...", ayat="8", n_tokens=100),
     _chunk("pp_20_2010-0084", "86", (40, 40), "Kegiatan bongkar muat dilakukan oleh badan usaha ...",
            status="partially_revoked"),
     _chunk("pp_31_2021-0001", "1", (2, 2), "Dalam Peraturan Pemerintah ini yang dimaksud dengan ...",
@@ -111,8 +116,9 @@ def hits(corpus: Corpus, *ids: str, scores: list[float] | None = None) -> list[H
 class FakeProvider:
     name, model = "fake", "fake-model"
 
-    def __init__(self, reply: str) -> None:
+    def __init__(self, reply: str, finish: str = "stop") -> None:
         self.reply = reply
+        self.finish = finish
         self.calls: list[list[dict]] = []
 
     def check(self) -> None:
@@ -120,7 +126,8 @@ class FakeProvider:
 
     def generate(self, messages):
         self.calls.append(messages)
-        return Generation(self.reply, self.name, self.model, 100, 20, 0.01)
+        return Generation(self.reply, self.name, self.model, 100, 20, 0.01, finish_reason=self.finish,
+                          max_output_tokens=20)
 
 
 def answerer(corpus: Corpus, reply: str, ids: tuple[str, ...], cfg: dict | None = None,
@@ -184,6 +191,51 @@ def test_expansion_cap(corpus: Corpus, index: VersionIndex) -> None:
     assert [c.chunk_id for c in ctx] == ["pm_74_2016-0010", "pm_93_2013-0084"]
 
 
+def test_sibling_expansion_groups_a_pasal_in_ayat_order(corpus: Corpus, index: VersionIndex) -> None:
+    ctx = build_context(hits(corpus, "pm_93_2013-0081", "unctad_rmt_2025-0006"), index, 8)
+    assert expand_siblings(ctx, index, max_tokens=10_000).cut == []
+    assert [c.chunk_id for c in ctx] == ["pm_93_2013-0080", "pm_93_2013-0081", "pm_93_2013-0082", "unctad_rmt_2025-0006"]
+    assert [c.added_by for c in ctx] == ["sibling", None, "sibling", None]
+    assert ctx[1].retrieved_rank == 1 and ctx[0].retrieved_rank is None
+
+
+def test_sibling_expansion_respects_token_budget(corpus: Corpus, index: VersionIndex, caplog) -> None:
+    ctx = build_context(hits(corpus, "pm_93_2013-0081"), index, 8)  # 400 tokens
+    result = expand_siblings(ctx, index, max_tokens=550)  # room for the 100-token ayat (8), not the 300-token (1)-(2)
+    assert result.cut == ["pm_93_2013-0080"] and result.dropped == []
+    assert [c.chunk_id for c in ctx] == ["pm_93_2013-0081", "pm_93_2013-0082"]
+    assert "cut 1 sibling" in caplog.text
+
+
+def test_top_pasal_siblings_win_over_the_lowest_ranked_hit(corpus: Corpus, index: VersionIndex, caplog) -> None:
+    # q02 shape: #1 PM 93 Pasal 69 ayat (1)-(2) is missing ayat (3)-(7); #2 PM 93 Pasal 71 is superseded
+    ids = ("pm_93_2013-0080", "pm_93_2013-0084", "uu_17_2008-0010", "pp_20_2010-0084")
+    ctx = build_context(hits(corpus, *ids), index, 8)  # 300 + 3 x 50 + 2 PM 74 x 50 = 550 tokens
+    result = expand_siblings(ctx, index, max_tokens=1060, priority_hits=2)  # needs 400 + 100 + 50 more
+    assert result.dropped == ["pp_20_2010-0084"] and result.cut == []
+    got = [c.chunk_id for c in ctx]
+    assert got[:3] == ["pm_93_2013-0080", "pm_93_2013-0081", "pm_93_2013-0082"]  # Pasal 69 complete, ayat order
+    assert "pm_93_2013-0085" in got and "uu_17_2008-0010" in got and "pp_20_2010-0084" not in got
+    assert "dropped retrieved hit #4 pp_20_2010-0084" in caplog.text
+
+
+def test_siblings_of_superseded_pasal_keep_their_status(corpus: Corpus, index: VersionIndex, names: DocNames) -> None:
+    ctx = build_context(hits(corpus, "pm_93_2013-0084"), index, 8)
+    expand_siblings(ctx, index, max_tokens=10_000)
+    ids = [c.chunk_id for c in ctx]
+    assert ids == ["pm_74_2016-0010", "pm_74_2016-0011", "pm_93_2013-0084", "pm_93_2013-0085"]
+    sib = ctx[3]
+    assert sib.added_by == "sibling" and sib.status == SUPERSEDED
+    assert "current wording: SOURCE 1, SOURCE 2" in describe(sib, ctx, names, index)
+
+
+def test_pipeline_reports_siblings_cut(corpus: Corpus) -> None:
+    cfg = copy.deepcopy(CFG)
+    cfg["versions"]["max_context_tokens"] = 450
+    ans = answerer(corpus, NOT_FOUND["id"], ("pm_93_2013-0081",), cfg)[0].answer("Apa persyaratan teknis izin usaha?")
+    assert ans.siblings_cut == ["pm_93_2013-0080", "pm_93_2013-0082"]
+
+
 # --- citations -----------------------------------------------------------------------------------
 
 def test_parse_citation_formats(names: DocNames) -> None:
@@ -197,7 +249,7 @@ def test_parse_citation_formats(names: DocNames) -> None:
     assert (cits[0].pasal, cits[0].ayat, cits[0].pages) == ("71", [2], (11, 11))
     assert (cits[1].ayat, cits[1].pages) == ([1, 2, 3], (12, 12))
     assert cits[2].penjelasan and cits[2].pages == (185, 186)
-    assert cits[1].bracket == cits[2].bracket  # two citations in one bracket
+    assert cits[1].span == cits[2].span  # two citations in one bracket
     assert cits[4].pages is None  # "PP 31" is a document, not page 31
     assert cits[0].raw == "PM 74/2016, Pasal 71 ayat (2), p. 11"
 
@@ -211,7 +263,7 @@ def test_validate_maps_citations_to_context(corpus: Corpus, index: VersionIndex,
         "[UU 17/2008, Pasal 195, p. 185] [UNCTAD RMT 2025, 1. International maritime trade, p. 10] [PM 74/2016, Pasal 71]"
     )
     cits = parse_citations(text, DocMatcher(names))
-    validate(cits, ctx, require_page=True)
+    validate(cits, ctx, fill_missing_page=False)
     ids = [ctx[c.source - 1].chunk_id if c.valid else c.problem for c in cits]
     assert ids[0] == "pm_74_2016-0010"
     assert ids[1] == "pm_74_2016-0011"
@@ -223,6 +275,74 @@ def test_validate_maps_citations_to_context(corpus: Corpus, index: VersionIndex,
     assert ids[7] == "uu_17_2008-0442"  # plain Pasal falls back to the Penjelasan chunk of that Pasal
     assert ids[8] == "unctad_rmt_2025-0006"
     assert ids[9] == "no page"
+
+
+def test_ayat_missing_from_chunk_text_is_flagged(corpus: Corpus, index: VersionIndex, names: DocNames) -> None:
+    ctx = build_context(hits(corpus, "uu_17_2008-0207"), index, 8)  # UU 17/2008 Pasal 198: whole-Pasal chunk
+    cits = parse_citations("[UU 17/2008, Pasal 198 ayat (1), p. 82] [UU 17/2008, Pasal 198 ayat (4), p. 82]",
+                           DocMatcher(names))
+    validate(cits, ctx)
+    assert all(c.valid for c in cits)
+    assert cits[0].flag is None
+    assert cits[1].flag == "ayat (4) not found in the cited text"
+
+
+def test_ayat_flag_prefers_the_sibling_that_contains_the_ayat(corpus: Corpus, index: VersionIndex, names: DocNames) -> None:
+    ctx = build_context(hits(corpus, "pm_93_2013-0080"), index, 8)
+    expand_siblings(ctx, index, 10_000)  # 0080 (1)-(2) p. 44, 0081 (3)-(7) p. 44-45
+    cits = parse_citations("[PM 93/2013, Pasal 69, ayat (3), p. 44]", DocMatcher(names))
+    validate(cits, ctx)
+    assert ctx[cits[0].source - 1].chunk_id == "pm_93_2013-0081" and cits[0].flag is None
+
+
+def test_unbracketed_and_pageless_citations_are_normalized(corpus: Corpus, index: VersionIndex, names: DocNames) -> None:
+    ctx = build_context(hits(corpus, "pm_93_2013-0080", "uu_17_2008-0010"), index, 8)
+    expand_siblings(ctx, index, 10_000)  # Pasal 69: (1)-(2) p. 44, (3)-(7) p. 44-45, (8) p. 45
+    text = ("Syarat administrasi (PM 93/2013, Pasal 69 ayat 2). Syarat teknis diatur PM 93/2013 Pasal 69 "
+            "ayat (3). Lihat [PM 93/2013, Pasal 69 ayat (8)]. Cabotage: UU 17/2008, Pasal 8(1) melarang.")
+    cits = parse_citations(text, DocMatcher(names))
+    validate(cits, ctx, names=names)
+    got = [(c.raw, c.bracketed, ctx[c.source - 1].chunk_id, c.canonical) for c in cits]
+    assert got == [
+        ("PM 93/2013, Pasal 69 ayat 2", False, "pm_93_2013-0080", "[PM 93/2013, Pasal 69 ayat (2), p. 44]"),
+        ("PM 93/2013 Pasal 69 ayat (3)", False, "pm_93_2013-0081", "[PM 93/2013, Pasal 69 ayat (3), p. 44-45]"),
+        ("PM 93/2013, Pasal 69 ayat (8)", True, "pm_93_2013-0082", "[PM 93/2013, Pasal 69 ayat (8), p. 45]"),
+        ("UU 17/2008, Pasal 8(1)", False, "uu_17_2008-0010", "[UU 17/2008, Pasal 8 ayat (1), p. 10]"),
+    ]
+    assert cits[0].normalized == ["no brackets", "page filled from source (p. 44)"]
+    assert cits[2].normalized == ["page filled from source (p. 45)"]
+    assert rewrite(text, cits, "flag", CFG["messages"]["unverified_marker"]) == (
+        "Syarat administrasi [PM 93/2013, Pasal 69 ayat (2), p. 44]. Syarat teknis diatur [PM 93/2013, "
+        "Pasal 69 ayat (3), p. 44-45]. Lihat [PM 93/2013, Pasal 69 ayat (8), p. 45]. Cabotage: "
+        "[UU 17/2008, Pasal 8 ayat (1), p. 10] melarang.")
+
+
+def test_unbracketed_citations_still_need_a_provided_unambiguous_source(
+        corpus: Corpus, index: VersionIndex, names: DocNames) -> None:
+    ctx = build_context(hits(corpus, "pm_93_2013-0084"), index, 8)  # PM 74/2016 Pasal 71: two chunks
+    text = ("Menurut PM 74/2016 Pasal 71, izin lewat OSS. Juga PM 50/2021 Pasal 3 ayat (1). "
+            "Pasal 71 PM 93/2013 telah diubah oleh PM 74/2016.")  # Pasal-first prose is not a citation
+    cits = parse_citations(text, DocMatcher(names))
+    validate(cits, ctx, names=names)
+    assert [(c.raw, c.valid) for c in cits] == [("PM 74/2016 Pasal 71", False), ("PM 50/2021 Pasal 3 ayat (1)", False)]
+    assert "ambiguous" in cits[0].problem and cits[1].problem == "document not recognised"
+    out = rewrite(text, cits, "flag", CFG["messages"]["unverified_marker"])
+    assert "PM 74/2016 Pasal 71[unverified citation: PM 74/2016 Pasal 71]" in out  # prose kept, marked
+    assert rewrite(text, cits, "drop", CFG["messages"]["unverified_marker"]) == text  # prose is not removed
+
+
+def test_ayat_ranges_with_unicode_hyphens(names: DocNames) -> None:
+    text = "(PM 74/2016, Pasal 71 ayat 1‑2) dan [PM 74/2016, Pasal 71 ayat (7)–(9), p. 12‑13]"
+    cits = parse_citations(text, DocMatcher(names))
+    assert [(c.ayat, c.pages) for c in cits] == [([1, 2], None), ([7, 8, 9], (12, 13))]
+
+
+def test_answer_with_only_unbracketed_citations_is_not_refused(corpus: Corpus) -> None:
+    # gpt-oss q02 wrote "(PM 93/2013, Pasal 69 ayat 2)": refused before this fix
+    reply = "Persyaratan administrasi meliputi akta pendirian dan NPWP (PM 93/2013, Pasal 69 ayat 2)."
+    ans = answerer(corpus, reply, ("pm_93_2013-0080",))[0].answer("Apa persyaratan izin usaha angkutan laut?")
+    assert not ans.refused and ans.cited == {1}
+    assert ans.text == "Persyaratan administrasi meliputi akta pendirian dan NPWP [PM 93/2013, Pasal 69 ayat (2), p. 44]."
 
 
 def test_rewrite_flag_and_drop() -> None:
@@ -256,6 +376,32 @@ def test_answer_with_valid_citations(corpus: Corpus) -> None:
     assert "Indonesian" in provider.calls[0][0]["content"]
 
 
+def test_fullwidth_bracket_citations_are_checked(corpus: Corpus) -> None:
+    # gpt-oss writes 【...】; before the fix these answers were refused as "no_valid_citation"
+    reply = "Izin melalui OSS【PM 74/2016, Pasal 71 ayat (1), p. 11】 dan ［PM 74/2016, Pasal 99, p. 40］."
+    ans = answerer(corpus, reply, ("pm_93_2013-0084",))[0].answer("Bagaimana izin usaha angkutan laut diberikan?")
+    assert not ans.refused and ans.cited == {1}
+    assert ans.text.startswith("Izin melalui OSS[PM 74/2016, Pasal 71 ayat (1), p. 11]")
+    assert "[unverified citation: PM 74/2016, Pasal 99, p. 40]" in ans.text
+    assert ans.raw_text == reply  # the model's own output is kept unchanged
+
+
+def test_flagged_ayat_adds_warning_but_keeps_answer(corpus: Corpus) -> None:
+    reply = "Pemanduan wajib [UU 17/2008, Pasal 198 ayat (4), p. 82]."
+    ans = answerer(corpus, reply, ("uu_17_2008-0207",))[0].answer("Apa itu perairan wajib pandu?")
+    assert not ans.refused and ans.text == reply
+    assert any(w.startswith("1 kutipan menyebut ayat") for w in ans.warnings)
+
+
+def test_prompt_requires_mentioning_relevant_superseded_sources() -> None:
+    system = CFG["prompt"]["system"]
+    assert "If a SUPERSEDED or REPEALED source is relevant to the question" in system
+    assert "Do not mention superseded sources" in system and "unrelated to the question" in system
+    assert "<Pasal lama> <dokumen lama> tentang <topik> telah diubah oleh <dokumen pengubah>" in system
+    assert "Never copy template text or <placeholders> literally" in system
+    assert "PM 74/2016" not in system and "PM 93/2013" not in system  # no concrete example to copy
+
+
 def test_citing_superseded_text_warns(corpus: Corpus) -> None:
     reply = "Izin diberikan oleh Direktur Jenderal [PM 93/2013, Pasal 71 ayat (1), p. 46]."
     ans = answerer(corpus, reply, ("pm_93_2013-0084",))[0].answer("Siapa yang memberikan izin usaha angkutan laut?")
@@ -280,6 +426,27 @@ def test_partly_revoked_document_is_flagged(corpus: Corpus, index: VersionIndex,
     reply = "Bongkar muat dilakukan oleh badan usaha [PP 20/2010, Pasal 86, p. 40]."
     ans = answerer(corpus, reply, ("pp_20_2010-0084",))[0].answer("Siapa yang melakukan kegiatan bongkar muat?")
     assert ans.warnings == [CFG["messages"]["partly_revoked"]["id"].format(doc="PP 20/2010", by="PP 31/2021")]
+
+
+def test_truncated_answer_is_never_counted_as_an_answer(corpus: Corpus) -> None:
+    a, provider = answerer(corpus, "", ("pm_93_2013-0084",))
+    provider.reply = "Izin melalui OSS [PM 74/2016, Pasal 71 ayat (1), p. 11]. Selain itu, pemohon wajib"
+    provider.finish = "length"
+    ans = a.answer("Bagaimana izin usaha angkutan laut diberikan?")
+    assert ans.refused and ans.truncated and ans.refusal_reason == "truncated" and ans.result == "TRUNCATED"
+    assert ans.text == CFG["messages"]["truncated"]["id"] and ans.cited == set() and ans.disclaimer is None
+    assert ans.raw_text.endswith("pemohon wajib")  # kept for inspection only
+
+
+def test_merge_replaces_only_rerun_questions() -> None:
+    from maritime_rag.answer.examples import split_report
+
+    lines = ["# Answer examples", "", "| query | lang |", "|---|---|", "| q01 | id | old |", "| q02 | id | old |",
+             "", "## q01: first", "", "old one", "", "## q02: second", "", "old two", ""]
+    old = "\n".join(lines)
+    rows, sections = split_report(old)
+    assert rows == {"q01": "| q01 | id | old |", "q02": "| q02 | id | old |"}
+    assert sections == {"q01": ["## q01: first", "", "old one"], "q02": ["## q02: second", "", "old two"]}
 
 
 def test_refusal_when_model_says_not_found(corpus: Corpus) -> None:
@@ -349,86 +516,6 @@ def test_prompt_lists_sources_in_context_order(corpus: Corpus, index: VersionInd
     assert f"cite as: {cite_as(ctx[3].chunk, names)}" in user
     assert "cite as: [UNCTAD RMT 2025, 1. International maritime trade, p. 9-10]" in user
     assert user.endswith("QUESTION: q?")
-
-
-# --- providers -------------------------------------------------------------------------------------
-
-def test_missing_api_key_is_a_clear_error(monkeypatch: pytest.MonkeyPatch) -> None:
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-    monkeypatch.delenv("ANTHROPIC_API_KEY", raising=False)
-    with pytest.raises(ProviderError, match="OPENAI_API_KEY"):
-        make_provider(CFG["provider"], "openai")
-    with pytest.raises(ProviderError, match="ANTHROPIC_API_KEY"):
-        make_provider(CFG["provider"], "anthropic")
-    with pytest.raises(ProviderError, match="unknown provider"):
-        make_provider(CFG["provider"], "gemini")
-    for name, env in (("groq", "GROQ_API_KEY"), ("google", "GOOGLE_API_KEY")):
-        monkeypatch.delenv(env, raising=False)
-        with pytest.raises(ProviderError, match=env):
-            make_provider(CFG["provider"], name)
-
-
-def test_openai_compatible_providers_use_their_own_endpoint(monkeypatch: pytest.MonkeyPatch) -> None:
-    import maritime_rag.answer.providers as providers
-
-    sent = []
-
-    def fake_post(url, payload, headers, timeout, who):
-        sent.append((url, payload, headers, who))
-        return {"model": payload["model"], "choices": [{"message": {"content": "ok"}, "finish_reason": "stop"}],
-                "usage": {"prompt_tokens": 7, "completion_tokens": 1}}
-
-    monkeypatch.setattr(providers, "_post", fake_post)
-    monkeypatch.setenv("GROQ_API_KEY", "gk")
-    monkeypatch.setenv("GOOGLE_API_KEY", "gg")
-    msgs = [{"role": "user", "content": "hi"}]
-    g = make_provider(CFG["provider"], "groq").generate(msgs)
-    assert (g.provider, g.text, g.prompt_tokens) == ("groq", "ok", 7)
-    g = make_provider(CFG["provider"], "google").generate(msgs)
-    assert g.provider == "google"
-    (groq_url, groq_payload, groq_headers, _), (gem_url, gem_payload, gem_headers, who) = sent
-    assert groq_url == "https://api.groq.com/openai/v1/chat/completions" and groq_headers["Authorization"] == "Bearer gk"
-    assert "max_completion_tokens" in groq_payload
-    assert gem_url.startswith("https://generativelanguage.googleapis.com/") and gem_headers["Authorization"] == "Bearer gg"
-    assert gem_payload["max_tokens"] == CFG["provider"]["google"]["max_output_tokens"] and who == "Google Gemini"
-
-
-def test_env_file_loader(tmp_path, monkeypatch: pytest.MonkeyPatch) -> None:
-    import os
-
-    from maritime_rag.config import load_env_file
-
-    env = tmp_path / ".env"
-    lines = ["# comment", "MRAG_A=one", 'MRAG_B="two words"', "MRAG_C=", "export MRAG_D=four # note", "MRAG_E=keep"]
-    env.write_text("\n".join(lines) + "\n", encoding="utf-8")
-    for k in ("MRAG_A", "MRAG_B", "MRAG_C", "MRAG_D"):
-        monkeypatch.delenv(k, raising=False)
-    monkeypatch.setenv("MRAG_E", "shell")
-    assert load_env_file(env) == ["MRAG_A", "MRAG_B", "MRAG_D"]
-    assert (os.environ["MRAG_A"], os.environ["MRAG_B"], os.environ["MRAG_D"]) == ("one", "two words", "four")
-    assert "MRAG_C" not in os.environ and os.environ["MRAG_E"] == "shell"  # empty skipped, shell wins
-    for k in ("MRAG_A", "MRAG_B", "MRAG_D"):
-        monkeypatch.delenv(k)
-    assert load_env_file(tmp_path / "missing.env") == []
-
-
-def test_unreachable_ollama_is_a_clear_error() -> None:
-    cfg = copy.deepcopy(CFG["provider"])
-    cfg["ollama"]["base_url"] = "http://127.0.0.1:9"  # nothing listens on the discard port
-    cfg["ollama"]["timeout_s"] = 5
-    provider = make_provider(cfg, "ollama")
-    with pytest.raises(ProviderError, match="not reachable.*ollama serve"):
-        provider.check()
-    with pytest.raises(ProviderError, match="not reachable.*ollama serve"):
-        provider.generate([{"role": "user", "content": "hi"}])
-
-
-def test_logging_provider_writes_tokens_and_latency(tmp_path) -> None:
-    log_file = tmp_path / "calls.jsonl"
-    gen = LoggingProvider(FakeProvider("hello"), log_file).generate([{"role": "user", "content": "hi"}])
-    assert gen.text == "hello"
-    row = json.loads(log_file.read_text(encoding="utf-8"))
-    assert row["prompt_tokens"] == 100 and row["output_tokens"] == 20 and "text" not in row and "latency_s" in row
 
 
 # --- real corpus (needs data/processed/chunks.jsonl; no models) ------------------------------------

@@ -5,6 +5,7 @@ Refusals return the fixed "not found" message in the question's language, with a
   gate               best reranker score below gate.min_rerank_score (gate off by default)
   model_not_found    the model said the sources do not contain the answer
   no_valid_citation  the model answered, but no citation matched a provided source
+  truncated          the output limit cut the answer off; a partial answer is never returned
 """
 
 from __future__ import annotations
@@ -15,7 +16,14 @@ import unicodedata
 from dataclasses import dataclass, field
 from typing import Any, Protocol
 
-from maritime_rag.answer.citations import Citation, DocMatcher, parse_citations, rewrite, validate
+from maritime_rag.answer.citations import (
+    Citation,
+    DocMatcher,
+    normalize_brackets,
+    parse_citations,
+    rewrite,
+    validate,
+)
 from maritime_rag.answer.prompt import LanguageDetector, build_messages
 from maritime_rag.answer.providers import Generation, Message, Provider
 from maritime_rag.answer.versions import (
@@ -25,6 +33,7 @@ from maritime_rag.answer.versions import (
     VersionIndex,
     build_context,
     cite_as,
+    expand_siblings,
     status_short,
 )
 from maritime_rag.retrieval.corpus import Corpus, Hit
@@ -86,6 +95,19 @@ class Answer:
     disclaimer: str | None = None
     generation: Generation | None = None
     messages: list[Message] = field(default_factory=list)
+    siblings_cut: list[str] = field(default_factory=list)  # same-Pasal chunks left out by the token budget
+    hits_dropped: list[str] = field(default_factory=list)  # low-ranked hits removed to fit the top Pasal
+
+    @property
+    def truncated(self) -> bool:
+        return self.refusal_reason == "truncated"
+
+    @property
+    def result(self) -> str:
+        """answered | TRUNCATED | refused: <reason> (a truncated answer never counts as an answer)."""
+        if self.truncated:
+            return "TRUNCATED"
+        return f"refused: {self.refusal_reason}" if self.refused else "answered"
 
     @property
     def cited(self) -> set[int]:
@@ -120,8 +142,11 @@ class Answerer:
         r = self.retrieve(question)
         times = dict(r.times)
         top = r.hits[0].score if r.hits and r.reranked else None
-        context = build_context(r.hits, self.index, self.cfg["versions"]["max_added_chunks"])
-        ans = Answer(question, lang, "", False, None, context, r.reranked, top, times)
+        v = self.cfg["versions"]
+        context = build_context(r.hits, self.index, v["max_added_chunks"])
+        sib = expand_siblings(context, self.index, v["max_context_tokens"], v["sibling_priority_hits"])
+        ans = Answer(question, lang, "", False, None, context, r.reranked, top, times,
+                     siblings_cut=sib.cut, hits_dropped=sib.dropped)
         if not r.hits:
             return self._refuse(ans, "no_hits")
         gate = self.cfg["gate"]
@@ -134,23 +159,32 @@ class Answerer:
         ans.messages = build_messages(question, lang, context, self.names, self.index, self.cfg)
         ans.generation = self.provider.generate(ans.messages)
         times["generate_s"] = ans.generation.latency_s
+        if ans.generation.wait_s:
+            times["llm_wait_s"] = ans.generation.wait_s  # rate-limit pacing and 429 backoff
         ans.raw_text = ans.generation.text.strip()
+        if ans.generation.truncated:
+            return self._refuse(ans, "truncated")
         return self._postcheck(ans)
 
     def _postcheck(self, ans: Answer) -> Answer:
         pc = self.cfg["postcheck"]
-        ans.citations = parse_citations(ans.raw_text or "", self.match_doc)
-        validate(ans.citations, ans.context, pc["require_page"])
+        text = normalize_brackets(ans.raw_text or "")
+        ans.citations = parse_citations(text, self.match_doc)
+        validate(ans.citations, ans.context, pc["fill_missing_page"], self.names)
         if not ans.cited:
             said_not_found = any(_normalize(m) in _normalize(ans.raw_text or "") for m in self.msgs["not_found"].values())
             return self._refuse(ans, "model_not_found" if said_not_found else "no_valid_citation")
 
         lang = ans.language
-        ans.text = rewrite(ans.raw_text or "", ans.citations, pc["invalid_citations"], self.msgs["unverified_marker"])
+        ans.text = rewrite(text, ans.citations, pc["invalid_citations"], self.msgs["unverified_marker"])
         invalid = [c.raw for c in ans.citations if not c.valid]
         if invalid:
             ans.warnings.append(self.msgs["invalid_citations"][lang].format(
                 n=len(invalid), cites="; ".join(f"[{c}]" for c in invalid)))
+        flagged = [c.raw for c in ans.citations if c.valid and c.flag]
+        if flagged:
+            ans.warnings.append(self.msgs["ayat_not_in_text"][lang].format(
+                n=len(flagged), cites="; ".join(f"[{c}]" for c in flagged)))
         cited = [ans.context[i - 1] for i in sorted(ans.cited)]
         for cc in cited:
             if cc.status != CURRENT:
@@ -174,5 +208,5 @@ class Answerer:
 
     def _refuse(self, ans: Answer, reason: str) -> Answer:
         ans.refused, ans.refusal_reason = True, reason
-        ans.text = self.msgs["not_found"][ans.language]
+        ans.text = self.msgs["truncated" if reason == "truncated" else "not_found"][ans.language]
         return ans
