@@ -1,0 +1,201 @@
+{
+  "meta": {
+    "generated": "2026-10-14T17:00",
+    "rubric_version": "06f7ccc59d"
+  },
+  "answerers": {
+    "groq-qwen": {
+      "judge": "groq",
+      "judge_model": "openai/gpt-oss-120b",
+      "answers": 44,
+      "judged": 44,
+      "invalid": 0,
+      "not_judged": [],
+      "distributions": {
+        "correctness": {
+          "correct": 40,
+          "partial": 2,
+          "wrong": 2
+        },
+        "faithfulness": {
+          "supported": 39,
+          "partly": 5,
+          "unsupported": 0
+        },
+        "superseded_mentioned": {
+          "yes": 10,
+          "no": 9,
+          "n.a.": 25
+        }
+      },
+      "correctness_by_slice": {
+        "factual_id": {
+          "correct": 22,
+          "partial": 1,
+          "wrong": 1
+        },
+        "which_pasal": {
+          "correct": 6,
+          "partial": 1,
+          "wrong": 0
+        },
+        "amended": {
+          "correct": 7,
+          "partial": 0,
+          "wrong": 1
+        },
+        "english": {
+          "correct": 5,
+          "partial": 0,
+          "wrong": 0
+        }
+      },
+      "correctness_by_context_hit": {
+        "True": {
+          "correct": 38,
+          "partial": 2,
+          "wrong": 0
+        },
+        "False": {
+          "correct": 2,
+          "partial": 0,
+          "wrong": 2
+        }
+      },
+      "judge_tokens": [
+        63077,
+        8087
+      ],
+      "judge_cost_usd": 0.014313749999999997
+    },
+    "groq": {
+      "judge": "groq-qwen",
+      "judge_model": "qwen/qwen3.8-27b",
+      "answers": 44,
+      "judged": 44,
+      "invalid": 0,
+      "not_judged": [],
+      "distributions": {
+        "correctness": {
+          "correct": 33,
+          "partial": 8,
+          "wrong": 3
+        },
+        "faithfulness": {
+          "supported": 41,
+          "partly": 2,
+          "unsupported": 1
+        },
+        "superseded_mentioned": {
+          "yes": 4,
+          "no": 7,
+          "n.a.": 33
+        }
+      },
+      "correctness_by_slice": {
+        "factual_id": {
+          "correct": 18,
+          "partial": 5,
+          "wrong": 1
+        },
+        "which_pasal": {
+          "correct": 7,
+          "partial": 0,
+          "wrong": 0
+        },
+        "amended": {
+          "correct": 3,
+          "partial": 3,
+          "wrong": 2
+        },
+        "english": {
+          "correct": 5,
+          "partial": 0,
+          "wrong": 0
+        }
+      },
+      "correctness_by_context_hit": {
+        "True": {
+          "correct": 31,
+          "partial": 8,
+          "wrong": 1
+        },
+        "False": {
+          "correct": 2,
+          "partial": 0,
+          "wrong": 2
+        }
+      },
+      "judge_tokens": [
+        52258,
+        3503
+      ],
+      "judge_cost_usd": 0.05581840000000002
+    }
+  },
+  "agreement": {
+    "status": "incomplete",
+    "errors": [
+      "M01: correctness is 'empty'",
+      "M01: faithfulness is 'empty'",
+      "M01: superseded_mentioned is 'empty'",
+      "M02: correctness is 'empty'",
+      "M02: faithfulness is 'empty'",
+      "M02: superseded_mentioned is 'empty'",
+      "M03: correctness is 'empty'",
+      "M03: faithfulness is 'empty'",
+      "M03: superseded_mentioned is 'empty'",
+      "M04: correctness is 'empty'",
+      "M04: faithfulness is 'empty'",
+      "M04: superseded_mentioned is 'empty'",
+      "M05: correctness is 'empty'",
+      "M05: faithfulness is 'empty'",
+      "M05: superseded_mentioned is 'empty'",
+      "M06: correctness is 'empty'",
+      "M06: faithfulness is 'empty'",
+      "M06: superseded_mentioned is 'empty'",
+      "M07: correctness is 'empty'",
+      "M07: faithfulness is 'empty'",
+      "M07: superseded_mentioned is 'empty'",
+      "M08: correctness is 'empty'",
+      "M08: faithfulness is 'empty'",
+      "M08: superseded_mentioned is 'empty'",
+      "M09: correctness is 'empty'",
+      "M09: faithfulness is 'empty'",
+      "M09: superseded_mentioned is 'empty'",
+      "M10: correctness is 'empty'",
+      "M10: faithfulness is 'empty'",
+      "M10: superseded_mentioned is 'empty'",
+      "M11: correctness is 'empty'",
+      "M11: faithfulness is 'empty'",
+      "M11: superseded_mentioned is 'empty'",
+      "M12: correctness is 'empty'",
+      "M12: faithfulness is 'empty'",
+      "M12: superseded_mentioned is 'empty'",
+      "M13: correctness is 'empty'",
+      "M13: faithfulness is 'empty'",
+      "M13: superseded_mentioned is 'empty'",
+      "M14: correctness is 'empty'",
+      "M14: faithfulness is 'empty'",
+      "M14: superseded_mentioned is 'empty'",
+      "M15: correctness is 'empty'",
+      "M15: faithfulness is 'empty'",
+      "M15: superseded_mentioned is 'empty'",
+      "M16: correctness is 'empty'",
+      "M16: faithfulness is 'empty'",
+      "M16: superseded_mentioned is 'empty'",
+      "M17: correctness is 'empty'",
+      "M17: faithfulness is 'empty'",
+      "M17: superseded_mentioned is 'empty'",
+      "M18: correctness is 'empty'",
+      "M18: faithfulness is 'empty'",
+      "M18: superseded_mentioned is 'empty'",
+      "M19: correctness is 'empty'",
+      "M19: faithfulness is 'empty'",
+      "M19: superseded_mentioned is 'empty'",
+      "M20: correctness is 'empty'",
+      "M20: faithfulness is 'empty'",
+      "M20: superseded_mentioned is 'empty'"
+    ]
+  }
+}

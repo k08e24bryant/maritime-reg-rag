@@ -1,0 +1,162 @@
+[
+ {
+  "sample_id": "M01",
+  "llm": "groq-qwen",
+  "id": "W03",
+  "slice": "which_pasal",
+  "answer_key": "W03|82d1023a|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "4a818eddc6"
+ },
+ {
+  "sample_id": "M02",
+  "llm": "groq",
+  "id": "F14",
+  "slice": "factual_id",
+  "answer_key": "F14|bb17528f|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "296b28ad82"
+ },
+ {
+  "sample_id": "M03",
+  "llm": "groq-qwen",
+  "id": "F19",
+  "slice": "factual_id",
+  "answer_key": "F19|8cad942a|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "1337529a86"
+ },
+ {
+  "sample_id": "M04",
+  "llm": "groq",
+  "id": "F02",
+  "slice": "factual_id",
+  "answer_key": "F02|ce7d7f7e|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "2ae301dd4d"
+ },
+ {
+  "sample_id": "M05",
+  "llm": "groq",
+  "id": "W04",
+  "slice": "which_pasal",
+  "answer_key": "W04|66ffae3d|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "5cd86d91b0"
+ },
+ {
+  "sample_id": "M06",
+  "llm": "groq-qwen",
+  "id": "F08",
+  "slice": "factual_id",
+  "answer_key": "F08|1562d6cc|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "2ad93072cf"
+ },
+ {
+  "sample_id": "M07",
+  "llm": "groq-qwen",
+  "id": "F05",
+  "slice": "factual_id",
+  "answer_key": "F05|adfcd01f|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "5789ed5381"
+ },
+ {
+  "sample_id": "M08",
+  "llm": "groq-qwen",
+  "id": "W04",
+  "slice": "which_pasal",
+  "answer_key": "W04|66ffae3d|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "641fa2e9de"
+ },
+ {
+  "sample_id": "M09",
+  "llm": "groq",
+  "id": "F24",
+  "slice": "factual_id",
+  "answer_key": "F24|f5f4bfc0|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "1527ab98ea"
+ },
+ {
+  "sample_id": "M10",
+  "llm": "groq-qwen",
+  "id": "E03",
+  "slice": "english",
+  "answer_key": "E03|0af432fa|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "2268c42cf4"
+ },
+ {
+  "sample_id": "M11",
+  "llm": "groq-qwen",
+  "id": "F23",
+  "slice": "factual_id",
+  "answer_key": "F23|58dce82a|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "ac899b3fb4"
+ },
+ {
+  "sample_id": "M12",
+  "llm": "groq-qwen",
+  "id": "A02",
+  "slice": "amended",
+  "answer_key": "A02|0170ff06|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "37e6991085"
+ },
+ {
+  "sample_id": "M13",
+  "llm": "groq",
+  "id": "A06",
+  "slice": "amended",
+  "answer_key": "A06|804acdb6|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "c39fad915b"
+ },
+ {
+  "sample_id": "M14",
+  "llm": "groq-qwen",
+  "id": "A01",
+  "slice": "amended",
+  "answer_key": "A01|517ed5d7|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "af4983ea0c"
+ },
+ {
+  "sample_id": "M15",
+  "llm": "groq",
+  "id": "E02",
+  "slice": "english",
+  "answer_key": "E02|a27f355c|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "8c738cae4a"
+ },
+ {
+  "sample_id": "M16",
+  "llm": "groq-qwen",
+  "id": "F03",
+  "slice": "factual_id",
+  "answer_key": "F03|a5c0ddeb|qwen/qwen3.8-27b|56e657a18b",
+  "answer_text_hash": "1042ef8807"
+ },
+ {
+  "sample_id": "M17",
+  "llm": "groq",
+  "id": "F07",
+  "slice": "factual_id",
+  "answer_key": "F07|45aec89b|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "483ab5f578"
+ },
+ {
+  "sample_id": "M18",
+  "llm": "groq",
+  "id": "W03",
+  "slice": "which_pasal",
+  "answer_key": "W03|82d1023a|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "110da04ad5"
+ },
+ {
+  "sample_id": "M19",
+  "llm": "groq",
+  "id": "A08",
+  "slice": "amended",
+  "answer_key": "A08|5c70aa9e|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "f1ae9e5584"
+ },
+ {
+  "sample_id": "M20",
+  "llm": "groq",
+  "id": "F22",
+  "slice": "factual_id",
+  "answer_key": "F22|3116b8c2|openai/gpt-oss-120b|545e28f41d",
+  "answer_text_hash": "e0a7060dbb"
+ }
+]

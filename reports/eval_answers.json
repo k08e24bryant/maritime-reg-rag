@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-10-14T12:15",
+    "generated": "2026-10-14T16:56",
     "questions": 54,
     "selected_retrieval": "hybrid_rerank",
     "k": 5,
@@ -11,9 +11,9 @@
     "groq": {
       "model": "openai/gpt-oss-120b",
       "prompt_version": "545e28f41d",
-      "stale_cache_rows": 0,
+      "rows_not_current": 3,
       "missing": [],
-      "metrics": {
+      "asrun": {
         "n": {
           "total": 54,
           "in_scope": 44,
@@ -89,14 +89,166 @@
             "context_hit": 0
           }
         }
-      }
+      },
+      "fixed": {
+        "n": {
+          "total": 54,
+          "in_scope": 44,
+          "out_of_scope": 10,
+          "answered": 44
+        },
+        "refusal_accuracy": [
+          10,
+          10
+        ],
+        "false_refusals": [
+          0,
+          44
+        ],
+        "false_refusal_reasons": {},
+        "truncated": 0,
+        "citations": {
+          "parsed": 82,
+          "valid": 82,
+          "normalized": 3,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 0
+        },
+        "context_hit": [
+          40,
+          44
+        ],
+        "amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 1
+        },
+        "cipta_kerja_warning_when_uu17_cited": [
+          10,
+          10
+        ],
+        "latency_generate_s": {
+          "median": 1.0943556999991415,
+          "p90": 4.009707200000776
+        },
+        "rate_limit_wait_s": 4.960000000006765,
+        "tokens": {
+          "prompt": 154431,
+          "output": 8704,
+          "reasoning": 2515
+        },
+        "cost_usd": 0.028387049999999997,
+        "per_slice": {
+          "factual_id": {
+            "n": 24,
+            "answered": 24,
+            "context_hit": 21
+          },
+          "which_pasal": {
+            "n": 7,
+            "answered": 7,
+            "context_hit": 7
+          },
+          "amended": {
+            "n": 8,
+            "answered": 8,
+            "context_hit": 7
+          },
+          "english": {
+            "n": 5,
+            "answered": 5,
+            "context_hit": 5
+          },
+          "out_of_scope": {
+            "n": 10,
+            "answered": 0,
+            "context_hit": 0
+          }
+        }
+      },
+      "asrun_matches_saved_report": true,
+      "changes": [
+        {
+          "id": "F01",
+          "slice": "factual_id",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (uu_17_2008-0075, uu_17_2008-0069)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "uu_17_2008-0070"
+            ],
+            [
+              "uu_17_2008-0070"
+            ]
+          ]
+        },
+        {
+          "id": "F05",
+          "slice": "factual_id",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (uu_17_2008-0233, pm_59_2021-0005)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            false,
+            true
+          ],
+          "cited": [
+            [
+              "pm_59_2021-0112",
+              "pm_59_2021-0104"
+            ],
+            [
+              "pm_59_2021-0104",
+              "uu_17_2008-0233"
+            ]
+          ]
+        },
+        {
+          "id": "A07",
+          "slice": "amended",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (pm_50_2021-0008, uu_66_2024-0073, uu_17_2008-0216)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "uu_17_2008-0008",
+              "uu_66_2024-0072"
+            ],
+            [
+              "uu_66_2024-0072"
+            ]
+          ]
+        }
+      ]
     },
     "groq-qwen": {
       "model": "qwen/qwen3.8-27b",
       "prompt_version": "56e657a18b",
-      "stale_cache_rows": 0,
+      "rows_not_current": 3,
       "missing": [],
-      "metrics": {
+      "asrun": {
         "n": {
           "total": 54,
           "in_scope": 44,
@@ -172,7 +324,208 @@
             "context_hit": 0
           }
         }
-      }
+      },
+      "fixed": {
+        "n": {
+          "total": 54,
+          "in_scope": 44,
+          "out_of_scope": 10,
+          "answered": 44
+        },
+        "refusal_accuracy": [
+          10,
+          10
+        ],
+        "false_refusals": [
+          0,
+          44
+        ],
+        "false_refusal_reasons": {},
+        "truncated": 0,
+        "citations": {
+          "parsed": 136,
+          "valid": 136,
+          "normalized": 0,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 1
+        },
+        "context_hit": [
+          40,
+          44
+        ],
+        "amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 2
+        },
+        "cipta_kerja_warning_when_uu17_cited": [
+          13,
+          13
+        ],
+        "latency_generate_s": {
+          "median": 0.7074984999999288,
+          "p90": 1.2753907999995135
+        },
+        "rate_limit_wait_s": 19.353000000001337,
+        "tokens": {
+          "prompt": 145458,
+          "output": 9448,
+          "reasoning": 0
+        },
+        "cost_usd": 0.15415839999999995,
+        "per_slice": {
+          "factual_id": {
+            "n": 24,
+            "answered": 24,
+            "context_hit": 21
+          },
+          "which_pasal": {
+            "n": 7,
+            "answered": 7,
+            "context_hit": 7
+          },
+          "amended": {
+            "n": 8,
+            "answered": 8,
+            "context_hit": 7
+          },
+          "english": {
+            "n": 5,
+            "answered": 5,
+            "context_hit": 5
+          },
+          "out_of_scope": {
+            "n": 10,
+            "answered": 0,
+            "context_hit": 0
+          }
+        }
+      },
+      "asrun_matches_saved_report": true,
+      "changes": [
+        {
+          "id": "F01",
+          "slice": "factual_id",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (uu_17_2008-0075, uu_17_2008-0069)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "uu_17_2008-0070"
+            ],
+            [
+              "uu_17_2008-0070"
+            ]
+          ]
+        },
+        {
+          "id": "F05",
+          "slice": "factual_id",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (uu_17_2008-0233, pm_59_2021-0005)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            false,
+            true
+          ],
+          "cited": [
+            [
+              "pm_59_2021-0104"
+            ],
+            [
+              "pm_59_2021-0104",
+              "uu_17_2008-0233"
+            ]
+          ]
+        },
+        {
+          "id": "F10",
+          "slice": "factual_id",
+          "reasons": [
+            "post-check: bug 2, bracketed note no longer rewritten as a citation"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "pp_31_2021-0244",
+              "pp_61_2009-0078"
+            ],
+            [
+              "pp_31_2021-0244"
+            ]
+          ]
+        },
+        {
+          "id": "A07",
+          "slice": "amended",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (pm_50_2021-0008, uu_66_2024-0073, uu_17_2008-0216)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "uu_66_2024-0072"
+            ],
+            [
+              "uu_66_2024-0072",
+              "uu_66_2024-0073"
+            ]
+          ]
+        }
+      ]
     }
+  },
+  "findings": {
+    "questionable_gold": [
+      {
+        "id": "F07",
+        "note": "Gold is PP 31/2021 Pasal 73 only. UU 17/2008 Pasal 104 states the same conditions for building a special terminal, and both LLMs answered from it (Qwen also cited the revoked PP 61/2009 Pasal 111 and said it was revoked). A legally sound answer that misses the gold chunk."
+      },
+      {
+        "id": "F13",
+        "note": "The same list of special goods (kayu gelondongan, barang curah, rel, ternak) is in PM 93/2013 Pasal 96 (retrieved at rank 1), UU 17/2008 Pasal 45 and PP 31/2021 Pasal 23, not only in the gold PP 20/2010 Pasal 185."
+      },
+      {
+        "id": "A01",
+        "note": "UU 17/2008 Pasal 28 ayat (1) also answers who grants the licence (the Minister, for inter-provincial routes; retrieved at rank 4). The amended-slice target, PM 74/2016 Pasal 71 (application to the Head of BKPM), is not in the context, so the amendment is not tested."
+      }
+    ],
+    "weaknesses": [
+      {
+        "id": "F24",
+        "note": "Answering from a neighbouring Pasal instead of refusing: the gold (PM 5/2024 Pasal 10, the operator's obligations) is not in the context, and both LLMs present PM 5/2024 Pasal 4 (the programme's principles) as the operator's obligations. Faithful to what they cite, but it answers a different question."
+      },
+      {
+        "id": "F05",
+        "note": "Same pattern in the as-run answers: the gold UU 17/2008 Pasal 224 had been dropped from the context (bug 1), and both LLMs answered with the crew-recruitment requirements of PM 59/2021 Pasal 99. The fixed run tests whether restoring the gold changes the answer."
+      }
+    ]
   }
 }
