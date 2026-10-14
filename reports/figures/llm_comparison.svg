@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="810" height="322" viewBox="0 0 810 322" role="img" aria-labelledby="t d">
+<title id="t">LLM comparison</title><desc id="d">Judge labels per LLM as 100% stacked bars.</desc>
+
+<style>
+  @media (prefers-color-scheme: dark) {
+    .surface { fill: #1a1a19; } .ink { fill: #f0efec; } .ink2 { fill: #c3c2b7; } .ink3 { fill: #8f8e86; }
+    .grid { stroke: #2f2f2d; } .axis { stroke: #55544f; }
+    .series { fill: #3987e5; stroke: #1a1a19; } .ci { stroke: #3987e5; }
+    .o1 { fill: #cde2fb; } .o2 { fill: #6da7ec; } .o3 { fill: #256abf; }
+    .on1 { fill: #0b0b0b; } .on2 { fill: #0b0b0b; } .on3 { fill: #ffffff; }
+    .sel { fill: #262624; }
+  }
+</style>
+<rect class="surface" fill="#fcfcfb" x="0" y="0" width="810" height="322" rx="8"/>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink" fill="#0b0b0b" x="20" y="28" font-size="16" font-weight="600">LLM comparison: cross-judged answers (each LLM graded by the other)</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="20" y="48" font-size="12">In-scope answers, share of each label; counts at right (best / middle / worst). Judge vs manual labels: see reports/eval.md.</text>
+<rect class="o1" fill="#184f95" x="20" y="62" width="12" height="12" rx="2"/>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="38" y="72" font-size="11">best (correct / supported)</text>
+<rect class="o2" fill="#3987e5" x="210" y="62" width="12" height="12" rx="2"/>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="228" y="72" font-size="11">middle (partial / partly)</text>
+<rect class="o3" fill="#86b6ef" x="400" y="62" width="12" height="12" rx="2"/>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="418" y="72" font-size="11">worst (wrong / unsupported)</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="20" y="96" font-size="12" font-weight="600">Correctness</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink" fill="#0b0b0b" x="20" y="123.0" font-size="12">gpt-oss-120b</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink3" fill="#8a8984" x="20" y="136.0" font-size="10">judged by Qwen3.8-27B</text>
+<g><title>gpt-oss-120b, Correctness: correct 33/44 (75%)</title>
+<rect class="o1" fill="#184f95" x="210.0" y="106" width="350.5" height="26" rx="4"/></g>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="on1" fill="#ffffff" x="385.2" y="123.0" font-size="11" text-anchor="middle">33</text>
+<g><title>gpt-oss-120b, Correctness: partial 8/44 (18%)</title>
+<rect class="o2" fill="#3987e5" x="562.5" y="106" width="83.5" height="26" rx="4"/></g>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="on2" fill="#ffffff" x="604.2" y="123.0" font-size="11" text-anchor="middle">8</text>
+<g><title>gpt-oss-120b, Correctness: wrong 3/44 (7%)</title>
+<rect class="o3" fill="#86b6ef" x="648.0" y="106" width="30.0" height="26" rx="4"/></g>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="688" y="123.0" font-size="11">33 / 8 / 3 of 44</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink" fill="#0b0b0b" x="20" y="161.0" font-size="12">Qwen3.8-27B</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink3" fill="#8a8984" x="20" y="174.0" font-size="10">judged by gpt-oss-120b</text>
+<g><title>Qwen3.8-27B, Correctness: correct 40/44 (91%)</title>
+<rect class="o1" fill="#184f95" x="210.0" y="144" width="425.3" height="26" rx="4"/></g>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="on1" fill="#ffffff" x="422.6" y="161.0" font-size="11" text-anchor="middle">40</text>
+<g><title>Qwen3.8-27B, Correctness: partial 2/44 (5%)</title>
+<rect class="o2" fill="#3987e5" x="637.3" y="144" width="19.4" height="26" rx="4"/></g>
+<g><title>Qwen3.8-27B, Correctness: wrong 2/44 (5%)</title>
+<rect class="o3" fill="#86b6ef" x="658.6" y="144" width="19.4" height="26" rx="4"/></g>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="688" y="161.0" font-size="11">40 / 2 / 2 of 44</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="20" y="206" font-size="12" font-weight="600">Faithfulness to cited sources</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink" fill="#0b0b0b" x="20" y="233.0" font-size="12">gpt-oss-120b</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink3" fill="#8a8984" x="20" y="246.0" font-size="10">judged by Qwen3.8-27B</text>
+<g><title>gpt-oss-120b, Faithfulness to cited sources: supported 41/44 (93%)</title>
+<rect class="o1" fill="#184f95" x="210.0" y="216" width="436.0" height="26" rx="4"/></g>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="on1" fill="#ffffff" x="428.0" y="233.0" font-size="11" text-anchor="middle">41</text>
+<g><title>gpt-oss-120b, Faithfulness to cited sources: partly 2/44 (5%)</title>
+<rect class="o2" fill="#3987e5" x="648.0" y="216" width="19.4" height="26" rx="4"/></g>
+<g><title>gpt-oss-120b, Faithfulness to cited sources: unsupported 1/44 (2%)</title>
+<rect class="o3" fill="#86b6ef" x="669.3" y="216" width="8.7" height="26" rx="4"/></g>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="688" y="233.0" font-size="11">41 / 2 / 1 of 44</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink" fill="#0b0b0b" x="20" y="271.0" font-size="12">Qwen3.8-27B</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink3" fill="#8a8984" x="20" y="284.0" font-size="10">judged by gpt-oss-120b</text>
+<g><title>Qwen3.8-27B, Faithfulness to cited sources: supported 39/44 (89%)</title>
+<rect class="o1" fill="#184f95" x="210.0" y="254" width="414.6" height="26" rx="4"/></g>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="on1" fill="#ffffff" x="417.3" y="271.0" font-size="11" text-anchor="middle">39</text>
+<g><title>Qwen3.8-27B, Faithfulness to cited sources: partly 5/44 (11%)</title>
+<rect class="o2" fill="#3987e5" x="626.6" y="254" width="51.4" height="26" rx="4"/></g>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="on2" fill="#ffffff" x="652.3" y="271.0" font-size="11" text-anchor="middle">5</text>
+<text font-family="system-ui, -apple-system, Segoe UI, sans-serif" class="ink2" fill="#52514e" x="688" y="271.0" font-size="11">39 / 5 / 0 of 44</text>
+</svg>

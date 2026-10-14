@@ -28,5 +28,67 @@ weaknesses:
   - id: F05
     note: >-
       Same pattern in the as-run answers: the gold UU 17/2008 Pasal 224 had been dropped from the context
-      (bug 1), and both LLMs answered with the crew-recruitment requirements of PM 59/2021 Pasal 99. The
-      fixed run tests whether restoring the gold changes the answer.
+      (bug 1), and both LLMs answered with the crew-recruitment requirements of PM 59/2021 Pasal 99. After
+      the fix the gold is back in the context, both LLMs cite it, and both fixed answers are judged correct.
+
+# Shown in reports/eval.md (Step 5). Full text of each change: docs/eval_plan.md "Post-hoc changes".
+post_hoc_changes:
+  - id: 1
+    when: after the retrieval results, before any answer result
+    change: >-
+      Answer-time Penjelasan -> body expansion (motivated by E03): a Penjelasan chunk in the context
+      brings in the body of its Pasal, within the same token budget. Retrieval metrics unchanged.
+  - id: 2
+    when: after the retrieval results, before any answer result
+    change: >-
+      The judge sees only the cited sources (not the full context); faithfulness is judged against the
+      cited sources.
+  - id: 3
+    when: after the Step 3 answer results, before any judge result
+    change: >-
+      Two bug fixes, reported as-run and fixed: (bug 1) the same-Pasal budget dropped retrieved hits even
+      when that could not make room (F01, F05, A07; F05 lost its gold); (bug 2) a bracketed prose note was
+      rewritten as a citation (Qwen F10). Only changed contexts were re-asked; the post-check was
+      re-applied without LLM calls.
+
+limitations:
+  - >-
+    Small n: 44 in-scope and 10 out-of-scope questions. A proportion's 95% CI spans about +/-0.15; per-slice
+    results (n = 5-24) are indicative only.
+  - >-
+    Questions were drafted by the system's author (an LLM) from specific chunks and reviewed by one person;
+    even paraphrased, they favour retrievable wording.
+  - >-
+    The judges are the two compared models (cross-judged, no model grades itself), validated by one
+    annotator on 20 answers.
+  - >-
+    superseded_mentioned is flagged: kappa 0.47 is just above the 0.40 rule with n = 20, and 4 of its 5
+    disagreements were the annotator saying "n.a." where the judge saw a relevant superseded or repealed
+    source. The rubric does not define "relevant" precisely (e.g. whether a revoked older provision among the
+    cited sources counts). Result kept, not relabelled; rubric fix listed as future work.
+  - >-
+    Three gold items are questionable (F07, F13, A01: another provision answers the question too); the
+    frozen gold was not changed.
+  - >-
+    Post-hoc changes 1-3 were decided after some results (listed above); Step 3 is reported both as-run
+    and fixed.
+  - >-
+    The corpus has no consolidated text and lacks the Cipta Kerja amendments (UU 11/2020, UU 6/2023) to
+    UU 17/2008; answers citing UU 17/2008 carry a warning instead.
+  - >-
+    Groq outputs are not fully deterministic; fp16 retrieval can swap near-tied hits. Cost is estimated
+    from token counts and the listed prices (reasoning tokens assumed billed as output; Qwen does not
+    report them separately).
+
+future_work:
+  - >-
+    Rubric: define "relevant superseded source" for superseded_mentioned (e.g. relevant = a gold chunk, or
+    a cited chunk on the same Pasal, is SUPERSEDED/REPEALED) and re-validate with a fresh manual sample.
+  - >-
+    Retrieval: handle REPEALED / revoked chunks at retrieval time (F07: the revoked PP 61/2009 Pasal 111
+    outranks the current PP 31/2021 Pasal 73).
+  - >-
+    Refusal when the right Pasal is missing: both LLMs answer from a neighbouring Pasal instead of saying
+    "not found" (F24); half of the answers without the gold in context were judged wrong.
+  - >-
+    A larger, independently written question set and a second annotator.

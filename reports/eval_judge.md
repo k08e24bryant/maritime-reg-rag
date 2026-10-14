@@ -28,4 +28,12 @@ Correctness by context hit: gold in context: correct 31 (78%), partial 8 (20%), 
 
 ## Agreement with the manual labels
 
-Status: incomplete. Problems: M01: correctness is 'empty'; M01: faithfulness is 'empty'; M01: superseded_mentioned is 'empty'; M02: correctness is 'empty'; M02: faithfulness is 'empty'; M02: superseded_mentioned is 'empty'; M03: correctness is 'empty'; M03: faithfulness is 'empty'; M03: superseded_mentioned is 'empty'; M04: correctness is 'empty'; M04: faithfulness is 'empty'; M04: superseded_mentioned is 'empty'; M05: correctness is 'empty'; M05: faithfulness is 'empty'; M05: superseded_mentioned is 'empty'; M06: correctness is 'empty'; M06: faithfulness is 'empty'; M06: superseded_mentioned is 'empty'; M07: correctness is 'empty'; M07: faithfulness is 'empty'; M07: superseded_mentioned is 'empty'; M08: correctness is 'empty'; M08: faithfulness is 'empty'; M08: superseded_mentioned is 'empty'; M09: correctness is 'empty'; M09: faithfulness is 'empty'; M09: superseded_mentioned is 'empty'; M10: correctness is 'empty'; M10: faithfulness is 'empty'; M10: superseded_mentioned is 'empty'; M11: correctness is 'empty'; M11: faithfulness is 'empty'; M11: superseded_mentioned is 'empty'; M12: correctness is 'empty'; M12: faithfulness is 'empty'; M12: superseded_mentioned is 'empty'; M13: correctness is 'empty'; M13: faithfulness is 'empty'; M13: superseded_mentioned is 'empty'; M14: correctness is 'empty'; M14: faithfulness is 'empty'; M14: superseded_mentioned is 'empty'; M15: correctness is 'empty'; M15: faithfulness is 'empty'; M15: superseded_mentioned is 'empty'; M16: correctness is 'empty'; M16: faithfulness is 'empty'; M16: superseded_mentioned is 'empty'; M17: correctness is 'empty'; M17: faithfulness is 'empty'; M17: superseded_mentioned is 'empty'; M18: correctness is 'empty'; M18: faithfulness is 'empty'; M18: superseded_mentioned is 'empty'; M19: correctness is 'empty'; M19: faithfulness is 'empty'; M19: superseded_mentioned is 'empty'; M20: correctness is 'empty'; M20: faithfulness is 'empty'; M20: superseded_mentioned is 'empty'
+n = 20 (kappa is unstable at this n).
+
+| criterion | agreement | Cohen's kappa | judge used for headline (kappa >= rule) |
+|---|---|---|---|
+| correctness | 95% | 0.87 | yes |
+| faithfulness | 100% | 1.00 | yes |
+| superseded_mentioned | 75% | 0.47 | yes |
+
+Manual labels on the sample: groq: correctness correct 7 (70%), partial 2 (20%), wrong 1 (10%), faithfulness supported 9 (90%), partly 1 (10%), superseded_mentioned n.a. 8 (80%), yes 2 (20%); groq-qwen: correctness correct 9 (90%), wrong 1 (10%), faithfulness supported 8 (80%), partly 2 (20%), superseded_mentioned n.a. 8 (80%), yes 1 (10%), no 1 (10%)

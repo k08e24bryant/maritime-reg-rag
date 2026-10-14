@@ -38,6 +38,7 @@ maritime-eval-questions = "maritime_rag.eval.questions:main"
 maritime-eval-retrieval = "maritime_rag.eval.retrieval:main"
 maritime-eval-answers = "maritime_rag.eval.answers:main"
 maritime-eval-judge = "maritime_rag.eval.judge:main"
+maritime-eval-report = "maritime_rag.eval.report:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

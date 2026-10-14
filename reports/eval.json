@@ -1,0 +1,1217 @@
+{
+  "meta": {
+    "generated": "2026-10-14T17:22",
+    "gold_sha256": "046a3c591e3f471f258273cf93958a24c24eb7039a34aae68f34c14eaadba73b",
+    "chunks_sha256": "70d67f44cf61a1df0a62688f674c8221b708a54abfaeb9198665aa27bd368fc7",
+    "questions": 54,
+    "sources": [
+      "reports/eval_retrieval.json",
+      "reports/eval_answers.json",
+      "reports/eval_judge.json",
+      "data/eval/findings.yaml"
+    ],
+    "plan": "docs/eval_plan.md"
+  },
+  "retrieval": {
+    "n_in_scope": 44,
+    "n_out_of_scope": 10,
+    "configs": {
+      "bm25": {
+        "label": "BM25 (heading prefix)",
+        "seconds": 0.2091433000005054,
+        "hit@1": {
+          "mean": 0.3409090909090909,
+          "ci95": [
+            0.20454545454545456,
+            0.4772727272727273
+          ]
+        },
+        "hit@5": {
+          "mean": 0.6363636363636364,
+          "ci95": [
+            0.5,
+            0.7727272727272727
+          ]
+        },
+        "mrr@10": {
+          "mean": 0.45075757575757575,
+          "ci95": [
+            0.32760416666666675,
+            0.5776988636363634
+          ]
+        },
+        "per_slice_hit@5": {
+          "factual_id": {
+            "mean": 0.6666666666666666,
+            "n": 24
+          },
+          "which_pasal": {
+            "mean": 0.5714285714285714,
+            "n": 7
+          },
+          "amended": {
+            "mean": 0.75,
+            "n": 8
+          },
+          "english": {
+            "mean": 0.4,
+            "n": 5
+          }
+        }
+      },
+      "bm25_noheading": {
+        "label": "BM25 (no heading)",
+        "seconds": 0.13444669999989856,
+        "hit@1": {
+          "mean": 0.3181818181818182,
+          "ci95": [
+            0.18181818181818182,
+            0.45454545454545453
+          ]
+        },
+        "hit@5": {
+          "mean": 0.6590909090909091,
+          "ci95": [
+            0.5227272727272727,
+            0.7954545454545454
+          ]
+        },
+        "mrr@10": {
+          "mean": 0.42866161616161613,
+          "ci95": [
+            0.31085542929292925,
+            0.5493686868686868
+          ]
+        },
+        "per_slice_hit@5": {
+          "factual_id": {
+            "mean": 0.7083333333333334,
+            "n": 24
+          },
+          "which_pasal": {
+            "mean": 0.5714285714285714,
+            "n": 7
+          },
+          "amended": {
+            "mean": 0.75,
+            "n": 8
+          },
+          "english": {
+            "mean": 0.4,
+            "n": 5
+          }
+        }
+      },
+      "dense": {
+        "label": "dense (e5)",
+        "seconds": 15.756802900001276,
+        "hit@1": {
+          "mean": 0.7045454545454546,
+          "ci95": [
+            0.5681818181818182,
+            0.8409090909090909
+          ]
+        },
+        "hit@5": {
+          "mean": 0.8409090909090909,
+          "ci95": [
+            0.7272727272727273,
+            0.9318181818181818
+          ]
+        },
+        "mrr@10": {
+          "mean": 0.7515151515151515,
+          "ci95": [
+            0.6339015151515152,
+            0.8613683712121212
+          ]
+        },
+        "per_slice_hit@5": {
+          "factual_id": {
+            "mean": 0.7916666666666666,
+            "n": 24
+          },
+          "which_pasal": {
+            "mean": 1.0,
+            "n": 7
+          },
+          "amended": {
+            "mean": 0.875,
+            "n": 8
+          },
+          "english": {
+            "mean": 0.8,
+            "n": 5
+          }
+        }
+      },
+      "hybrid": {
+        "label": "hybrid (RRF)",
+        "seconds": 1.5287803999999596,
+        "hit@1": {
+          "mean": 0.5,
+          "ci95": [
+            0.36363636363636365,
+            0.6363636363636364
+          ]
+        },
+        "hit@5": {
+          "mean": 0.7954545454545454,
+          "ci95": [
+            0.6590909090909091,
+            0.9090909090909091
+          ]
+        },
+        "mrr@10": {
+          "mean": 0.6277417027417028,
+          "ci95": [
+            0.5114772727272727,
+            0.7407941017316014
+          ]
+        },
+        "per_slice_hit@5": {
+          "factual_id": {
+            "mean": 0.7916666666666666,
+            "n": 24
+          },
+          "which_pasal": {
+            "mean": 1.0,
+            "n": 7
+          },
+          "amended": {
+            "mean": 0.75,
+            "n": 8
+          },
+          "english": {
+            "mean": 0.6,
+            "n": 5
+          }
+        }
+      },
+      "hybrid_rerank": {
+        "label": "hybrid + rerank (bge)",
+        "seconds": 24.59924470000078,
+        "hit@1": {
+          "mean": 0.6590909090909091,
+          "ci95": [
+            0.5227272727272727,
+            0.7954545454545454
+          ]
+        },
+        "hit@5": {
+          "mean": 0.8863636363636364,
+          "ci95": [
+            0.7954545454545454,
+            0.9772727272727273
+          ]
+        },
+        "mrr@10": {
+          "mean": 0.7462121212121212,
+          "ci95": [
+            0.6344223484848485,
+            0.8485321969696967
+          ]
+        },
+        "per_slice_hit@5": {
+          "factual_id": {
+            "mean": 0.875,
+            "n": 24
+          },
+          "which_pasal": {
+            "mean": 1.0,
+            "n": 7
+          },
+          "amended": {
+            "mean": 0.875,
+            "n": 8
+          },
+          "english": {
+            "mean": 0.8,
+            "n": 5
+          }
+        }
+      }
+    },
+    "selected": {
+      "name": "hybrid_rerank",
+      "label": "hybrid + rerank (bge)",
+      "seconds": 24.59924470000078,
+      "hit@1": {
+        "mean": 0.6590909090909091,
+        "ci95": [
+          0.5227272727272727,
+          0.7954545454545454
+        ]
+      },
+      "hit@5": {
+        "mean": 0.8863636363636364,
+        "ci95": [
+          0.7954545454545454,
+          0.9772727272727273
+        ]
+      },
+      "mrr@10": {
+        "mean": 0.7462121212121212,
+        "ci95": [
+          0.6344223484848485,
+          0.8485321969696967
+        ]
+      },
+      "per_slice_hit@5": {
+        "factual_id": {
+          "mean": 0.875,
+          "n": 24
+        },
+        "which_pasal": {
+          "mean": 1.0,
+          "n": 7
+        },
+        "amended": {
+          "mean": 0.875,
+          "n": 8
+        },
+        "english": {
+          "mean": 0.8,
+          "n": 5
+        }
+      },
+      "explanation": "best Hit@5 = 0.886; within 0.02 of it: hybrid_rerank; simplest: hybrid_rerank (simplicity order {'bm25': 0, 'bm25_noheading': 0, 'dense': 1, 'hybrid': 2, 'hybrid_rerank': 3}; BM25 tie keeps the heading; then MRR)"
+    },
+    "gold_sha256": "046a3c591e3f471f258273cf93958a24c24eb7039a34aae68f34c14eaadba73b"
+  },
+  "gate": {
+    "rule": "largest candidate refusing at most 1 in-scope question(s)",
+    "table": [
+      {
+        "threshold": 0.005,
+        "in_scope_refused": 0,
+        "out_of_scope_refused": 4,
+        "out_of_scope_n": 10
+      },
+      {
+        "threshold": 0.01,
+        "in_scope_refused": 0,
+        "out_of_scope_refused": 4,
+        "out_of_scope_n": 10
+      },
+      {
+        "threshold": 0.02,
+        "in_scope_refused": 2,
+        "out_of_scope_refused": 5,
+        "out_of_scope_n": 10
+      },
+      {
+        "threshold": 0.05,
+        "in_scope_refused": 2,
+        "out_of_scope_refused": 8,
+        "out_of_scope_n": 10
+      },
+      {
+        "threshold": 0.1,
+        "in_scope_refused": 3,
+        "out_of_scope_refused": 10,
+        "out_of_scope_n": 10
+      }
+    ],
+    "proposed": 0.01,
+    "enabled_in_evaluation": false,
+    "answer_time_effect": {
+      "threshold": 0.01,
+      "in_scope_refused": [],
+      "out_of_scope_refused": [
+        "O01",
+        "O04",
+        "O05",
+        "O06"
+      ],
+      "llm_calls_saved_per_llm": 4
+    }
+  },
+  "answers": {
+    "groq": {
+      "model": "openai/gpt-oss-120b",
+      "asrun": {
+        "n": {
+          "total": 54,
+          "in_scope": 44,
+          "out_of_scope": 10,
+          "answered": 44
+        },
+        "refusal_accuracy": [
+          10,
+          10
+        ],
+        "false_refusals": [
+          0,
+          44
+        ],
+        "false_refusal_reasons": {},
+        "truncated": 0,
+        "citations": {
+          "parsed": 83,
+          "valid": 83,
+          "normalized": 3,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 0
+        },
+        "context_hit": [
+          39,
+          44
+        ],
+        "amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 2
+        },
+        "cipta_kerja_warning_when_uu17_cited": [
+          10,
+          10
+        ],
+        "latency_generate_s": {
+          "median": 1.0943556999991415,
+          "p90": 4.009707200000776
+        },
+        "rate_limit_wait_s": 4.9590000000047425,
+        "tokens": {
+          "prompt": 151918,
+          "output": 8650,
+          "reasoning": 2437
+        },
+        "cost_usd": 0.027977699999999998,
+        "per_slice": {
+          "factual_id": {
+            "n": 24,
+            "answered": 24,
+            "context_hit": 20
+          },
+          "which_pasal": {
+            "n": 7,
+            "answered": 7,
+            "context_hit": 7
+          },
+          "amended": {
+            "n": 8,
+            "answered": 8,
+            "context_hit": 7
+          },
+          "english": {
+            "n": 5,
+            "answered": 5,
+            "context_hit": 5
+          },
+          "out_of_scope": {
+            "n": 10,
+            "answered": 0,
+            "context_hit": 0
+          }
+        }
+      },
+      "fixed": {
+        "n": {
+          "total": 54,
+          "in_scope": 44,
+          "out_of_scope": 10,
+          "answered": 44
+        },
+        "refusal_accuracy": [
+          10,
+          10
+        ],
+        "false_refusals": [
+          0,
+          44
+        ],
+        "false_refusal_reasons": {},
+        "truncated": 0,
+        "citations": {
+          "parsed": 82,
+          "valid": 82,
+          "normalized": 3,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 0
+        },
+        "context_hit": [
+          40,
+          44
+        ],
+        "amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 1
+        },
+        "cipta_kerja_warning_when_uu17_cited": [
+          10,
+          10
+        ],
+        "latency_generate_s": {
+          "median": 1.0943556999991415,
+          "p90": 4.009707200000776
+        },
+        "rate_limit_wait_s": 4.960000000006765,
+        "tokens": {
+          "prompt": 154431,
+          "output": 8704,
+          "reasoning": 2515
+        },
+        "cost_usd": 0.028387049999999997,
+        "per_slice": {
+          "factual_id": {
+            "n": 24,
+            "answered": 24,
+            "context_hit": 21
+          },
+          "which_pasal": {
+            "n": 7,
+            "answered": 7,
+            "context_hit": 7
+          },
+          "amended": {
+            "n": 8,
+            "answered": 8,
+            "context_hit": 7
+          },
+          "english": {
+            "n": 5,
+            "answered": 5,
+            "context_hit": 5
+          },
+          "out_of_scope": {
+            "n": 10,
+            "answered": 0,
+            "context_hit": 0
+          }
+        }
+      },
+      "changes": [
+        {
+          "id": "F01",
+          "slice": "factual_id",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (uu_17_2008-0075, uu_17_2008-0069)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "uu_17_2008-0070"
+            ],
+            [
+              "uu_17_2008-0070"
+            ]
+          ]
+        },
+        {
+          "id": "F05",
+          "slice": "factual_id",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (uu_17_2008-0233, pm_59_2021-0005)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            false,
+            true
+          ],
+          "cited": [
+            [
+              "pm_59_2021-0112",
+              "pm_59_2021-0104"
+            ],
+            [
+              "pm_59_2021-0104",
+              "uu_17_2008-0233"
+            ]
+          ]
+        },
+        {
+          "id": "A07",
+          "slice": "amended",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (pm_50_2021-0008, uu_66_2024-0073, uu_17_2008-0216)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "uu_17_2008-0008",
+              "uu_66_2024-0072"
+            ],
+            [
+              "uu_66_2024-0072"
+            ]
+          ]
+        }
+      ]
+    },
+    "groq-qwen": {
+      "model": "qwen/qwen3.8-27b",
+      "asrun": {
+        "n": {
+          "total": 54,
+          "in_scope": 44,
+          "out_of_scope": 10,
+          "answered": 44
+        },
+        "refusal_accuracy": [
+          10,
+          10
+        ],
+        "false_refusals": [
+          0,
+          44
+        ],
+        "false_refusal_reasons": {},
+        "truncated": 0,
+        "citations": {
+          "parsed": 133,
+          "valid": 133,
+          "normalized": 1,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 1
+        },
+        "context_hit": [
+          39,
+          44
+        ],
+        "amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 2
+        },
+        "cipta_kerja_warning_when_uu17_cited": [
+          12,
+          12
+        ],
+        "latency_generate_s": {
+          "median": 0.6704715999994733,
+          "p90": 1.2209703999997146
+        },
+        "rate_limit_wait_s": 19.335999999999693,
+        "tokens": {
+          "prompt": 143047,
+          "output": 8944,
+          "reasoning": 0
+        },
+        "cost_usd": 0.15021359999999997,
+        "per_slice": {
+          "factual_id": {
+            "n": 24,
+            "answered": 24,
+            "context_hit": 20
+          },
+          "which_pasal": {
+            "n": 7,
+            "answered": 7,
+            "context_hit": 7
+          },
+          "amended": {
+            "n": 8,
+            "answered": 8,
+            "context_hit": 7
+          },
+          "english": {
+            "n": 5,
+            "answered": 5,
+            "context_hit": 5
+          },
+          "out_of_scope": {
+            "n": 10,
+            "answered": 0,
+            "context_hit": 0
+          }
+        }
+      },
+      "fixed": {
+        "n": {
+          "total": 54,
+          "in_scope": 44,
+          "out_of_scope": 10,
+          "answered": 44
+        },
+        "refusal_accuracy": [
+          10,
+          10
+        ],
+        "false_refusals": [
+          0,
+          44
+        ],
+        "false_refusal_reasons": {},
+        "truncated": 0,
+        "citations": {
+          "parsed": 136,
+          "valid": 136,
+          "normalized": 0,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 1
+        },
+        "context_hit": [
+          40,
+          44
+        ],
+        "amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 2
+        },
+        "cipta_kerja_warning_when_uu17_cited": [
+          13,
+          13
+        ],
+        "latency_generate_s": {
+          "median": 0.7074984999999288,
+          "p90": 1.2753907999995135
+        },
+        "rate_limit_wait_s": 19.353000000001337,
+        "tokens": {
+          "prompt": 145458,
+          "output": 9448,
+          "reasoning": 0
+        },
+        "cost_usd": 0.15415839999999995,
+        "per_slice": {
+          "factual_id": {
+            "n": 24,
+            "answered": 24,
+            "context_hit": 21
+          },
+          "which_pasal": {
+            "n": 7,
+            "answered": 7,
+            "context_hit": 7
+          },
+          "amended": {
+            "n": 8,
+            "answered": 8,
+            "context_hit": 7
+          },
+          "english": {
+            "n": 5,
+            "answered": 5,
+            "context_hit": 5
+          },
+          "out_of_scope": {
+            "n": 10,
+            "answered": 0,
+            "context_hit": 0
+          }
+        }
+      },
+      "changes": [
+        {
+          "id": "F01",
+          "slice": "factual_id",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (uu_17_2008-0075, uu_17_2008-0069)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "uu_17_2008-0070"
+            ],
+            [
+              "uu_17_2008-0070"
+            ]
+          ]
+        },
+        {
+          "id": "F05",
+          "slice": "factual_id",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (uu_17_2008-0233, pm_59_2021-0005)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            false,
+            true
+          ],
+          "cited": [
+            [
+              "pm_59_2021-0104"
+            ],
+            [
+              "pm_59_2021-0104",
+              "uu_17_2008-0233"
+            ]
+          ]
+        },
+        {
+          "id": "F10",
+          "slice": "factual_id",
+          "reasons": [
+            "post-check: bug 2, bracketed note no longer rewritten as a citation"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "pp_31_2021-0244",
+              "pp_61_2009-0078"
+            ],
+            [
+              "pp_31_2021-0244"
+            ]
+          ]
+        },
+        {
+          "id": "A07",
+          "slice": "amended",
+          "reasons": [
+            "context: bug 1, hits no longer dropped (pm_50_2021-0008, uu_66_2024-0073, uu_17_2008-0216)"
+          ],
+          "result": [
+            "answered",
+            "answered"
+          ],
+          "context_hit": [
+            true,
+            true
+          ],
+          "cited": [
+            [
+              "uu_66_2024-0072"
+            ],
+            [
+              "uu_66_2024-0072",
+              "uu_66_2024-0073"
+            ]
+          ]
+        }
+      ]
+    }
+  },
+  "judge": {
+    "groq": {
+      "model": "openai/gpt-oss-120b",
+      "judged_by": "groq-qwen",
+      "judge_model": "qwen/qwen3.8-27b",
+      "n": 44,
+      "invalid": 0,
+      "distributions": {
+        "correctness": {
+          "correct": 33,
+          "partial": 8,
+          "wrong": 3
+        },
+        "faithfulness": {
+          "supported": 41,
+          "partly": 2,
+          "unsupported": 1
+        },
+        "superseded_mentioned": {
+          "yes": 4,
+          "no": 7,
+          "n.a.": 33
+        }
+      },
+      "correctness_by_slice": {
+        "factual_id": {
+          "correct": 18,
+          "partial": 5,
+          "wrong": 1
+        },
+        "which_pasal": {
+          "correct": 7,
+          "partial": 0,
+          "wrong": 0
+        },
+        "amended": {
+          "correct": 3,
+          "partial": 3,
+          "wrong": 2
+        },
+        "english": {
+          "correct": 5,
+          "partial": 0,
+          "wrong": 0
+        }
+      },
+      "correctness_by_context_hit": {
+        "True": {
+          "correct": 31,
+          "partial": 8,
+          "wrong": 1
+        },
+        "False": {
+          "correct": 2,
+          "partial": 0,
+          "wrong": 2
+        }
+      },
+      "manual_sample": {
+        "correctness": {
+          "correct": 7,
+          "partial": 2,
+          "wrong": 1
+        },
+        "faithfulness": {
+          "supported": 9,
+          "partly": 1
+        },
+        "superseded_mentioned": {
+          "n.a.": 8,
+          "yes": 2
+        }
+      }
+    },
+    "groq-qwen": {
+      "model": "qwen/qwen3.8-27b",
+      "judged_by": "groq",
+      "judge_model": "openai/gpt-oss-120b",
+      "n": 44,
+      "invalid": 0,
+      "distributions": {
+        "correctness": {
+          "correct": 40,
+          "partial": 2,
+          "wrong": 2
+        },
+        "faithfulness": {
+          "supported": 39,
+          "partly": 5,
+          "unsupported": 0
+        },
+        "superseded_mentioned": {
+          "yes": 10,
+          "no": 9,
+          "n.a.": 25
+        }
+      },
+      "correctness_by_slice": {
+        "factual_id": {
+          "correct": 22,
+          "partial": 1,
+          "wrong": 1
+        },
+        "which_pasal": {
+          "correct": 6,
+          "partial": 1,
+          "wrong": 0
+        },
+        "amended": {
+          "correct": 7,
+          "partial": 0,
+          "wrong": 1
+        },
+        "english": {
+          "correct": 5,
+          "partial": 0,
+          "wrong": 0
+        }
+      },
+      "correctness_by_context_hit": {
+        "True": {
+          "correct": 38,
+          "partial": 2,
+          "wrong": 0
+        },
+        "False": {
+          "correct": 2,
+          "partial": 0,
+          "wrong": 2
+        }
+      },
+      "manual_sample": {
+        "correctness": {
+          "correct": 9,
+          "wrong": 1
+        },
+        "faithfulness": {
+          "supported": 8,
+          "partly": 2
+        },
+        "superseded_mentioned": {
+          "n.a.": 8,
+          "yes": 1,
+          "no": 1
+        }
+      }
+    }
+  },
+  "agreement": {
+    "n": 20,
+    "criteria": {
+      "correctness": {
+        "agreement": 0.95,
+        "kappa": 0.8666666666666666,
+        "used_for_headline": true,
+        "flagged": false
+      },
+      "faithfulness": {
+        "agreement": 1.0,
+        "kappa": 1.0,
+        "used_for_headline": true,
+        "flagged": false
+      },
+      "superseded_mentioned": {
+        "agreement": 0.75,
+        "kappa": 0.4680851063829787,
+        "used_for_headline": true,
+        "flagged": true
+      }
+    },
+    "rule_kappa_min": 0.4,
+    "flag_kappa_below": 0.6
+  },
+  "cost": {
+    "per_llm": {
+      "groq": {
+        "answer_calls": 57,
+        "answer_usd": 0.031243499999999997,
+        "answer_tokens": [
+          171010,
+          9320
+        ],
+        "judge_calls": 44,
+        "judge_usd": 0.014313749999999997,
+        "judge_tokens": [
+          63077,
+          8087
+        ]
+      },
+      "groq-qwen": {
+        "answer_calls": 57,
+        "answer_usd": 0.16804319999999998,
+        "answer_tokens": [
+          160694,
+          9872
+        ],
+        "judge_calls": 44,
+        "judge_usd": 0.05581840000000002,
+        "judge_tokens": [
+          52258,
+          3503
+        ]
+      }
+    },
+    "calls": 202,
+    "total_usd": 0.26941885
+  },
+  "latency_generate_s": {
+    "groq": {
+      "median": 1.0943556999991415,
+      "p90": 4.009707200000776
+    },
+    "groq-qwen": {
+      "median": 0.7074984999999288,
+      "p90": 1.2753907999995135
+    }
+  },
+  "post_hoc_changes": [
+    {
+      "id": 1,
+      "when": "after the retrieval results, before any answer result",
+      "change": "Answer-time Penjelasan -> body expansion (motivated by E03): a Penjelasan chunk in the context brings in the body of its Pasal, within the same token budget. Retrieval metrics unchanged."
+    },
+    {
+      "id": 2,
+      "when": "after the retrieval results, before any answer result",
+      "change": "The judge sees only the cited sources (not the full context); faithfulness is judged against the cited sources."
+    },
+    {
+      "id": 3,
+      "when": "after the Step 3 answer results, before any judge result",
+      "change": "Two bug fixes, reported as-run and fixed: (bug 1) the same-Pasal budget dropped retrieved hits even when that could not make room (F01, F05, A07; F05 lost its gold); (bug 2) a bracketed prose note was rewritten as a citation (Qwen F10). Only changed contexts were re-asked; the post-check was re-applied without LLM calls."
+    }
+  ],
+  "findings": {
+    "questionable_gold": [
+      {
+        "id": "F07",
+        "note": "Gold is PP 31/2021 Pasal 73 only. UU 17/2008 Pasal 104 states the same conditions for building a special terminal, and both LLMs answered from it (Qwen also cited the revoked PP 61/2009 Pasal 111 and said it was revoked). A legally sound answer that misses the gold chunk."
+      },
+      {
+        "id": "F13",
+        "note": "The same list of special goods (kayu gelondongan, barang curah, rel, ternak) is in PM 93/2013 Pasal 96 (retrieved at rank 1), UU 17/2008 Pasal 45 and PP 31/2021 Pasal 23, not only in the gold PP 20/2010 Pasal 185."
+      },
+      {
+        "id": "A01",
+        "note": "UU 17/2008 Pasal 28 ayat (1) also answers who grants the licence (the Minister, for inter-provincial routes; retrieved at rank 4). The amended-slice target, PM 74/2016 Pasal 71 (application to the Head of BKPM), is not in the context, so the amendment is not tested."
+      }
+    ],
+    "weaknesses": [
+      {
+        "id": "F24",
+        "note": "Answering from a neighbouring Pasal instead of refusing: the gold (PM 5/2024 Pasal 10, the operator's obligations) is not in the context, and both LLMs present PM 5/2024 Pasal 4 (the programme's principles) as the operator's obligations. Faithful to what they cite, but it answers a different question."
+      },
+      {
+        "id": "F05",
+        "note": "Same pattern in the as-run answers: the gold UU 17/2008 Pasal 224 had been dropped from the context (bug 1), and both LLMs answered with the crew-recruitment requirements of PM 59/2021 Pasal 99. After the fix the gold is back in the context, both LLMs cite it, and both fixed answers are judged correct."
+      }
+    ]
+  },
+  "limitations": [
+    "Small n: 44 in-scope and 10 out-of-scope questions. A proportion's 95% CI spans about +/-0.15; per-slice results (n = 5-24) are indicative only.",
+    "Questions were drafted by the system's author (an LLM) from specific chunks and reviewed by one person; even paraphrased, they favour retrievable wording.",
+    "The judges are the two compared models (cross-judged, no model grades itself), validated by one annotator on 20 answers.",
+    "superseded_mentioned is flagged: kappa 0.47 is just above the 0.40 rule with n = 20, and 4 of its 5 disagreements were the annotator saying \"n.a.\" where the judge saw a relevant superseded or repealed source. The rubric does not define \"relevant\" precisely (e.g. whether a revoked older provision among the cited sources counts). Result kept, not relabelled; rubric fix listed as future work.",
+    "Three gold items are questionable (F07, F13, A01: another provision answers the question too); the frozen gold was not changed.",
+    "Post-hoc changes 1-3 were decided after some results (listed above); Step 3 is reported both as-run and fixed.",
+    "The corpus has no consolidated text and lacks the Cipta Kerja amendments (UU 11/2020, UU 6/2023) to UU 17/2008; answers citing UU 17/2008 carry a warning instead.",
+    "Groq outputs are not fully deterministic; fp16 retrieval can swap near-tied hits. Cost is estimated from token counts and the listed prices (reasoning tokens assumed billed as output; Qwen does not report them separately)."
+  ],
+  "future_work": [
+    "Rubric: define \"relevant superseded source\" for superseded_mentioned (e.g. relevant = a gold chunk, or a cited chunk on the same Pasal, is SUPERSEDED/REPEALED) and re-validate with a fresh manual sample.",
+    "Retrieval: handle REPEALED / revoked chunks at retrieval time (F07: the revoked PP 61/2009 Pasal 111 outranks the current PP 31/2021 Pasal 73).",
+    "Refusal when the right Pasal is missing: both LLMs answer from a neighbouring Pasal instead of saying \"not found\" (F24); half of the answers without the gold in context were judged wrong.",
+    "A larger, independently written question set and a second annotator."
+  ],
+  "headline": [
+    {
+      "text": "Retrieval: hybrid BM25 + e5 with bge-reranker reaches Hit@5 0.89 (95% CI 0.80-0.98) and MRR@10 0.75 on 44 in-scope questions, selected among 5 retrievers by a rule fixed before the run.",
+      "sources": [
+        "retrieval.selected.hit@5.mean",
+        "retrieval.selected.hit@5.ci95",
+        "retrieval.selected.mrr@10.mean",
+        "retrieval.n_in_scope"
+      ],
+      "values": {
+        "retrieval.selected.hit@5.mean": 0.8863636363636364,
+        "retrieval.selected.hit@5.ci95": [
+          0.7954545454545454,
+          0.9772727272727273
+        ],
+        "retrieval.selected.mrr@10.mean": 0.7462121212121212,
+        "retrieval.n_in_scope": 44
+      }
+    },
+    {
+      "text": "Grounding: all 218 of 218 citations in the answers of both LLMs map to a provided source; gpt-oss-120b refuses 10/10 and Qwen3.8-27B refuses 10/10 out-of-scope questions, with 0 false refusals on 44 in-scope questions each.",
+      "sources": [
+        "answers.groq.fixed.citations",
+        "answers.groq-qwen.fixed.citations",
+        "answers.groq.fixed.refusal_accuracy",
+        "answers.groq-qwen.fixed.refusal_accuracy",
+        "answers.groq.fixed.false_refusals",
+        "answers.groq-qwen.fixed.false_refusals"
+      ],
+      "values": {
+        "answers.groq.fixed.citations": {
+          "parsed": 82,
+          "valid": 82,
+          "normalized": 3,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 0
+        },
+        "answers.groq-qwen.fixed.citations": {
+          "parsed": 136,
+          "valid": 136,
+          "normalized": 0,
+          "answers_with_invalid": 0,
+          "answers_with_flagged_ayat": 1
+        },
+        "answers.groq.fixed.refusal_accuracy": [
+          10,
+          10
+        ],
+        "answers.groq-qwen.fixed.refusal_accuracy": [
+          10,
+          10
+        ],
+        "answers.groq.fixed.false_refusals": [
+          0,
+          44
+        ],
+        "answers.groq-qwen.fixed.false_refusals": [
+          0,
+          44
+        ]
+      }
+    },
+    {
+      "text": "Correctness (cross-judged; judge vs human agreement kappa 0.87, n = 20): Qwen3.8-27B 40/44 (91%) correct, gpt-oss-120b 33/44 (75%).",
+      "sources": [
+        "judge.groq-qwen.distributions.correctness.correct",
+        "judge.groq-qwen.n",
+        "judge.groq.distributions.correctness.correct",
+        "judge.groq.n",
+        "agreement.criteria.correctness.kappa",
+        "agreement.n"
+      ],
+      "values": {
+        "judge.groq-qwen.distributions.correctness.correct": 40,
+        "judge.groq-qwen.n": 44,
+        "judge.groq.distributions.correctness.correct": 33,
+        "judge.groq.n": 44,
+        "agreement.criteria.correctness.kappa": 0.8666666666666666,
+        "agreement.n": 20
+      }
+    },
+    {
+      "text": "Amended regulations: the current version is cited in 7/8 (gpt-oss-120b), 7/8 (Qwen3.8-27B) amended-Pasal answers; every statement is supported by the cited sources in 41/44 (gpt-oss-120b), 39/44 (Qwen3.8-27B) answers (judge vs human kappa 1.00).",
+      "sources": [
+        "answers.groq.fixed.amended",
+        "answers.groq-qwen.fixed.amended",
+        "judge.groq.distributions.faithfulness.supported",
+        "judge.groq-qwen.distributions.faithfulness.supported",
+        "agreement.criteria.faithfulness.kappa"
+      ],
+      "values": {
+        "answers.groq.fixed.amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 1
+        },
+        "answers.groq-qwen.fixed.amended": {
+          "n": 8,
+          "answered": 8,
+          "cites_current_version": 7,
+          "cites_superseded_text": 2
+        },
+        "judge.groq.distributions.faithfulness.supported": 41,
+        "judge.groq-qwen.distributions.faithfulness.supported": 39,
+        "agreement.criteria.faithfulness.kappa": 1.0
+      }
+    },
+    {
+      "text": "Cost and speed: about $0.27 for all 202 LLM calls of the evaluation (answers and judging, Groq); median generation 1.1 s (gpt-oss-120b) / 0.7 s (Qwen3.8-27B); retrieval and reranking run locally.",
+      "sources": [
+        "cost.total_usd",
+        "cost.calls",
+        "latency_generate_s.groq.median",
+        "latency_generate_s.groq-qwen.median"
+      ],
+      "values": {
+        "cost.total_usd": 0.26941885,
+        "cost.calls": 202,
+        "latency_generate_s.groq.median": 1.0943556999991415,
+        "latency_generate_s.groq-qwen.median": 0.7074984999999288
+      }
+    }
+  ]
+}

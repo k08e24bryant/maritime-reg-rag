@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generated": "2026-10-14T17:00",
+    "generated": "2026-10-14T17:11",
     "rubric_version": "06f7ccc59d"
   },
   "answerers": {
@@ -134,68 +134,74 @@
     }
   },
   "agreement": {
-    "status": "incomplete",
-    "errors": [
-      "M01: correctness is 'empty'",
-      "M01: faithfulness is 'empty'",
-      "M01: superseded_mentioned is 'empty'",
-      "M02: correctness is 'empty'",
-      "M02: faithfulness is 'empty'",
-      "M02: superseded_mentioned is 'empty'",
-      "M03: correctness is 'empty'",
-      "M03: faithfulness is 'empty'",
-      "M03: superseded_mentioned is 'empty'",
-      "M04: correctness is 'empty'",
-      "M04: faithfulness is 'empty'",
-      "M04: superseded_mentioned is 'empty'",
-      "M05: correctness is 'empty'",
-      "M05: faithfulness is 'empty'",
-      "M05: superseded_mentioned is 'empty'",
-      "M06: correctness is 'empty'",
-      "M06: faithfulness is 'empty'",
-      "M06: superseded_mentioned is 'empty'",
-      "M07: correctness is 'empty'",
-      "M07: faithfulness is 'empty'",
-      "M07: superseded_mentioned is 'empty'",
-      "M08: correctness is 'empty'",
-      "M08: faithfulness is 'empty'",
-      "M08: superseded_mentioned is 'empty'",
-      "M09: correctness is 'empty'",
-      "M09: faithfulness is 'empty'",
-      "M09: superseded_mentioned is 'empty'",
-      "M10: correctness is 'empty'",
-      "M10: faithfulness is 'empty'",
-      "M10: superseded_mentioned is 'empty'",
-      "M11: correctness is 'empty'",
-      "M11: faithfulness is 'empty'",
-      "M11: superseded_mentioned is 'empty'",
-      "M12: correctness is 'empty'",
-      "M12: faithfulness is 'empty'",
-      "M12: superseded_mentioned is 'empty'",
-      "M13: correctness is 'empty'",
-      "M13: faithfulness is 'empty'",
-      "M13: superseded_mentioned is 'empty'",
-      "M14: correctness is 'empty'",
-      "M14: faithfulness is 'empty'",
-      "M14: superseded_mentioned is 'empty'",
-      "M15: correctness is 'empty'",
-      "M15: faithfulness is 'empty'",
-      "M15: superseded_mentioned is 'empty'",
-      "M16: correctness is 'empty'",
-      "M16: faithfulness is 'empty'",
-      "M16: superseded_mentioned is 'empty'",
-      "M17: correctness is 'empty'",
-      "M17: faithfulness is 'empty'",
-      "M17: superseded_mentioned is 'empty'",
-      "M18: correctness is 'empty'",
-      "M18: faithfulness is 'empty'",
-      "M18: superseded_mentioned is 'empty'",
-      "M19: correctness is 'empty'",
-      "M19: faithfulness is 'empty'",
-      "M19: superseded_mentioned is 'empty'",
-      "M20: correctness is 'empty'",
-      "M20: faithfulness is 'empty'",
-      "M20: superseded_mentioned is 'empty'"
-    ]
+    "n": 20,
+    "missing_judgements": [],
+    "criteria": {
+      "correctness": {
+        "agreement": 0.95,
+        "kappa": 0.8666666666666666,
+        "use_judge_for_headline": true,
+        "confusion": {
+          "correct|correct": 15,
+          "partial|partial": 2,
+          "correct|partial": 1,
+          "wrong|wrong": 2
+        }
+      },
+      "faithfulness": {
+        "agreement": 1.0,
+        "kappa": 1.0,
+        "use_judge_for_headline": true,
+        "confusion": {
+          "supported|supported": 17,
+          "partly|partly": 3
+        }
+      },
+      "superseded_mentioned": {
+        "agreement": 0.75,
+        "kappa": 0.4680851063829787,
+        "use_judge_for_headline": true,
+        "confusion": {
+          "n.a.|n.a.": 12,
+          "n.a.|no": 2,
+          "n.a.|yes": 2,
+          "yes|yes": 3,
+          "no|yes": 1
+        }
+      }
+    },
+    "status": "complete",
+    "manual_distributions": {
+      "groq": {
+        "correctness": {
+          "correct": 7,
+          "partial": 2,
+          "wrong": 1
+        },
+        "faithfulness": {
+          "supported": 9,
+          "partly": 1
+        },
+        "superseded_mentioned": {
+          "n.a.": 8,
+          "yes": 2
+        }
+      },
+      "groq-qwen": {
+        "correctness": {
+          "correct": 9,
+          "wrong": 1
+        },
+        "faithfulness": {
+          "supported": 8,
+          "partly": 2
+        },
+        "superseded_mentioned": {
+          "n.a.": 8,
+          "yes": 1,
+          "no": 1
+        }
+      }
+    }
   }
 }

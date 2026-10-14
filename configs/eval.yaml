@@ -92,3 +92,12 @@ judge:                     # Step 4 (docs/eval_plan.md section 4 + post-hoc chan
       The system adds a fixed "not legal advice" line and warnings itself; do not grade them.
       Reply with only this JSON object, no other text:
       {"correctness": "...", "faithfulness": "...", "superseded_mentioned": "...", "rationale": "one sentence"}
+
+report:                    # Step 5: everything in one place (maritime-eval-report)
+  retrieval_json: reports/eval_retrieval.json
+  answers_json: reports/eval_answers.json
+  judge_json: reports/eval_judge.json
+  output_json: reports/eval.json
+  output_md: reports/eval.md
+  figures_dir: reports/figures
+  flag_kappa_below: 0.60   # criteria above the 0.40 rule but below this are flagged as fragile (n = 20)
