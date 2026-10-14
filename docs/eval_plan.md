@@ -158,6 +158,34 @@ LLM comparison).
 - fp16 retrieval jitter can swap near-tied hits.
 - The corpus lacks consolidated text and Cipta Kerja amendments.
 
+## Gold review log (before any result)
+
+2026-10-14, review of `data/eval/questions_draft.xlsx` by the project owner;
+`maritime-eval-questions validate` wrote `data/eval/questions_gold.csv` (55 questions,
+3 edited, 0 deleted). No retrieval or answer result existed at that point.
+
+- **A04**: question premise fixed. The repealed PM 93/2013 Pasal 18 was about a report to the
+  Director General (a request for approval), not a general prior duty; the question now asks
+  whether that approval route still exists.
+- **F17, F18**: gold extended with the general sanction rules of PP 31/2021, Pasal 223
+  (`pp_31_2021-0241`, warning -> freeze -> revocation steps) and Pasal 222
+  (`pp_31_2021-0240`, direct freeze/revocation), which answer the same questions.
+- **F24, A05**: reference answers extended (edited in place).
+
+Found in the same review, to apply before the freeze (a re-run of `validate`):
+
+- **F12**: its only gold, PP 61/2009 Pasal 122 (5-year special-terminal permit), is revoked by
+  PP 31/2021 Pasal 233 ayat (1) huruf b. Delete F12.
+- **F07**: its second gold, PP 61/2009 Pasal 111 (`pp_61_2009-0114`), is revoked by the same
+  provision; the current rule is PP 31/2021 Pasal 73. Gold becomes `pp_31_2021-0082` only, and
+  the reference answer drops the PP 61/2009 note.
+- Checked: no other gold chunk is in PP 31/2021's revocation lists (PP 20/2010 Pasal 182 and
+  185; PP 61/2009 Pasal 6, 20 and 28 are still in force).
+- Checked: PP 31/2021 Pasal 220-224 (general administrative sanctions) carry
+  "BAB VIII MANAJEMEN KEAMANAN KAPAL". The source PDF has no other BAB heading between Pasal 170
+  and 225, so this is the regulation's own structure, not a chunker error. No change; chunk ids
+  are unchanged.
+
 ## Post-hoc changes
 
 (none)

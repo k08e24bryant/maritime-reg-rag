@@ -109,3 +109,9 @@ Decisions made while reviewing Phase 1 that later phases must implement.
 - PP 31/2021: swap the 2021 scan for the born-digital copy from peraturan.go.id (body +
   separate Penjelasan file). The manual overrides for the scan then report as stale; remove them.
 - PM 74/2016 and PM 5/2024 stay on their embedded OCR layer (decision: leave as is).
+- **Per-Pasal revocation (open)**: PP 31/2021 Pasal 233 ayat (1) lists exactly which Pasal of
+  PP 20/2010 (huruf a) and PP 61/2009 (huruf b) are revoked (e.g. PP 61/2009 Pasal 111 and 122).
+  Parsing that list would label those chunks REPEALED by PP 31/2021, instead of the document-level
+  "this Pasal may no longer apply" note. It changes metadata only (chunk ids, text and headings
+  stay the same), so it does not affect the retrieval evaluation. Decide before the answer
+  evaluation (Phase 4 Step 3).

@@ -19,3 +19,17 @@ review:
   shared_words_warn: 5     # auto_check warns when a question shares >= this many consecutive words with its gold text
 
 seed: 42
+
+retrieval:                 # Step 2 (docs/eval_plan.md section 2); local only, no LLM
+  retrieval_config: configs/retrieval.yaml
+  depth: 10                # each configuration returns its top 10 (MRR@10)
+  hit_at: [1, 5]
+  rerank_first_stage: 20   # hybrid+rerank reranks the hybrid top 20
+  configs: [bm25, bm25_noheading, dense, hybrid, hybrid_rerank]
+  simplicity: {bm25: 0, bm25_noheading: 0, dense: 1, hybrid: 2, hybrid_rerank: 3}
+  selection_margin: 0.02   # simplest config with Hit@5 within this of the best
+  bootstrap: {resamples: 2000, ci: 0.95}   # seed: `seed` in retrieval.yaml
+  gate_thresholds: [0.005, 0.01, 0.02, 0.05, 0.1]
+  gate_max_in_scope_refusals: 1
+  output_json: reports/eval_retrieval.json
+  output_md: reports/eval_retrieval.md
